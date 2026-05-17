@@ -1,0 +1,67 @@
+# Canonical root and directory routes
+/index.html / 301
+/services /services/ 301
+/portfolio /portfolio/ 301
+/contact/ /contact.html 301
+
+# Clean service page canonicals
+/services/custom-app-development /services/custom-app-development/ 301
+/services/custom-app-development.html /services/custom-app-development/ 301
+/services/contractor-crm-software /services/contractor-crm-software/ 301
+/services/contractor-crm-software.html /services/contractor-crm-software/ 301
+/services/website-design /services/website-design/ 301
+/services/website-design.html /services/website-design/ 301
+/services/seo-services /services/seo-services/ 301
+/services/seo-services.html /services/seo-services/ 301
+
+# Old service routes
+/apps /services/custom-app-development/ 301
+/apps/ /services/custom-app-development/ 301
+/custom-app-development /services/custom-app-development/ 301
+/custom-app-development/ /services/custom-app-development/ 301
+/contractor-crm /services/contractor-crm-software/ 301
+/contractor-crm/ /services/contractor-crm-software/ 301
+/services/contractor-crm /services/contractor-crm-software/ 301
+/services/contractor-crm.html /services/contractor-crm-software/ 301
+/websites /services/website-design/ 301
+/websites/ /services/website-design/ 301
+/services/websites /services/website-design/ 301
+/services/websites.html /services/website-design/ 301
+/seo-services /services/seo-services/ 301
+/seo-services/ /services/seo-services/ 301
+
+# Clean case study canonicals
+/portfolio/mfr-roofing /portfolio/mfr-roofing/ 301
+/portfolio/mfr-roofing.html /portfolio/mfr-roofing/ 301
+/portfolio/decorative-curbing-landscape /portfolio/decorative-curbing-landscape/ 301
+/portfolio/decorative-curbing-landscape.html /portfolio/decorative-curbing-landscape/ 301
+/portfolio/curbflow /portfolio/curbflow/ 301
+/portfolio/curbflow.html /portfolio/curbflow/ 301
+/portfolio/security-dashboard /portfolio/security-dashboard/ 301
+/portfolio/security-dashboard.html /portfolio/security-dashboard/ 301
+/portfolio/studio-facility /portfolio/studio-facility/ 301
+/portfolio/studio-facility.html /portfolio/studio-facility/ 301
+/portfolio/video-confessional /portfolio/video-confessional/ 301
+/portfolio/video-confessional.html /portfolio/video-confessional/ 301
+
+# Other portfolio and app routes
+/apps/mfr-command-center /portfolio/mfr-roofing/ 301
+/apps/mfr-command-center/ /portfolio/mfr-roofing/ 301
+/apps/mfr-command-center-demo /mfr-command-center/ 301
+/work /portfolio/ 301
+/work/ /portfolio/ 301
+/demos /demos/ 301
+/decorative-curbing-landscape /portfolio/decorative-curbing-landscape/ 301
+/decorative-curbing-landscape/ /portfolio/decorative-curbing-landscape/ 301
+/security-dashboard /portfolio/security-dashboard/ 301
+/security-demo /security-operations-platform-demo.html 301
+/portfolio/studio /portfolio/studio-facility/ 301
+/portfolio/video /portfolio/video-confessional/ 301
+
+# Hash redirects like /index.html#services cannot be handled by Cloudflare _redirects because browsers do not send fragments to the server.
+# assets/js/main.js handles legacy home hash links for services, portfolio/work, and contact on the client.
+
+# Blog clean URL helpers
+/blog.html /blog/ 301
+/blog /blog/ 301
+/admin /admin/ 301

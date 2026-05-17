@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Arsenal Command Center Demo | Custom Operations App | Arsenal Media</title>
+<style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #08090d;
+      --panel: rgba(255,255,255,0.06);
+      --panel-strong: rgba(255,255,255,0.09);
+      --border: rgba(220, 38, 38, 0.35);
+      --border-soft: rgba(255,255,255,0.09);
+      --red: #dc2626;
+      --red-bright: #ef4444;
+      --red-dark: #991b1b;
+      --white: #ffffff;
+      --muted: #a3a3a3;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --blue: #60a5fa;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(220,38,38,0.28), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(153,27,27,0.20), transparent 32%),
+        linear-gradient(135deg, #07080c 0%, #16151a 100%);
+      color: var(--white);
+      min-height: 100vh;
+      padding: 22px;
+    }
+
+    .hidden { display: none !important; }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .login-screen {
+      width: min(560px, 100%);
+      margin: 42px auto;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.42);
+      backdrop-filter: blur(12px);
+    }
+
+    .login-logo {
+      display: block;
+      width: 330px;
+      max-width: 92%;
+      margin: 0 auto 24px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      color: var(--red-bright);
+      margin-bottom: 18px;
+      font-size: 1.55rem;
+    }
+
+    h3 {
+      color: var(--red-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+
+    .subtitle, .muted {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .login-form {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 14px;
+      border: 2px solid rgba(220,38,38,0.35);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--red-bright);
+      background: rgba(255,255,255,0.1);
+    }
+
+    select option {
+      background: #151515;
+      color: var(--white);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 18px;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 0.98rem;
+      box-shadow: 0 12px 28px rgba(220,38,38,0.18);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(220,38,38,0.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(220,38,38,0.45);
+      box-shadow: none;
+    }
+
+    .btn-small {
+      padding: 9px 11px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .danger { background: rgba(220,38,38,0.25); border: 1px solid var(--red); }
+    .success { background: rgba(34,197,94,0.25); border: 1px solid var(--green); }
+
+    .header {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border-soft);
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 22px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.36);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      min-width: 0;
+    }
+
+    .brand img {
+      height: 82px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .title-block h1 {
+      color: var(--white);
+      text-shadow: 0 0 28px rgba(220,38,38,0.42);
+    }
+
+    .title-block .subtitle {
+      font-weight: 500;
+    }
+
+    .account-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .message {
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      background: rgba(220,38,38,0.12);
+      color: #fecaca;
+      font-weight: 700;
+    }
+
+    .top-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.62fr);
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .card, .form-card, .table-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 14px 44px rgba(0,0,0,0.28);
+      backdrop-filter: blur(10px);
+      min-width: 0;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .tab {
+      min-height: 62px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      color: var(--white);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.15;
+      cursor: pointer;
+      padding: 12px;
+      transition: 0.2s ease;
+    }
+
+    .tab:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .tab.active {
+      border-color: var(--red-bright);
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+      box-shadow: 0 0 24px rgba(220,38,38,0.35);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tools-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .stat-card h3 {
+      color: var(--red-bright);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+      font-weight: 900;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .form-grid textarea, .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .multi-select {
+      min-height: 170px;
+    }
+
+    .table-card {
+      margin-top: 22px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 920px;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: rgba(220,38,38,0.32);
+      padding: 14px;
+      text-align: left;
+      color: var(--white);
+      font-size: 0.92rem;
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: #e5e5e5;
+      vertical-align: top;
+    }
+
+    .type-badge, .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .type-badge {
+      color: #fecaca;
+      background: rgba(220,38,38,0.18);
+      border: 1px solid rgba(220,38,38,0.55);
+    }
+
+    .status.approved { color: #86efac; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.55); }
+    .status.pending { color: #fde68a; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.55); }
+    .status.denied { color: #fecaca; background: rgba(220,38,38,0.15); border: 1px solid rgba(220,38,38,0.55); }
+
+    .auth-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1180px) {
+      .top-layout { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 12px; }
+      .header { flex-direction: column; align-items: stretch; }
+      .brand { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .brand img { height: auto; width: 260px; max-width: 100%; }
+      .account-bar { display: grid; grid-template-columns: 1fr; }
+      .account-bar button, .badge { width: 100%; justify-content: center; }
+      .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tools-grid, .stats-grid, .form-grid { grid-template-columns: 1fr; }
+      .card, .form-card, .table-card { padding: 16px; }
+      .login-screen { margin: 22px auto; padding: 24px; }
+    }
+
+    @media (max-width: 430px) {
+      .tabs { grid-template-columns: 1fr; }
+      .login-logo { width: 250px; }
+    }
+  </style>
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GCDYP7KS2C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GCDYP7KS2C');
+</script>
+<style id="arsenal-back-to-site-style">
+  .arsenal-back-to-site{
+    position:fixed;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:99999;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 16px;
+    border-radius:16px;
+    background:rgba(196,30,30,.97);
+    color:#fff!important;
+    text-decoration:none!important;
+    font:800 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    letter-spacing:.02em;
+    box-shadow:0 18px 40px rgba(0,0,0,.32);
+    border:1px solid rgba(255,255,255,.18);
+  }
+  .arsenal-back-to-site:hover{filter:brightness(1.08);}
+  .arsenal-back-to-site::before{content:'↩';font-size:14px;line-height:1;}
+  @media(max-width:760px){
+    .arsenal-back-to-site{right:12px;top:auto;bottom:18px;transform:none;padding:11px 14px;font-size:12px;border-radius:999px;}
+  }
+</style><link href="/favicon.ico" rel="icon"/><link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/><link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/><link href="/apple-touch-icon.png" rel="apple-touch-icon" type="image/png"/>
+<style id="v38-page-overflow-guard">
+html,body{width:100%;max-width:100%;overflow-x:hidden!important;}
+*,*::before,*::after{box-sizing:border-box;min-width:0;}
+img,svg,video,canvas,iframe{max-width:100%;height:auto;}
+pre,code{max-width:100%;white-space:pre-wrap;word-break:break-word;}
+@media(max-width:900px){
+  body{max-width:100vw!important;}
+  .container,.wrap,.page,.page-wrap,.content,.section,.hero,.card,.panel,.modal,.modal-sheet,.login-box,.app-body{max-width:100%!important;}
+  .grid,.row,.cards,.form-grid,.stats-grid,.toolbar,.filters{min-width:0!important;max-width:100%!important;}
+  input,select,textarea,button{max-width:100%;}
+  .btn,.button,a[class*="btn"]{white-space:normal;}
+  table{max-width:100%;}
+  .table-wrap,.table-card,.table-panel,[class*="table"]{max-width:100%;}
+}
+</style>
+<style id="am-demo-close-style">
+  .am-demo-close-button,
+  .arsenal-back-to-site.am-demo-close-button{
+    position:fixed!important;
+    top:max(14px, env(safe-area-inset-top))!important;
+    right:max(14px, env(safe-area-inset-right))!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    z-index:2147483647!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    width:auto!important;
+    max-width:calc(100vw - 28px)!important;
+    padding:10px 14px!important;
+    border-radius:12px!important;
+    border:1px solid rgba(255,255,255,.18)!important;
+    background:rgba(9,12,18,.92)!important;
+    color:#fff!important;
+    box-shadow:0 18px 42px rgba(0,0,0,.28)!important;
+    font-family:Inter, Arial, Helvetica, sans-serif!important;
+    font-size:13px!important;
+    line-height:1!important;
+    font-weight:900!important;
+    letter-spacing:.01em!important;
+    text-decoration:none!important;
+    backdrop-filter:blur(14px)!important;
+    -webkit-backdrop-filter:blur(14px)!important;
+  }
+  .am-demo-close-button::before,
+  .arsenal-back-to-site.am-demo-close-button::before{content:none!important;display:none!important;}
+  .am-demo-close-button__x{
+    display:grid!important;place-items:center!important;
+    width:18px!important;height:18px!important;border-radius:6px!important;
+    background:#dc2626!important;color:#fff!important;
+    font-size:15px!important;line-height:18px!important;font-weight:950!important;
+  }
+  .am-demo-close-button:hover,
+  .arsenal-back-to-site.am-demo-close-button:hover{
+    color:#fff!important;filter:brightness(1.06)!important;transform:translateY(-1px)!important;
+  }
+  .am-demo-close-button:focus-visible,
+  .arsenal-back-to-site.am-demo-close-button:focus-visible{
+    outline:3px solid rgba(220,38,38,.45)!important;
+    outline-offset:3px!important;
+  }
+  @media (max-width:560px){
+    .am-demo-close-button,
+    .arsenal-back-to-site.am-demo-close-button{
+      top:max(10px, env(safe-area-inset-top))!important;
+      right:max(10px, env(safe-area-inset-right))!important;
+      padding:9px 11px!important;
+      border-radius:10px!important;
+      font-size:12px!important;
+      max-width:calc(100vw - 20px)!important;
+    }
+    .am-demo-close-button__x{width:17px!important;height:17px!important;font-size:14px!important;}
+  }
+  @media print{
+    .am-demo-close-button,
+    .arsenal-back-to-site.am-demo-close-button{display:none!important;}
+  }
+</style>
+<!-- Arsenal Media v42 crawl/social metadata -->
+<meta content="Arsenal Command Center demo showing dashboard, approvals, submissions, tools, and operations workflows in one custom app." name="description"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<link href="https://arsenalmediaco.com/arsenal-media-command-center-demo.html" rel="canonical"/>
+<meta content="Arsenal Command Center Demo | Custom Operations App | Arsenal Media" property="og:title"/>
+<meta content="Arsenal Command Center demo showing dashboard, approvals, submissions, tools, and operations workflows in one custom app." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://arsenalmediaco.com/arsenal-media-command-center-demo.html" property="og:url"/>
+<meta content="Arsenal Media" property="og:site_name"/>
+<meta content="https://arsenalmediaco.com/arsenal-command-social-preview-v42.jpg?v=42" property="og:image"/>
+<meta content="https://arsenalmediaco.com/arsenal-command-social-preview-v42.jpg?v=42" property="og:image:secure_url"/>
+<meta content="image/jpeg" property="og:image:type"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="Arsenal Command Center custom operations app demo preview." property="og:image:alt"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Arsenal Command Center Demo | Custom Operations App | Arsenal Media" name="twitter:title"/>
+<meta content="Arsenal Command Center demo showing dashboard, approvals, submissions, tools, and operations workflows in one custom app." name="twitter:description"/>
+<meta content="https://arsenalmediaco.com/arsenal-command-social-preview-v42.jpg?v=42" name="twitter:image"/>
+<meta content="Arsenal Command Center custom operations app demo preview." name="twitter:image:alt"/>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://arsenalmediaco.com/arsenal-media-command-center-demo.html#webpage", "url": "https://arsenalmediaco.com/arsenal-media-command-center-demo.html", "name": "Arsenal Command Center Demo | Custom Operations App | Arsenal Media", "description": "Arsenal Command Center demo showing dashboard, approvals, submissions, tools, and operations workflows in one custom app.", "isPartOf": {"@type": "WebSite", "name": "Arsenal Media", "url": "https://arsenalmediaco.com/"}, "image": "https://arsenalmediaco.com/arsenal-command-social-preview-v42.jpg?v=42"}</script>
+<!-- /Arsenal Media v42 crawl/social metadata -->
+</head>
+<body>
+<a aria-label="Close demo and return to Arsenal Media website" class="arsenal-back-to-site am-demo-close-button" data-am-close-demo="" href="/portfolio/"><span aria-hidden="true" class="am-demo-close-button__x">×</span><span>Close Demo</span></a>
+<div class="login-screen" id="loginScreen">
+<img alt="Arsenal Media Logo" class="login-logo" loading="lazy" src="/assets/arsenal-command-logo.webp"/>
+<h1>Command Center Demo</h1>
+<p class="subtitle">A branded client operations portal powered by Arsenal Media.</p>
+<div class="message hidden" id="loginMessage"></div>
+<div class="login-form">
+<input id="loginEmail" placeholder="Email" type="email" value="admin@arsenalmedia.demo"/>
+<input id="loginPassword" placeholder="Password" type="password" value="demo123"/>
+<button onclick="demoLogin()">Sign In to Demo</button>
+<button class="btn-secondary" onclick="showDemoHint()">Need demo credentials?</button>
+</div>
+<p class="auth-note">Demo credentials: <strong>admin@arsenalmedia.demo</strong> / <strong>demo123</strong>. This version uses hardcoded sample data only.</p>
+</div>
+<div class="container hidden" id="app">
+<div class="header">
+<div class="brand">
+<img alt="Arsenal Media Logo" loading="lazy" src="/assets/arsenal-command-logo.webp"/>
+<div class="title-block">
+<h1>Command Center</h1>
+<p class="subtitle">Demo Client Portal • Hardcoded Sample Data • Arsenal Media</p>
+</div>
+</div>
+<div class="account-bar">
+<div class="badge"><span class="dot"></span><span id="accountLabel">Demo Admin • ADMIN</span></div>
+<button class="btn-secondary" onclick="switchRole()">Switch Role</button>
+<button class="btn-secondary" onclick="demoLogout()">Sign Out</button>
+</div>
+</div>
+<div class="message hidden" id="appMessage"></div>
+<div class="top-layout">
+<div class="card">
+<h3>Navigation</h3>
+<p class="muted">Preview the major command center workflows.</p>
+<div class="tabs" id="tabs"></div>
+</div>
+<div class="card">
+<h3>Data Tools</h3>
+<p class="muted">Export demo data or reset the sample records.</p>
+<div class="tools-grid">
+<input id="startDate" type="date"/>
+<input id="endDate" type="date"/>
+<button onclick="exportCSV()">📊 Export CSV</button>
+<button class="btn-secondary" onclick="backupJSON()">💾 Backup JSON</button>
+<button class="btn-secondary full" onclick="resetDemoData()">🔄 Reset Demo Data</button>
+</div>
+</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><h3>Total Commissions</h3><div class="stat-value" id="statCommissions">$0</div></div>
+<div class="stat-card"><h3>Approved Shows</h3><div class="stat-value" id="statShows">0</div></div>
+<div class="stat-card"><h3>Pending Items</h3><div class="stat-value" id="statPending">0</div></div>
+<div class="stat-card"><h3>Total Entries</h3><div class="stat-value" id="statTotal">0</div></div>
+</div>
+<div id="formArea"></div>
+<div id="tableArea"></div>
+</div>
+<script>
+    const logoUri = "assets/arsenal-command-logo.webp";
+    let currentRole = "admin";
+    let currentUser = { name: "Demo Admin", email: "admin@arsenalmedia.demo", role: "admin" };
+
+    const tabConfig = [
+      ["commissions", "💰 Commissions"],
+      ["shows", "🎤 Shows"],
+      ["managerHours", "🕒 Manager Hours"],
+      ["equipmentHours", "🎛 Equipment Hours"],
+      ["checkout", "📦 Equipment Checkout"],
+      ["repair", "🛠 Equipment Repair"],
+      ["pending", "⏳ Pending Approvals"],
+      ["users", "👥 Users"]
+    ];
+
+    const initialData = {
+      commissions: [
+        { id: "c1", type: "Commission", date: "2026-05-03", name: "Jordan Lee", details: "Riverbend Wedding", amount: 175, status: "Approved", notes: "Photo booth upsell" },
+        { id: "c2", type: "Commission", date: "2026-05-04", name: "Avery Stone", details: "Corporate Trivia Night", amount: 95, status: "Pending", notes: "Trivia package" }
+      ],
+      shows: [
+        { id: "s1", type: "Show", date: "2026-05-02", name: "Jordan Lee", details: "Hudson Wedding", amount: "6:00 PM - 11:00 PM", status: "Approved", notes: "Main system" },
+        { id: "s2", type: "Show", date: "2026-05-09", name: "Lindsay Murray", details: "Highland Prom", amount: "7:00 PM - 11:30 PM", status: "Pending", notes: "Uplights requested" }
+      ],
+      managerHours: [
+        { id: "m1", type: "Manager Hours", date: "2026-05-01", name: "Lindsay Murray", details: "Weekend scheduling", amount: "3.5 hours", status: "Approved", notes: "Schedule confirmations" }
+      ],
+      equipmentHours: [
+        { id: "e1", type: "Equipment Hours", date: "2026-05-01", name: "Tech Team", details: "Additional speaker system", amount: "5 hours", status: "Pending", notes: "Returned Monday" }
+      ],
+      checkout: [
+        { id: "co1", type: "Equipment Checkout", date: "2026-05-10", name: "Bryan Evans", details: "Projector, Projector Screen, Additional Mic", amount: "Graduation Party", status: "Pending", notes: "Needed by Friday" }
+      ],
+      repair: [
+        { id: "r1", type: "Equipment Repair", date: "2026-05-04", name: "Steve Smith", details: "QSC Speaker K12.2 SN-88219", amount: "Crackling at high volume", status: "Pending", notes: "Needs bench test" }
+      ],
+      users: [
+        { id: "u1", email: "admin@arsenalmedia.demo", fullName: "Demo Admin", role: "admin", phone: "555-0100" },
+        { id: "u2", email: "manager@arsenalmedia.demo", fullName: "Demo Manager", role: "manager", phone: "555-0101" },
+        { id: "u3", email: "user@arsenalmedia.demo", fullName: "Demo User", role: "user", phone: "555-0102" }
+      ]
+    };
+
+    let data = JSON.parse(JSON.stringify(initialData));
+    let activeTab = "commissions";
+
+    function allEntries() {
+      return [...data.commissions, ...data.shows, ...data.managerHours, ...data.equipmentHours, ...data.checkout, ...data.repair];
+    }
+
+    function demoLogin() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const pass = document.getElementById("loginPassword").value;
+      if (!email || pass !== "demo123") {
+        showLoginMessage("Invalid demo credentials. Use demo123 as the password.");
+        return;
+      }
+
+      const user = data.users.find(u => u.email === email) || data.users[0];
+      currentRole = user.role;
+      currentUser = { name: user.fullName, email: user.email, role: user.role };
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      render();
+    }
+
+    function demoLogout() {
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+    }
+
+    function showDemoHint() {
+      showLoginMessage("Use admin@arsenalmedia.demo and password demo123. You can also try manager@arsenalmedia.demo or user@arsenalmedia.demo.");
+    }
+
+    function showLoginMessage(msg) {
+      const el = document.getElementById("loginMessage");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+    }
+
+    function showAppMessage(msg) {
+      const el = document.getElementById("appMessage");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      setTimeout(() => el.classList.add("hidden"), 3500);
+    }
+
+    function switchRole() {
+      const next = currentRole === "admin" ? "manager" : currentRole === "manager" ? "user" : "admin";
+      currentRole = next;
+      currentUser.role = next;
+      currentUser.name = next === "admin" ? "Demo Admin" : next === "manager" ? "Demo Manager" : "Demo User";
+      currentUser.email = next + "@arsenalmedia.demo";
+      activeTab = "commissions";
+      render();
+      showAppMessage("Demo role switched to " + next.toUpperCase());
+    }
+
+    function canViewAll() { return currentRole === "admin" || currentRole === "manager"; }
+    function canManage() { return currentRole === "admin"; }
+
+    function render() {
+      document.getElementById("accountLabel").textContent = currentUser.name + " • " + currentRole.toUpperCase();
+      renderTabs();
+      renderStats();
+      renderForm();
+      renderTable();
+    }
+
+    function renderTabs() {
+      const tabs = document.getElementById("tabs");
+      tabs.innerHTML = tabConfig
+        .filter(([key]) => key !== "users" || canViewAll())
+        .filter(([key]) => key !== "pending" || canViewAll())
+        .map(([key, label]) => `<div class="tab ${activeTab === key ? "active" : ""}" onclick="setTab('${key}')">${label}</div>`)
+        .join("");
+    }
+
+    function setTab(tab) {
+      activeTab = tab;
+      render();
+    }
+
+    function renderStats() {
+      const entries = allEntries();
+      const commissionTotal = data.commissions.filter(x => x.status === "Approved").reduce((sum, x) => sum + Number(x.amount || 0), 0);
+      document.getElementById("statCommissions").textContent = "$" + commissionTotal.toFixed(2);
+      document.getElementById("statShows").textContent = data.shows.filter(x => x.status === "Approved").length;
+      document.getElementById("statPending").textContent = entries.filter(x => x.status === "Pending").length;
+      document.getElementById("statTotal").textContent = entries.length;
+    }
+
+    function renderForm() {
+      const area = document.getElementById("formArea");
+      if (activeTab === "users") {
+        area.innerHTML = canManage() ? `
+          <div class="form-card">
+            <h2>Add Demo User</h2>
+            <div class="form-grid">
+              <input id="newName" placeholder="Full Name">
+              <input id="newEmail" placeholder="Email">
+              <input id="newPhone" placeholder="Phone">
+              <select id="newRole">
+                <option value="user">Standard User</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button onclick="addDemoUser()">Add User</button>
+          </div>` : "";
+        return;
+      }
+
+      if (activeTab === "pending") {
+        area.innerHTML = "";
+        return;
+      }
+
+      const formTitle = {
+        commissions: "Add Commission Entry",
+        shows: "Add Show Entry",
+        managerHours: "Add Manager Hours",
+        equipmentHours: "Add Equipment Hours",
+        checkout: "Equipment Checkout Form",
+        repair: "Equipment Repair Form"
+      }[activeTab];
+
+      if (activeTab === "checkout") {
+        area.innerHTML = `
+          <div class="form-card">
+            <h2>${formTitle}</h2>
+            <p class="muted">Demo multi-select equipment checkout request.</p>
+            <div class="form-grid">
+              <input id="entryName" value="${currentUser.name}" placeholder="Full Name">
+              <input id="entryEmail" value="${currentUser.email}" placeholder="Email">
+              <input id="entryDate" type="date">
+              <input id="entryDetails" placeholder="Event Name / Location">
+              <select id="checkoutItems" multiple class="multi-select full">
+                <option>Other</option><option>Uplights</option><option>Photobooth</option><option>Additional Mic</option>
+                <option>Trivia Box</option><option>Bingo Setup</option><option>Beer Pong Setup</option><option>Mic Stand</option>
+                <option>Projector</option><option>Projector Screen</option><option>Additional System</option>
+                <option>Additional Speakers w/stands</option><option>Intelligent Lighting</option><option>Tent</option>
+                <option>2 Columns</option><option>4 Columns</option>
+              </select>
+              <textarea id="entryNotes" placeholder="Additional notes" class="full"></textarea>
+            </div>
+            <button onclick="addEntry()">Submit Equipment Checkout</button>
+          </div>`;
+        return;
+      }
+
+      if (activeTab === "repair") {
+        area.innerHTML = `
+          <div class="form-card">
+            <h2>${formTitle}</h2>
+            <div class="form-grid">
+              <input id="entryName" value="${currentUser.name}" placeholder="Name">
+              <input id="repairMake" placeholder="Make">
+              <input id="repairModel" placeholder="Model">
+              <input id="repairSerial" placeholder="Serial Number">
+              <input id="entryDate" type="date">
+              <textarea id="entryDetails" placeholder="Describe malfunction" class="full"></textarea>
+              <textarea id="entryNotes" placeholder="Image notes / links" class="full"></textarea>
+            </div>
+            <button onclick="addEntry()">Submit Repair Report</button>
+          </div>`;
+        return;
+      }
+
+      area.innerHTML = `
+        <div class="form-card">
+          <h2>${formTitle}</h2>
+          <div class="form-grid">
+            <input id="entryDate" type="date">
+            <input id="entryName" value="${currentUser.name}" placeholder="Name">
+            <input id="entryAmount" placeholder="${activeTab === "commissions" ? "Amount ($)" : activeTab.includes("Hours") ? "Hours" : "Time / Amount"}">
+            <input id="entryDetails" placeholder="Event / Details">
+            <select id="entryStatus">
+              <option>Pending</option><option>Approved</option><option>Denied</option>
+            </select>
+            <textarea id="entryNotes" placeholder="Notes" class="full"></textarea>
+          </div>
+          <button onclick="addEntry()">Submit Entry</button>
+        </div>`;
+    }
+
+    function currentListKey() {
+      return activeTab;
+    }
+
+    function addEntry() {
+      const id = "demo-" + Date.now();
+      const date = document.getElementById("entryDate")?.value || new Date().toISOString().split("T")[0];
+      const name = document.getElementById("entryName")?.value || currentUser.name;
+      let details = document.getElementById("entryDetails")?.value || "Demo Event";
+      let amount = document.getElementById("entryAmount")?.value || "Demo";
+      const notes = document.getElementById("entryNotes")?.value || "";
+      const status = canManage() ? (document.getElementById("entryStatus")?.value || "Pending") : "Pending";
+
+      if (activeTab === "checkout") {
+        const selected = Array.from(document.getElementById("checkoutItems").selectedOptions).map(o => o.value);
+        details = selected.length ? selected.join(", ") : "Equipment Request";
+        amount = document.getElementById("entryDetails").value || "Demo Event";
+      }
+
+      if (activeTab === "repair") {
+        const make = document.getElementById("repairMake").value || "Demo Make";
+        const model = document.getElementById("repairModel").value || "Demo Model";
+        const serial = document.getElementById("repairSerial").value || "DEMO-SN";
+        amount = details || "Repair issue";
+        details = `${make} ${model} - ${serial}`;
+      }
+
+      const typeMap = {
+        commissions: "Commission",
+        shows: "Show",
+        managerHours: "Manager Hours",
+        equipmentHours: "Equipment Hours",
+        checkout: "Equipment Checkout",
+        repair: "Equipment Repair"
+      };
+
+      data[currentListKey()].unshift({ id, type: typeMap[activeTab], date, name, details, amount, status, notes });
+      showAppMessage("Demo entry added.");
+      render();
+    }
+
+    function renderTable() {
+      const area = document.getElementById("tableArea");
+      let rows = [];
+
+      if (activeTab === "pending") {
+        rows = allEntries().filter(x => x.status === "Pending");
+      } else if (activeTab === "users") {
+        area.innerHTML = renderUsersTable();
+        return;
+      } else {
+        rows = data[currentListKey()] || [];
+      }
+
+      if (!canViewAll()) rows = rows.filter(x => x.name === currentUser.name);
+
+      area.innerHTML = `
+        <div class="table-card">
+          <h2>${activeTab === "pending" ? "Pending Approvals" : tabConfig.find(t => t[0] === activeTab)?.[1].replace(/^[^ ]+ /, "") + " Records"}</h2>
+          <table>
+            <thead><tr><th>Type</th><th>Date</th><th>Name</th><th>Details</th><th>Amount / Time</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+            <tbody>
+              ${rows.map(row => `
+                <tr>
+                  <td><span class="type-badge">${row.type}</span></td>
+                  <td>${formatDate(row.date)}</td>
+                  <td>${row.name}</td>
+                  <td>${row.details}</td>
+                  <td>${activeTab === "commissions" && !String(row.amount).startsWith("$") ? "$" + Number(row.amount || 0).toFixed(2) : row.amount}</td>
+                  <td><span class="status ${row.status.toLowerCase()}">${row.status}</span></td>
+                  <td>${row.notes || "-"}</td>
+                  <td>${canManage() ? actions(row.id) : "-"}</td>
+                </tr>`).join("") || `<tr><td colspan="8">No demo records yet.</td></tr>`}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function renderUsersTable() {
+      return `
+        <div class="table-card">
+          <h2>Demo Users</h2>
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody>
+              ${data.users.map(u => `
+                <tr>
+                  <td>${u.fullName}</td><td>${u.email}</td><td>${u.phone}</td><td><span class="type-badge">${u.role}</span></td>
+                  <td>${canManage() ? `<button class="btn-small btn-secondary" onclick="demoResetPassword('${u.email}')">Reset Password</button>` : "-"}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function actions(id) {
+      return `<button class="btn-small success" onclick="setStatus('${id}','Approved')">Approve</button>
+              <button class="btn-small danger" onclick="setStatus('${id}','Denied')">Deny</button>
+              <button class="btn-small btn-secondary" onclick="deleteEntry('${id}')">Delete</button>`;
+    }
+
+    function setStatus(id, status) {
+      for (const key of ["commissions","shows","managerHours","equipmentHours","checkout","repair"]) {
+        const item = data[key].find(x => x.id === id);
+        if (item) item.status = status;
+      }
+      render();
+    }
+
+    function deleteEntry(id) {
+      for (const key of ["commissions","shows","managerHours","equipmentHours","checkout","repair"]) {
+        data[key] = data[key].filter(x => x.id !== id);
+      }
+      render();
+    }
+
+    function addDemoUser() {
+      data.users.push({
+        id: "u" + Date.now(),
+        fullName: document.getElementById("newName").value || "New Demo User",
+        email: document.getElementById("newEmail").value || "newuser@arsenalmedia.demo",
+        phone: document.getElementById("newPhone").value || "555-0199",
+        role: document.getElementById("newRole").value
+      });
+      render();
+      showAppMessage("Demo user added.");
+    }
+
+    function demoResetPassword(email) {
+      showAppMessage("Demo password reset for " + email + ". In production, this would call Supabase.");
+    }
+
+    function exportCSV() {
+      const rows = [["Type","Date","Name","Details","Amount/Time","Status","Notes"], ...allEntries().map(x => [x.type,x.date,x.name,x.details,x.amount,x.status,x.notes || ""])];
+      const csv = rows.map(r => r.map(v => `"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+      download("arsenal-command-center-demo.csv", csv, "text/csv");
+    }
+
+    function backupJSON() {
+      download("arsenal-command-center-demo-backup.json", JSON.stringify(data, null, 2), "application/json");
+    }
+
+    function resetDemoData() {
+      data = JSON.parse(JSON.stringify(initialData));
+      render();
+      showAppMessage("Demo data reset.");
+    }
+
+    function download(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function formatDate(date) {
+      if (!date) return "-";
+      return new Date(date + "T00:00:00").toLocaleDateString();
+    }
+  </script>
+<script id="am-demo-close-script">
+(function(){
+  function getFallback(btn){
+    return (btn && btn.getAttribute('href')) || './portfolio/index.html';
+  }
+  function sameSiteReferrer(){
+    if(!document.referrer) return false;
+    try{
+      var ref = new URL(document.referrer);
+      return ref.origin === window.location.origin || ref.protocol === 'file:';
+    }catch(e){
+      return false;
+    }
+  }
+  document.addEventListener('click', function(event){
+    var btn = event.target.closest && event.target.closest('[data-am-close-demo]');
+    if(!btn) return;
+    event.preventDefault();
+    var fallback = getFallback(btn);
+    if(window.opener && !window.opener.closed){
+      window.close();
+      window.setTimeout(function(){ window.location.href = fallback; }, 250);
+      return;
+    }
+    if(window.history.length > 1 && sameSiteReferrer()){
+      window.history.back();
+      return;
+    }
+    window.location.href = fallback;
+  });
+})();
+</script>
+</body>
+</html>

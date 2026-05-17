@@ -1,0 +1,23 @@
+# Arsenal Media
+
+> Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for contractors and service businesses in Waxahachie, Dallas-Fort Worth, and North Texas.
+
+## Core Pages
+- Home: https://arsenalmediaco.com/
+- Services: https://arsenalmediaco.com/services/
+- Custom App Development: https://arsenalmediaco.com/services/custom-app-development/
+- Contractor CRM Software: https://arsenalmediaco.com/services/contractor-crm-software/
+- Website Design: https://arsenalmediaco.com/services/website-design/
+- SEO Services: https://arsenalmediaco.com/services/seo-services/
+- Portfolio: https://arsenalmediaco.com/portfolio/
+- MFR Roofing Command Center Case Study: https://arsenalmediaco.com/portfolio/mfr-roofing/
+- Decorative Curbing & Landscape Website Case Study: https://arsenalmediaco.com/portfolio/decorative-curbing-landscape/
+- Contact: https://arsenalmediaco.com/contact.html
+
+## Featured Demos
+- MFR Roofing Command Center: https://arsenalmediaco.com/mfr-command-center/
+- CurbFlow Operations Center: https://arsenalmediaco.com/curbflow/
+- Decorative Curbing & Landscape Demo: https://arsenalmediaco.com/decorative-curbing-landscape/
+
+## Service Area
+Waxahachie, Dallas, Fort Worth, Plano, Arlington, Irving, Richardson, Frisco, McKinney, Ellis County, Dallas County, Tarrant County, Collin County, Dallas-Fort Worth Metroplex, North Texas.

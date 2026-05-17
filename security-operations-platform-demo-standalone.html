@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Security Operations Dashboard Demo | Arsenal Media</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2430;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --accent4: #10b981;
+    --accent5: #ef4444;
+    --accent6: #ec4899;
+    --text: #e2e8f0;
+    --text2: #64748b;
+    --text3: #94a3b8;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --sidebar-w: 220px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SHELL ── */
+  .shell { display: flex; height: 100vh; overflow: hidden; position: relative; }
+
+  /* ── OVERLAY (mobile) ── */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 40;
+  }
+  .overlay.visible { display: block; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+  .logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .logo-mark { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
+  .logo-name { font-family: var(--sans); font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.1; }
+  .logo-sub { font-size: 10px; color: var(--text2); font-family: var(--mono); margin-top: 4px; }
+  .nav { flex: 1; padding: 16px 0; }
+  .nav-section { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; color: var(--text2); padding: 10px 20px 6px; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--text3);
+    border-left: 2px solid transparent;
+    transition: all 0.15s; user-select: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--surface2); color: var(--accent); border-left-color: var(--accent); }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+  .nav-badge { margin-left: auto; font-family: var(--mono); font-size: 9px; padding: 1px 6px; border-radius: 10px; background: var(--accent5); color: #fff; font-weight: 700; }
+  .nav-badge.ok { background: var(--accent4); }
+  .nav-badge.warn { background: var(--accent3); }
+  .sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 9px; color: var(--text2); line-height: 1.8; flex-shrink: 0; }
+  .sidebar-footer span { color: var(--accent4); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    height: 56px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    background: var(--surface); flex-shrink: 0;
+  }
+  .menu-btn {
+    display: none;
+    background: none; border: none; color: var(--text3);
+    font-size: 20px; cursor: pointer; padding: 4px 6px;
+    line-height: 1; flex-shrink: 0;
+  }
+  .topbar-title { font-size: 14px; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .topbar-meta { font-family: var(--mono); font-size: 10px; color: var(--text2); white-space: nowrap; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent4); box-shadow: 0 0 6px var(--accent4); animation: pulse 2s infinite; flex-shrink: 0; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+  .btn { font-family: var(--mono); font-size: 10px; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--accent); color: var(--accent); background: transparent; cursor: pointer; letter-spacing: 0.06em; transition: all 0.15s; white-space: nowrap; }
+  .btn:hover { background: var(--accent); color: var(--bg); }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; overflow-y: auto; padding: 20px; }
+
+  /* ── PANELS ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── RESPONSIVE GRIDS ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+  .grid-full { margin-bottom: 14px; }
+
+  /* ── CARDS ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px; animation: fadeUp 0.35s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 6px; }
+  .card-title { font-size: 10px; font-family: var(--mono); letter-spacing: 0.12em; color: var(--text2); text-transform: uppercase; }
+  .card-badge { font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 3px; white-space: nowrap; }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--accent4); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--accent5); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-blue { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+
+  /* ── KPI ── */
+  .kpi-val { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .kpi-label { font-size: 12px; color: var(--text3); }
+  .kpi-delta { font-family: var(--mono); font-size: 10px; margin-top: 6px; }
+  .up{color:var(--accent4)} .down{color:var(--accent5)} .neutral{color:var(--text2)}
+
+  /* ── BAR ── */
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .bar-label { font-size: 11px; color: var(--text3); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .bar-val { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 40px; text-align: right; flex-shrink: 0; }
+
+  /* ── DONUT ── */
+  .donut-wrap { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .donut-legend { flex: 1; min-width: 100px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: var(--text3); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-val { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--text); }
+
+  /* ── TABLE (scrollable on mobile) ── */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; }
+  .tbl th { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--text2); text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+  .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text3); vertical-align: middle; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: var(--surface2); }
+  .tbl .name { color: var(--text); font-weight: 500; }
+
+  /* ── FEED ── */
+  .feed-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .feed-meta { font-family: var(--mono); font-size: 9px; color: var(--text2); margin-bottom: 3px; }
+  .feed-text { font-size: 12px; color: var(--text3); line-height: 1.5; }
+  .feed-text strong { color: var(--text); font-weight: 600; }
+
+  /* ── PROGRESS ── */
+  .progress-stack { margin-bottom: 10px; }
+  .progress-label-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; }
+  .progress-label { color: var(--text3); }
+  .progress-pct { font-family: var(--mono); font-size: 11px; }
+  .progress-bar { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 20px; }
+  .page-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .page-sub { font-size: 10px; color: var(--text2); font-family: var(--mono); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ════════════════════════════════
+     RESPONSIVE BREAKPOINTS
+  ════════════════════════════════ */
+
+  /* Tablet — collapse to 2 columns */
+  @media (max-width: 900px) {
+    .grid4 { grid-template-columns: 1fr 1fr; }
+    .grid3 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Mobile — sidebar becomes drawer */
+  @media (max-width: 640px) {
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      transform: translateX(-100%);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .menu-btn { display: block; }
+    .topbar-meta.hide-mobile { display: none; }
+    .grid4 { grid-template-columns: 1fr 1fr; }
+    .grid3 { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    .content { padding: 14px; }
+    .page-title { font-size: 17px; }
+    .kpi-val { font-size: 28px; }
+    .bar-label { width: 90px; font-size: 10px; }
+    .topbar { padding: 0 14px; gap: 10px; }
+    .btn { display: none; }
+  }
+
+  @media (max-width: 380px) {
+    .grid4 { grid-template-columns: 1fr; }
+  }
+</style>
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GCDYP7KS2C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GCDYP7KS2C');
+</script>
+<style id="arsenal-back-to-site-style">
+  .arsenal-back-to-site{
+    position:fixed;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:99999;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 16px;
+    border-radius:16px;
+    background:rgba(196,30,30,.97);
+    color:#fff!important;
+    text-decoration:none!important;
+    font:800 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    letter-spacing:.02em;
+    box-shadow:0 18px 40px rgba(0,0,0,.32);
+    border:1px solid rgba(255,255,255,.18);
+  }
+  .arsenal-back-to-site:hover{filter:brightness(1.08);}
+  .arsenal-back-to-site::before{content:'↩';font-size:14px;line-height:1;}
+  @media(max-width:760px){
+    .arsenal-back-to-site{right:12px;top:auto;bottom:18px;transform:none;padding:11px 14px;font-size:12px;border-radius:999px;}
+  }
+</style><link href="/favicon.ico" rel="icon"/><link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/><link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/><link href="/apple-touch-icon.png" rel="apple-touch-icon" type="image/png"/>
+<style id="v38-page-overflow-guard">
+html,body{width:100%;max-width:100%;overflow-x:hidden!important;}
+*,*::before,*::after{box-sizing:border-box;min-width:0;}
+img,svg,video,canvas,iframe{max-width:100%;height:auto;}
+pre,code{max-width:100%;white-space:pre-wrap;word-break:break-word;}
+@media(max-width:900px){
+  body{max-width:100vw!important;}
+  .container,.wrap,.page,.page-wrap,.content,.section,.hero,.card,.panel,.modal,.modal-sheet,.login-box,.app-body{max-width:100%!important;}
+  .grid,.row,.cards,.form-grid,.stats-grid,.toolbar,.filters{min-width:0!important;max-width:100%!important;}
+  input,select,textarea,button{max-width:100%;}
+  .btn,.button,a[class*="btn"]{white-space:normal;}
+  table{max-width:100%;}
+  .table-wrap,.table-card,.table-panel,[class*="table"]{max-width:100%;}
+}
+</style>
+<style id="am-demo-close-style">
+  .am-demo-close-button,
+  .arsenal-back-to-site.am-demo-close-button{
+    position:fixed!important;
+    top:max(14px, env(safe-area-inset-top))!important;
+    right:max(14px, env(safe-area-inset-right))!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    z-index:2147483647!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    width:auto!important;
+    max-width:calc(100vw - 28px)!important;
+    padding:10px 14px!important;
+    border-radius:12px!important;
+    border:1px solid rgba(255,255,255,.18)!important;
+    background:rgba(9,12,18,.92)!important;
+    color:#fff!important;
+    box-shadow:0 18px 42px rgba(0,0,0,.28)!important;
+    font-family:Inter, Arial, Helvetica, sans-serif!important;
+    font-size:13px!important;
+    line-height:1!important;
+    font-weight:900!important;
+    letter-spacing:.01em!important;
+    text-decoration:none!important;
+    backdrop-filter:blur(14px)!important;
+    -webkit-backdrop-filter:blur(14px)!important;
+  }
+  .am-demo-close-button::before,
+  .arsenal-back-to-site.am-demo-close-button::before{content:none!important;display:none!important;}
+  .am-demo-close-button__x{
+    display:grid!important;place-items:center!important;
+    width:18px!important;height:18px!important;border-radius:6px!important;
+    background:#dc2626!important;color:#fff!important;
+    font-size:15px!important;line-height:18px!important;font-weight:950!important;
+  }
+  .am-demo-close-button:hover,
+  .arsenal-back-to-site.am-demo-close-button:hover{
+    color:#fff!important;filter:brightness(1.06)!important;transform:translateY(-1px)!important;
+  }
+  .am-demo-close-button:focus-visible,
+  .arsenal-back-to-site.am-demo-close-button:focus-visible{
+    outline:3px solid rgba(220,38,38,.45)!important;
+    outline-offset:3px!important;
+  }
+  @media (max-width:560px){
+    .am-demo-close-button,
+    .arsenal-back-to-site.am-demo-close-button{
+      top:max(10px, env(safe-area-inset-top))!important;
+      right:max(10px, env(safe-area-inset-right))!important;
+      padding:9px 11px!important;
+      border-radius:10px!important;
+      font-size:12px!important;
+      max-width:calc(100vw - 20px)!important;
+    }
+    .am-demo-close-button__x{width:17px!important;height:17px!important;font-size:14px!important;}
+  }
+  @media print{
+    .am-demo-close-button,
+    .arsenal-back-to-site.am-demo-close-button{display:none!important;}
+  }
+</style>
+<!-- Arsenal Media v42 crawl/social metadata -->
+<meta content="Standalone security operations dashboard demo with executive metrics, risk tracking, incidents, and SaaS visibility." name="description"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<link href="https://arsenalmediaco.com/security-operations-platform-demo-standalone.html" rel="canonical"/>
+<meta content="Security Operations Dashboard Demo | Arsenal Media" property="og:title"/>
+<meta content="Standalone security operations dashboard demo with executive metrics, risk tracking, incidents, and SaaS visibility." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://arsenalmediaco.com/security-operations-platform-demo-standalone.html" property="og:url"/>
+<meta content="Arsenal Media" property="og:site_name"/>
+<meta content="https://arsenalmediaco.com/security-social-preview-v42.jpg?v=42" property="og:image"/>
+<meta content="https://arsenalmediaco.com/security-social-preview-v42.jpg?v=42" property="og:image:secure_url"/>
+<meta content="image/jpeg" property="og:image:type"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="Standalone Security Operations dashboard demo preview." property="og:image:alt"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Security Operations Dashboard Demo | Arsenal Media" name="twitter:title"/>
+<meta content="Standalone security operations dashboard demo with executive metrics, risk tracking, incidents, and SaaS visibility." name="twitter:description"/>
+<meta content="https://arsenalmediaco.com/security-social-preview-v42.jpg?v=42" name="twitter:image"/>
+<meta content="Standalone Security Operations dashboard demo preview." name="twitter:image:alt"/>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://arsenalmediaco.com/security-operations-platform-demo-standalone.html#webpage", "url": "https://arsenalmediaco.com/security-operations-platform-demo-standalone.html", "name": "Security Operations Dashboard Demo | Arsenal Media", "description": "Standalone security operations dashboard demo with executive metrics, risk tracking, incidents, and SaaS visibility.", "isPartOf": {"@type": "WebSite", "name": "Arsenal Media", "url": "https://arsenalmediaco.com/"}, "image": "https://arsenalmediaco.com/security-social-preview-v42.jpg?v=42"}</script>
+<!-- /Arsenal Media v42 crawl/social metadata -->
+</head>
+<body>
+<a aria-label="Close demo and return to Arsenal Media website" class="arsenal-back-to-site am-demo-close-button" data-am-close-demo="" href="/portfolio/"><span aria-hidden="true" class="am-demo-close-button__x">×</span><span>Close Demo</span></a>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="shell">
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+<div class="logo">
+<div class="logo-mark">Arsenal Media Co</div>
+<div class="logo-name">SecOps<br/>Platform</div>
+<div class="logo-sub">v1.0 · Demo</div>
+</div>
+<div class="nav">
+<div class="nav-section">Dashboards</div>
+<div class="nav-item active" onclick="switchPanel('exec',this)"><span class="icon">⬡</span> Executive Summary</div>
+<div class="nav-item" onclick="switchPanel('saas',this)"><span class="icon">◈</span> SaaS Governance<span class="nav-badge warn">12</span></div>
+<div class="nav-item" onclick="switchPanel('compliance',this)"><span class="icon">◻</span> Compliance Posture<span class="nav-badge">3</span></div>
+<div class="nav-item" onclick="switchPanel('vendor',this)"><span class="icon">◑</span> Vendor Risk<span class="nav-badge warn">2</span></div>
+<div class="nav-item" onclick="switchPanel('iam',this)"><span class="icon">◎</span> IAM &amp; Access<span class="nav-badge">5</span></div>
+<div class="nav-item" onclick="switchPanel('incident',this)"><span class="icon">△</span> Incident &amp; Alerts<span class="nav-badge ok">2</span></div>
+</div>
+<div class="sidebar-footer">
+      LAST SYNC<br/><span>Today 06:14 UTC</span><br/><br/>
+      CLIENT<br/><span>DEMO ORG</span><br/><br/>
+      MANAGED BY<br/><span>Arsenal Media Co</span>
+</div>
+</nav>
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+<button aria-label="Menu" class="menu-btn" onclick="openSidebar()">☰</button>
+<div class="topbar-title" id="topbar-title">Executive Summary</div>
+<div class="topbar-right">
+<div class="topbar-meta hide-mobile" id="topbar-meta">Overall Security Posture · Q2 2026</div>
+<div class="status-dot"></div>
+<div class="topbar-meta">LIVE</div>
+<button class="btn">↓ Export</button>
+</div>
+</div>
+<div class="content">
+<!-- ══════════════════════════════════════════
+           PANEL 1: EXECUTIVE SUMMARY
+      ══════════════════════════════════════════ -->
+<div class="panel active" id="panel-exec">
+<div class="page-header">
+<div class="page-title">Security Posture Overview</div>
+<div class="page-sub">COMPILED · APR 2026 · FOR: BOARD / EXECUTIVE LEADERSHIP</div>
+</div>
+<div class="grid4">
+<div class="card">
+<div class="card-header"><div class="card-title">Overall Score</div><div class="card-badge badge-yellow">MODERATE</div></div>
+<div style="text-align:center;padding:6px 0">
+<svg height="90" viewbox="0 0 100 100" width="90">
+<circle cx="50" cy="50" fill="none" r="40" stroke="#1e2430" stroke-width="10"></circle>
+<circle cx="50" cy="50" fill="none" r="40" stroke="#f59e0b" stroke-dasharray="175 251" stroke-dashoffset="63" stroke-linecap="round" stroke-width="10"></circle>
+<text fill="#e2e8f0" font-family="Syne,sans-serif" font-size="20" font-weight="800" text-anchor="middle" x="50" y="46">72</text>
+<text fill="#64748b" font-family="Space Mono,monospace" font-size="9" text-anchor="middle" x="50" y="60">/100</text>
+</svg>
+</div>
+<div class="kpi-delta neutral" style="text-align:center">▲ +4 pts from last month</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Open Findings</div><div class="card-badge badge-red">ACTION</div></div>
+<div class="kpi-val" style="color:var(--accent5)">23</div>
+<div class="kpi-label">Across all domains</div>
+<div class="kpi-delta"><span style="color:var(--accent5)">■</span> 4 Critical  <span style="color:var(--accent3)">■</span> 11 High  <span style="color:var(--text2)">■</span> 8 Med</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">SaaS Apps</div><div class="card-badge badge-blue">MONITORED</div></div>
+<div class="kpi-val" style="color:var(--accent)">128</div>
+<div class="kpi-label">Active applications</div>
+<div class="kpi-delta neutral">12 unlicensed · 7 orphaned</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Compliance</div><div class="card-badge badge-yellow">IN PROGRESS</div></div>
+<div class="kpi-val" style="color:var(--accent3)">68%</div>
+<div class="kpi-label">NIST CSF coverage</div>
+<div class="kpi-delta neutral">SOC 2: 54% · ISO: 41%</div>
+</div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">Risk by Domain</div></div>
+<div class="bar-row"><div class="bar-label">Identity &amp; Access</div><div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--accent4)"></div></div><div class="bar-val">78</div></div>
+<div class="bar-row"><div class="bar-label">Endpoint Security</div><div class="bar-track"><div class="bar-fill" style="width:83%;background:var(--accent4)"></div></div><div class="bar-val">83</div></div>
+<div class="bar-row"><div class="bar-label">SaaS Governance</div><div class="bar-track"><div class="bar-fill" style="width:61%;background:var(--accent3)"></div></div><div class="bar-val">61</div></div>
+<div class="bar-row"><div class="bar-label">Vendor Risk</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--accent3)"></div></div><div class="bar-val">55</div></div>
+<div class="bar-row"><div class="bar-label">Network &amp; Cloud</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--accent4)"></div></div><div class="bar-val">72</div></div>
+<div class="bar-row"><div class="bar-label">Data Protection</div><div class="bar-track"><div class="bar-fill" style="width:47%;background:var(--accent5)"></div></div><div class="bar-val">47</div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Recent Activity</div><div class="card-badge badge-blue">7 DAYS</div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent5)"></div><div><div class="feed-meta">TODAY · 09:12</div><div class="feed-text"><strong>Critical:</strong> 4 admin accounts without MFA in Workspace</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent3)"></div><div><div class="feed-meta">APR 27 · 14:33</div><div class="feed-text"><strong>Vendor:</strong> CoreSync DPA renewal due in 18 days</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent4)"></div><div><div class="feed-meta">APR 26 · 11:05</div><div class="feed-text"><strong>Resolved:</strong> Phishing IR closed via Shield IR</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent3)"></div><div><div class="feed-meta">APR 25 · 08:44</div><div class="feed-text"><strong>SaaS:</strong> 12 apps without SSO flagged</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent4)"></div><div><div class="feed-meta">APR 24 · 16:20</div><div class="feed-text"><strong>Compliance:</strong> NIST CSF updated — 68% coverage</div></div></div>
+</div>
+</div>
+<div class="grid3">
+<div class="card">
+<div class="card-header"><div class="card-title">Endpoint Coverage</div></div>
+<div class="donut-wrap">
+<svg height="80" viewbox="0 0 80 80" width="80"><circle cx="40" cy="40" fill="none" r="30" stroke="#1e2430" stroke-width="10"></circle><circle cx="40" cy="40" fill="none" r="30" stroke="#10b981" stroke-dasharray="159 188" stroke-dashoffset="47" stroke-linecap="round" stroke-width="10"></circle><text fill="#e2e8f0" font-family="Syne" font-size="14" font-weight="800" text-anchor="middle" x="40" y="44">94%</text></svg>
+<div class="donut-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent4)"></div>Protected<div class="legend-val">847</div></div><div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div>Unmanaged<div class="legend-val">53</div></div></div>
+</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">MFA Adoption</div></div>
+<div class="donut-wrap">
+<svg height="80" viewbox="0 0 80 80" width="80"><circle cx="40" cy="40" fill="none" r="30" stroke="#1e2430" stroke-width="10"></circle><circle cx="40" cy="40" fill="none" r="30" stroke="#f59e0b" stroke-dasharray="133 188" stroke-dashoffset="47" stroke-linecap="round" stroke-width="10"></circle><text fill="#e2e8f0" font-family="Syne" font-size="14" font-weight="800" text-anchor="middle" x="40" y="44">71%</text></svg>
+<div class="donut-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>MFA Active<div class="legend-val">638</div></div><div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div>No MFA<div class="legend-val">262</div></div></div>
+</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Vendor DPAs</div></div>
+<div class="donut-wrap">
+<svg height="80" viewbox="0 0 80 80" width="80"><circle cx="40" cy="40" fill="none" r="30" stroke="#1e2430" stroke-width="10"></circle><circle cx="40" cy="40" fill="none" r="30" stroke="#00e5ff" stroke-dasharray="113 188" stroke-dashoffset="47" stroke-linecap="round" stroke-width="10"></circle><text fill="#e2e8f0" font-family="Syne" font-size="14" font-weight="800" text-anchor="middle" x="40" y="44">60%</text></svg>
+<div class="donut-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Executed<div class="legend-val">18</div></div><div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div>Missing<div class="legend-val">12</div></div></div>
+</div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+           PANEL 2: SaaS GOVERNANCE
+      ══════════════════════════════════════════ -->
+<div class="panel" id="panel-saas">
+<div class="page-header">
+<div class="page-title">SaaS Governance</div>
+<div class="page-sub">LICENSE OPTIMIZATION · ACCESS CONTROL · CONTRACT RENEWALS · 128 APPS</div>
+</div>
+<div class="grid4">
+<div class="card"><div class="card-header"><div class="card-title">Total Apps</div><div class="card-badge badge-blue">TRACKED</div></div><div class="kpi-val" style="color:var(--accent)">128</div><div class="kpi-label">Active applications</div><div class="kpi-delta up">▲ +7 from last quarter</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Annual Spend</div><div class="card-badge badge-yellow">REVIEW</div></div><div class="kpi-val" style="color:var(--accent3)">$284K</div><div class="kpi-label">Annualized license cost</div><div class="kpi-delta down">▼ $32K savings identified</div></div>
+<div class="card"><div class="card-header"><div class="card-title">SSO Coverage</div><div class="card-badge badge-yellow">PARTIAL</div></div><div class="kpi-val" style="color:var(--accent3)">74%</div><div class="kpi-label">Apps with SSO enabled</div><div class="kpi-delta">12 apps without SSO</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Renewals Due</div><div class="card-badge badge-red">90 DAYS</div></div><div class="kpi-val" style="color:var(--accent5)">8</div><div class="kpi-label">Contracts expiring</div><div class="kpi-delta down">3 this month · 5 next</div></div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">Spend by Category</div></div>
+<div class="bar-row"><div class="bar-label">Productivity</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--accent)"></div></div><div class="bar-val">$82K</div></div>
+<div class="bar-row"><div class="bar-label">Security Tools</div><div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--accent2)"></div></div><div class="bar-val">$68K</div></div>
+<div class="bar-row"><div class="bar-label">Development</div><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--accent4)"></div></div><div class="bar-val">$51K</div></div>
+<div class="bar-row"><div class="bar-label">HR &amp; Finance</div><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--accent3)"></div></div><div class="bar-val">$40K</div></div>
+<div class="bar-row"><div class="bar-label">Marketing</div><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--accent6)"></div></div><div class="bar-val">$28K</div></div>
+<div class="bar-row"><div class="bar-label">Other</div><div class="bar-track"><div class="bar-fill" style="width:13%;background:var(--text2)"></div></div><div class="bar-val">$15K</div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Upcoming Renewals</div></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>App</th><th>Date</th><th>Cost</th><th>Status</th></tr></thead><tbody>
+<tr><td class="name">CoreSync</td><td>May 12</td><td>$14K</td><td><span class="card-badge badge-red">DPA Due</span></td></tr>
+<tr><td class="name">Klaviyo</td><td>May 18</td><td>$8.4K</td><td><span class="card-badge badge-yellow">Review</span></td></tr>
+<tr><td class="name">Okta</td><td>Jun 1</td><td>$31K</td><td><span class="card-badge badge-green">Ready</span></td></tr>
+<tr><td class="name">CrowdStrike</td><td>Jun 8</td><td>$47K</td><td><span class="card-badge badge-yellow">Gap Open</span></td></tr>
+<tr><td class="name">Clearwatch MDR</td><td>Jun 15</td><td>$28K</td><td><span class="card-badge badge-green">Ready</span></td></tr>
+<tr><td class="name">Jamf Pro</td><td>Jun 22</td><td>$12K</td><td><span class="card-badge badge-green">Ready</span></td></tr>
+</tbody></table></div>
+</div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">Apps Without SSO</div><div class="card-badge badge-red">12 FLAGGED</div></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>App</th><th>Category</th><th>Users</th><th>Risk</th></tr></thead><tbody>
+<tr><td class="name">Canva</td><td>Design</td><td>42</td><td><span class="card-badge badge-red">High</span></td></tr>
+<tr><td class="name">Trello</td><td>PM</td><td>28</td><td><span class="card-badge badge-red">High</span></td></tr>
+<tr><td class="name">Loom</td><td>Video</td><td>19</td><td><span class="card-badge badge-yellow">Med</span></td></tr>
+<tr><td class="name">Figma</td><td>Design</td><td>15</td><td><span class="card-badge badge-yellow">Med</span></td></tr>
+<tr><td class="name">Calendly</td><td>Scheduling</td><td>12</td><td><span class="card-badge badge-yellow">Med</span></td></tr>
+<tr><td class="name">Typeform</td><td>Forms</td><td>8</td><td><span class="card-badge badge-green">Low</span></td></tr>
+</tbody></table></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">License Waste</div><div class="card-badge badge-yellow">$32K</div></div>
+<div class="bar-row"><div class="bar-label">Unused seats &gt;90d</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--accent5)"></div></div><div class="bar-val">$14K</div></div>
+<div class="bar-row"><div class="bar-label">Duplicate tools</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--accent3)"></div></div><div class="bar-val">$9.6K</div></div>
+<div class="bar-row"><div class="bar-label">Downgrade options</div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--accent3)"></div></div><div class="bar-val">$6.8K</div></div>
+<div class="bar-row"><div class="bar-label">Shadow IT</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--accent4)"></div></div><div class="bar-val">$3.6K</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+           PANEL 3: COMPLIANCE POSTURE
+      ══════════════════════════════════════════ -->
+<div class="panel" id="panel-compliance">
+<div class="page-header">
+<div class="page-title">Compliance Posture</div>
+<div class="page-sub">NIST CSF · SOC 2 TYPE II · ISO 27001</div>
+</div>
+<div class="grid3">
+<div class="card">
+<div class="card-header"><div class="card-title">NIST CSF</div><div class="card-badge badge-yellow">IN PROGRESS</div></div>
+<div style="text-align:center;padding:4px 0 12px"><svg height="80" viewbox="0 0 90 90" width="80"><circle cx="45" cy="45" fill="none" r="36" stroke="#1e2430" stroke-width="10"></circle><circle cx="45" cy="45" fill="none" r="36" stroke="#f59e0b" stroke-dasharray="152 226" stroke-dashoffset="56" stroke-linecap="round" stroke-width="10"></circle><text fill="#e2e8f0" font-family="Syne" font-size="18" font-weight="800" text-anchor="middle" x="45" y="42">68%</text><text fill="#64748b" font-family="Space Mono" font-size="9" text-anchor="middle" x="45" y="56">COVERAGE</text></svg></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Identify</span><span class="progress-pct" style="color:var(--accent4)">82%</span></div><div class="progress-bar"><div class="progress-fill" style="width:82%;background:var(--accent4)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Protect</span><span class="progress-pct" style="color:var(--accent3)">71%</span></div><div class="progress-bar"><div class="progress-fill" style="width:71%;background:var(--accent3)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Detect</span><span class="progress-pct" style="color:var(--accent3)">65%</span></div><div class="progress-bar"><div class="progress-fill" style="width:65%;background:var(--accent3)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Respond</span><span class="progress-pct" style="color:var(--accent3)">60%</span></div><div class="progress-bar"><div class="progress-fill" style="width:60%;background:var(--accent3)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Recover</span><span class="progress-pct" style="color:var(--accent5)">48%</span></div><div class="progress-bar"><div class="progress-fill" style="width:48%;background:var(--accent5)"></div></div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">SOC 2 Type II</div><div class="card-badge badge-yellow">GAP PHASE</div></div>
+<div style="text-align:center;padding:4px 0 12px"><svg height="80" viewbox="0 0 90 90" width="80"><circle cx="45" cy="45" fill="none" r="36" stroke="#1e2430" stroke-width="10"></circle><circle cx="45" cy="45" fill="none" r="36" stroke="#7c3aed" stroke-dasharray="122 226" stroke-dashoffset="56" stroke-linecap="round" stroke-width="10"></circle><text fill="#e2e8f0" font-family="Syne" font-size="18" font-weight="800" text-anchor="middle" x="45" y="42">54%</text><text fill="#64748b" font-family="Space Mono" font-size="9" text-anchor="middle" x="45" y="56">COVERAGE</text></svg></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Security (CC)</span><span class="progress-pct" style="color:var(--accent3)">63%</span></div><div class="progress-bar"><div class="progress-fill" style="width:63%;background:#7c3aed"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Availability (A)</span><span class="progress-pct" style="color:var(--accent3)">70%</span></div><div class="progress-bar"><div class="progress-fill" style="width:70%;background:#7c3aed"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Confidentiality (C)</span><span class="progress-pct" style="color:var(--accent5)">44%</span></div><div class="progress-bar"><div class="progress-fill" style="width:44%;background:var(--accent5)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Processing Int.</span><span class="progress-pct" style="color:var(--accent5)">39%</span></div><div class="progress-bar"><div class="progress-fill" style="width:39%;background:var(--accent5)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">Privacy (P)</span><span class="progress-pct" style="color:var(--accent5)">48%</span></div><div class="progress-bar"><div class="progress-fill" style="width:48%;background:var(--accent5)"></div></div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">ISO 27001</div><div class="card-badge badge-red">EARLY STAGE</div></div>
+<div style="text-align:center;padding:4px 0 12px"><svg height="80" viewbox="0 0 90 90" width="80"><circle cx="45" cy="45" fill="none" r="36" stroke="#1e2430" stroke-width="10"></circle><circle cx="45" cy="45" fill="none" r="36" stroke="#ef4444" stroke-dasharray="93 226" stroke-dashoffset="56" stroke-linecap="round" stroke-width="10"></circle><text fill="#e2e8f0" font-family="Syne" font-size="18" font-weight="800" text-anchor="middle" x="45" y="42">41%</text><text fill="#64748b" font-family="Space Mono" font-size="9" text-anchor="middle" x="45" y="56">COVERAGE</text></svg></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">A.5 Policies</span><span class="progress-pct" style="color:var(--accent3)">60%</span></div><div class="progress-bar"><div class="progress-fill" style="width:60%;background:var(--accent3)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">A.6 Org Controls</span><span class="progress-pct" style="color:var(--accent5)">45%</span></div><div class="progress-bar"><div class="progress-fill" style="width:45%;background:var(--accent5)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">A.8 Asset Mgmt</span><span class="progress-pct" style="color:var(--accent3)">55%</span></div><div class="progress-bar"><div class="progress-fill" style="width:55%;background:var(--accent3)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">A.9 Access Control</span><span class="progress-pct" style="color:var(--accent3)">62%</span></div><div class="progress-bar"><div class="progress-fill" style="width:62%;background:var(--accent3)"></div></div></div>
+<div class="progress-stack"><div class="progress-label-row"><span class="progress-label">A.12 Operations</span><span class="progress-pct" style="color:var(--accent5)">28%</span></div><div class="progress-bar"><div class="progress-fill" style="width:28%;background:var(--accent5)"></div></div></div>
+</div>
+</div>
+<div class="grid-full">
+<div class="card">
+<div class="card-header"><div class="card-title">Open Compliance Gaps</div><div class="card-badge badge-red">18 ITEMS</div></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Control</th><th>Framework</th><th>Description</th><th>Owner</th><th>Priority</th></tr></thead><tbody>
+<tr><td class="name">CC6.1</td><td>SOC 2</td><td>Logical access provisioning not documented</td><td>IT Security</td><td><span class="card-badge badge-red">Critical</span></td></tr>
+<tr><td class="name">ID.AM-2</td><td>NIST CSF</td><td>Software asset inventory incomplete</td><td>IT Ops</td><td><span class="card-badge badge-red">Critical</span></td></tr>
+<tr><td class="name">A.12.4</td><td>ISO 27001</td><td>Event logging not centralized</td><td>IT Security</td><td><span class="card-badge badge-red">High</span></td></tr>
+<tr><td class="name">RS.CO-2</td><td>NIST CSF</td><td>Incident reporting criteria not defined</td><td>Legal</td><td><span class="card-badge badge-yellow">High</span></td></tr>
+<tr><td class="name">CC9.2</td><td>SOC 2</td><td>Vendor risk assessment undocumented</td><td>Procurement</td><td><span class="card-badge badge-yellow">Medium</span></td></tr>
+<tr><td class="name">RC.RP-1</td><td>NIST CSF</td><td>Recovery plan not tested in 12 months</td><td>IT Ops</td><td><span class="card-badge badge-yellow">Medium</span></td></tr>
+</tbody></table></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+           PANEL 4: VENDOR RISK
+      ══════════════════════════════════════════ -->
+<div class="panel" id="panel-vendor">
+<div class="page-header">
+<div class="page-title">Vendor Risk Management</div>
+<div class="page-sub">DPA STATUS · SECURITY POSTURE · CONTRACT REVIEW · 30 VENDORS</div>
+</div>
+<div class="grid4">
+<div class="card"><div class="card-header"><div class="card-title">Vendors Tracked</div></div><div class="kpi-val" style="color:var(--accent)">30</div><div class="kpi-label">Active relationships</div></div>
+<div class="card"><div class="card-header"><div class="card-title">DPA Coverage</div><div class="card-badge badge-yellow">PARTIAL</div></div><div class="kpi-val" style="color:var(--accent3)">60%</div><div class="kpi-label">18 executed · 12 missing</div></div>
+<div class="card"><div class="card-header"><div class="card-title">High Risk</div><div class="card-badge badge-red">REVIEW</div></div><div class="kpi-val" style="color:var(--accent5)">4</div><div class="kpi-label">Vendors requiring action</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Assessments Due</div></div><div class="kpi-val" style="color:var(--accent3)">7</div><div class="kpi-label">Annual reviews overdue</div></div>
+</div>
+<div class="grid-full">
+<div class="card">
+<div class="card-header"><div class="card-title">Vendor Risk Register</div></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Vendor</th><th>Category</th><th>Risk</th><th>DPA</th><th>Last Review</th><th>Finding</th></tr></thead><tbody>
+<tr><td class="name">CoreSync</td><td>Platform/API</td><td><span class="card-badge badge-red">High · 68</span></td><td><span class="card-badge badge-yellow">Renew</span></td><td>Mar 2026</td><td>API platform migration; EDR coverage gap</td></tr>
+<tr><td class="name">Klaviyo</td><td>Email/Marketing</td><td><span class="card-badge badge-yellow">Med · 54</span></td><td><span class="card-badge badge-yellow">Review</span></td><td>Feb 2026</td><td>MSA clause 7.3 under legal review</td></tr>
+<tr><td class="name">CrowdStrike</td><td>EDR/Security</td><td><span class="card-badge badge-green">Low · 22</span></td><td><span class="card-badge badge-green">Done</span></td><td>Jan 2026</td><td>Coverage gap on contractor fleet (53 devices)</td></tr>
+<tr><td class="name">Clearwatch MDR</td><td>MDR/SIEM</td><td><span class="card-badge badge-green">Low · 18</span></td><td><span class="card-badge badge-green">Done</span></td><td>Jan 2026</td><td>Clean assessment</td></tr>
+<tr><td class="name">Okta</td><td>IAM/SSO</td><td><span class="card-badge badge-green">Low · 20</span></td><td><span class="card-badge badge-green">Done</span></td><td>Dec 2025</td><td>Clean assessment</td></tr>
+<tr><td class="name">AWS</td><td>Cloud Infra</td><td><span class="card-badge badge-yellow">Med · 41</span></td><td><span class="card-badge badge-green">Done</span></td><td>Nov 2025</td><td>IAM least-privilege gaps in 3 accounts</td></tr>
+<tr><td class="name">Shield IR</td><td>Phishing IR</td><td><span class="card-badge badge-green">Low · 24</span></td><td><span class="card-badge badge-yellow">Draft</span></td><td>Apr 2026</td><td>DPA in draft; IR contract active</td></tr>
+</tbody></table></div>
+</div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">Risk Distribution</div></div>
+<div class="bar-row"><div class="bar-label">Low Risk (0–30)</div><div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--accent4)"></div></div><div class="bar-val">22</div></div>
+<div class="bar-row"><div class="bar-label">Medium (31–59)</div><div class="bar-track"><div class="bar-fill" style="width:13%;background:var(--accent3)"></div></div><div class="bar-val">4</div></div>
+<div class="bar-row"><div class="bar-label">High (60–79)</div><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--accent5)"></div></div><div class="bar-val">3</div></div>
+<div class="bar-row"><div class="bar-label">Critical (80+)</div><div class="bar-track"><div class="bar-fill" style="width:3%;background:#7c3aed"></div></div><div class="bar-val">1</div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">DPA Status</div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent4)"></div><div><div class="feed-meta">EXECUTED</div><div class="feed-text"><strong>18 vendors</strong> — DPAs signed and on file</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent3)"></div><div><div class="feed-meta">IN REVIEW</div><div class="feed-text"><strong>5 vendors</strong> — Legal review in progress</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent5)"></div><div><div class="feed-meta">MISSING</div><div class="feed-text"><strong>7 vendors</strong> — No DPA on file; outreach required</div></div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+           PANEL 5: IAM & ACCESS
+      ══════════════════════════════════════════ -->
+<div class="panel" id="panel-iam">
+<div class="page-header">
+<div class="page-title">Identity &amp; Access Management</div>
+<div class="page-sub">MFA COVERAGE · PRIVILEGED ACCESS · ORPHANED ACCOUNTS · SSO HEALTH</div>
+</div>
+<div class="grid4">
+<div class="card"><div class="card-header"><div class="card-title">Total Identities</div></div><div class="kpi-val" style="color:var(--accent)">900</div><div class="kpi-label">Users + contractors</div><div class="kpi-delta neutral">638 employees · 262 contractors</div></div>
+<div class="card"><div class="card-header"><div class="card-title">MFA Coverage</div><div class="card-badge badge-yellow">RISK</div></div><div class="kpi-val" style="color:var(--accent3)">71%</div><div class="kpi-label">639 enrolled / 261 without</div><div class="kpi-delta down">▼ 4 admins without MFA</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Orphaned Accounts</div><div class="card-badge badge-red">ACTION</div></div><div class="kpi-val" style="color:var(--accent5)">34</div><div class="kpi-label">Inactive &gt;90 days</div><div class="kpi-delta down">12 with active app access</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Privileged Accounts</div></div><div class="kpi-val" style="color:#a78bfa">28</div><div class="kpi-label">Admin / elevated roles</div><div class="kpi-delta down">6 without PAM controls</div></div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">MFA by Department</div></div>
+<div class="bar-row"><div class="bar-label">Security / IT</div><div class="bar-track"><div class="bar-fill" style="width:98%;background:var(--accent4)"></div></div><div class="bar-val">98%</div></div>
+<div class="bar-row"><div class="bar-label">Engineering</div><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--accent4)"></div></div><div class="bar-val">95%</div></div>
+<div class="bar-row"><div class="bar-label">Finance</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--accent4)"></div></div><div class="bar-val">88%</div></div>
+<div class="bar-row"><div class="bar-label">Production/Media</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--accent3)"></div></div><div class="bar-val">72%</div></div>
+<div class="bar-row"><div class="bar-label">Executive</div><div class="bar-track"><div class="bar-fill" style="width:63%;background:var(--accent3)"></div></div><div class="bar-val">63%</div></div>
+<div class="bar-row"><div class="bar-label">Contractors</div><div class="bar-track"><div class="bar-fill" style="width:41%;background:var(--accent5)"></div></div><div class="bar-val">41%</div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Critical Findings</div><div class="card-badge badge-red">5 OPEN</div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent5)"></div><div><div class="feed-meta">CRITICAL · ADMIN ACCESS</div><div class="feed-text"><strong>4 admin accounts</strong> in Workspace without MFA — immediate remediation required</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent5)"></div><div><div class="feed-meta">HIGH · ORPHANED</div><div class="feed-text"><strong>12 former contractor accounts</strong> retain active SaaS access post-offboarding</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent3)"></div><div><div class="feed-meta">MEDIUM · PRIVILEGE</div><div class="feed-text"><strong>6 privileged accounts</strong> without PAM logging — admin actions unaudited</div></div></div>
+<div class="feed-item"><div class="feed-dot" style="background:var(--accent3)"></div><div><div class="feed-meta">MEDIUM · ACCESS REVIEW</div><div class="feed-text"><strong>Quarterly access review</strong> overdue — 34 accounts flagged</div></div></div>
+</div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">SSO by App Category</div></div>
+<div class="bar-row"><div class="bar-label">Security Tools</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent4)"></div></div><div class="bar-val">100%</div></div>
+<div class="bar-row"><div class="bar-label">Productivity</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--accent4)"></div></div><div class="bar-val">88%</div></div>
+<div class="bar-row"><div class="bar-label">Development</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--accent4)"></div></div><div class="bar-val">82%</div></div>
+<div class="bar-row"><div class="bar-label">HR &amp; Finance</div><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--accent3)"></div></div><div class="bar-val">75%</div></div>
+<div class="bar-row"><div class="bar-label">Marketing</div><div class="bar-track"><div class="bar-fill" style="width:48%;background:var(--accent5)"></div></div><div class="bar-val">48%</div></div>
+<div class="bar-row"><div class="bar-label">Design / Creative</div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--accent5)"></div></div><div class="bar-val">38%</div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Privileged Access</div></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Role</th><th>Count</th><th>MFA</th><th>PAM</th></tr></thead><tbody>
+<tr><td class="name">Global Admin</td><td>6</td><td><span class="card-badge badge-yellow">4/6</span></td><td><span class="card-badge badge-red">2/6</span></td></tr>
+<tr><td class="name">Cloud Root</td><td>4</td><td><span class="card-badge badge-green">4/4</span></td><td><span class="card-badge badge-yellow">3/4</span></td></tr>
+<tr><td class="name">Domain Admin</td><td>3</td><td><span class="card-badge badge-green">3/3</span></td><td><span class="card-badge badge-green">3/3</span></td></tr>
+<tr><td class="name">Security Admin</td><td>5</td><td><span class="card-badge badge-green">5/5</span></td><td><span class="card-badge badge-green">5/5</span></td></tr>
+<tr><td class="name">Finance Admin</td><td>4</td><td><span class="card-badge badge-yellow">3/4</span></td><td><span class="card-badge badge-red">1/4</span></td></tr>
+<tr><td class="name">App Admins</td><td>6</td><td><span class="card-badge badge-red">3/6</span></td><td><span class="card-badge badge-red">0/6</span></td></tr>
+</tbody></table></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+           PANEL 6: INCIDENT & ALERTS
+      ══════════════════════════════════════════ -->
+<div class="panel" id="panel-incident">
+<div class="page-header">
+<div class="page-title">Incident &amp; Alert Posture</div>
+<div class="page-sub">EDR · SIEM · PHISHING · OPEN INCIDENTS · 30-DAY WINDOW</div>
+</div>
+<div class="grid4">
+<div class="card"><div class="card-header"><div class="card-title">Open Incidents</div><div class="card-badge badge-yellow">ACTIVE</div></div><div class="kpi-val" style="color:var(--accent3)">2</div><div class="kpi-label">In active investigation</div><div class="kpi-delta">0 critical · 2 medium</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Alerts (30d)</div></div><div class="kpi-val" style="color:var(--accent)">847</div><div class="kpi-label">Total alerts generated</div><div class="kpi-delta neutral">94% auto-closed · 6% reviewed</div></div>
+<div class="card"><div class="card-header"><div class="card-title">Phishing (30d)</div></div><div class="kpi-val" style="color:var(--accent3)">24</div><div class="kpi-label">Attempts detected</div><div class="kpi-delta up">1 escalated · all contained</div></div>
+<div class="card"><div class="card-header"><div class="card-title">MTTD / MTTR</div><div class="card-badge badge-green">HEALTHY</div></div><div style="display:flex;gap:16px;margin-top:8px"><div><div style="font-size:22px;font-weight:800;color:var(--accent4)">4.2h</div><div style="font-size:10px;color:var(--text2);font-family:var(--mono)">MTTD</div></div><div><div style="font-size:22px;font-weight:800;color:var(--accent4)">18h</div><div style="font-size:10px;color:var(--text2);font-family:var(--mono)">MTTR</div></div></div></div>
+</div>
+<div class="grid2">
+<div class="card">
+<div class="card-header"><div class="card-title">Alert Volume by Source</div></div>
+<div class="bar-row"><div class="bar-label">CrowdStrike EDR</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent5)"></div></div><div class="bar-val">412</div></div>
+<div class="bar-row"><div class="bar-label">Clearwatch MDR</div><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--accent2)"></div></div><div class="bar-val">268</div></div>
+<div class="bar-row"><div class="bar-label">Google Workspace</div><div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--accent)"></div></div><div class="bar-val">124</div></div>
+<div class="bar-row"><div class="bar-label">Meraki Network</div><div class="bar-track"><div class="bar-fill" style="width:14%;background:var(--accent4)"></div></div><div class="bar-val">58</div></div>
+<div class="bar-row"><div class="bar-label">Shield IR</div><div class="bar-track"><div class="bar-fill" style="width:15%;background:var(--accent6)"></div></div><div class="bar-val">24</div></div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Alert Triage</div></div>
+<div class="donut-wrap">
+<svg height="90" viewbox="0 0 110 110" width="90"><circle cx="55" cy="55" fill="none" r="44" stroke="#1e2430" stroke-width="12"></circle><circle cx="55" cy="55" fill="none" r="44" stroke="#10b981" stroke-dasharray="260 277" stroke-dashoffset="69" stroke-linecap="round" stroke-width="12"></circle><circle cx="55" cy="55" fill="none" r="44" stroke="#ef4444" stroke-dasharray="17 277" stroke-dashoffset="-191" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-family="Syne" font-size="16" font-weight="800" text-anchor="middle" x="55" y="50">847</text><text fill="#64748b" font-family="Space Mono" font-size="9" text-anchor="middle" x="55" y="65">alerts</text></svg>
+<div class="donut-legend">
+<div class="legend-item"><div class="legend-dot" style="background:var(--accent4)"></div>Auto-closed<div class="legend-val">796</div></div>
+<div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Reviewed<div class="legend-val">36</div></div>
+<div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div>Escalated<div class="legend-val">15</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid-full">
+<div class="card">
+<div class="card-header"><div class="card-title">Incident Log — Last 30 Days</div></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Severity</th><th>Status</th><th>Summary</th></tr></thead><tbody>
+<tr><td class="name">INC-041</td><td>Apr 28</td><td>IAM</td><td><span class="card-badge badge-yellow">Medium</span></td><td><span class="card-badge badge-yellow">Open</span></td><td>Admin login from unrecognized IP</td></tr>
+<tr><td class="name">INC-040</td><td>Apr 26</td><td>Phishing</td><td><span class="card-badge badge-yellow">Medium</span></td><td><span class="card-badge badge-green">Closed</span></td><td>Credential harvest attempt — contained by Shield IR</td></tr>
+<tr><td class="name">INC-039</td><td>Apr 22</td><td>Endpoint</td><td><span class="card-badge badge-red">High</span></td><td><span class="card-badge badge-green">Closed</span></td><td>Suspicious process on contractor device — quarantined</td></tr>
+<tr><td class="name">INC-038</td><td>Apr 19</td><td>SaaS</td><td><span class="card-badge badge-yellow">Medium</span></td><td><span class="card-badge badge-green">Closed</span></td><td>Unauthorized OAuth app — Workspace access revoked</td></tr>
+<tr><td class="name">INC-037</td><td>Apr 14</td><td>Network</td><td><span class="card-badge badge-yellow">Medium</span></td><td><span class="card-badge badge-yellow">Open</span></td><td>Anomalous outbound traffic — investigation ongoing</td></tr>
+<tr><td class="name">INC-036</td><td>Apr 9</td><td>Phishing</td><td><span class="card-badge badge-green">Low</span></td><td><span class="card-badge badge-green">Closed</span></td><td>BEC simulation — user reported correctly</td></tr>
+</tbody></table></div>
+</div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+<script>
+  const panels = {
+    exec:       { title: 'Executive Summary',       meta: 'Overall Security Posture · Q2 2026' },
+    saas:       { title: 'SaaS Governance',         meta: 'License Optimization · 128 Apps' },
+    compliance: { title: 'Compliance Posture',      meta: 'NIST CSF · SOC 2 · ISO 27001' },
+    vendor:     { title: 'Vendor Risk',             meta: 'DPA Status · 30 Vendors Tracked' },
+    iam:        { title: 'Identity & Access',       meta: 'MFA · Privileged Access · Orphaned Accounts' },
+    incident:   { title: 'Incident & Alerts',       meta: 'EDR · SIEM · 30-Day Window' }
+  };
+
+  function switchPanel(id, el) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('topbar-title').textContent = panels[id].title;
+    document.getElementById('topbar-meta').textContent = panels[id].meta;
+    closeSidebar();
+  }
+
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('overlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+</script>
+<script id="am-demo-close-script">
+(function(){
+  function getFallback(btn){
+    return (btn && btn.getAttribute('href')) || './portfolio/index.html';
+  }
+  function sameSiteReferrer(){
+    if(!document.referrer) return false;
+    try{
+      var ref = new URL(document.referrer);
+      return ref.origin === window.location.origin || ref.protocol === 'file:';
+    }catch(e){
+      return false;
+    }
+  }
+  document.addEventListener('click', function(event){
+    var btn = event.target.closest && event.target.closest('[data-am-close-demo]');
+    if(!btn) return;
+    event.preventDefault();
+    var fallback = getFallback(btn);
+    if(window.opener && !window.opener.closed){
+      window.close();
+      window.setTimeout(function(){ window.location.href = fallback; }, 250);
+      return;
+    }
+    if(window.history.length > 1 && sameSiteReferrer()){
+      window.history.back();
+      return;
+    }
+    window.location.href = fallback;
+  });
+})();
+</script>
+</body>
+</html>
