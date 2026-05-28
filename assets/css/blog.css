@@ -1,0 +1,27 @@
+/* Arsenal Media blog styling generated for Git-based blog pages */
+.blogIndexHero,.blogArticleHero{padding:70px 0 58px;}
+.blogMeta{margin:18px 0 0;color:var(--muted);font-size:14px;font-weight:850;}
+.blogGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:stretch;}
+.blogCard{display:flex;flex-direction:column;overflow:hidden;}
+.blogCardImageLink{display:block;background:#0d0f14;text-decoration:none;}
+.blogCard img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0f14;}
+.blogCard .body{padding:26px;display:flex;flex-direction:column;flex:1;}
+.blogCard h2{font-size:clamp(24px,2.4vw,34px);line-height:1.12;letter-spacing:-.03em;margin:10px 0 12px;color:var(--ink);}
+.blogCard h2 a{text-decoration:none;color:inherit;}
+.blogCard h2 a:hover{color:var(--red2);}
+.blogCard p:not(.eyebrow){color:var(--muted);line-height:1.72;margin:0 0 22px;}
+.blogCard .btn{margin-top:auto;align-self:flex-start;}
+.blogArticleLayout{display:grid;grid-template-columns:minmax(0,820px) minmax(260px,340px);gap:38px;align-items:start;}
+.blogPostPanel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:var(--shadow2);}
+.articleHeroImage{width:100%;max-height:460px;object-fit:cover;border-radius:20px;border:1px solid var(--line);margin-bottom:30px;background:#0d0f14;}
+.prose{font-size:1.06rem;line-height:1.82;color:#3f4650;}
+.prose p{margin:0 0 20px;}
+.prose h2{font-size:clamp(25px,2.6vw,36px);line-height:1.15;letter-spacing:-.025em;color:var(--ink);margin:36px 0 12px;}
+.prose h3{font-size:22px;line-height:1.22;color:var(--ink);margin:30px 0 10px;}
+.prose ul{display:grid;gap:9px;margin:0 0 24px;padding-left:1.3rem;}
+.prose li{padding-left:4px;}
+.blogPostActions{display:flex;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:30px;padding-top:24px;}
+.blogAside{position:sticky;top:96px;}
+.blogAside .asideCard p{margin-bottom:18px;}
+@media(max-width:980px){.blogGrid,.blogArticleLayout{grid-template-columns:1fr}.blogAside{position:relative;top:auto}.blogIndexHero,.blogArticleHero{padding:54px 0 44px;}}
+@media(max-width:600px){.blogGrid{gap:20px}.blogCard .body,.blogPostPanel{padding:22px}.blogPostActions .btn{width:100%;}.articleHeroImage{border-radius:16px;margin-bottom:22px;}}

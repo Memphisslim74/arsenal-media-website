@@ -21,10 +21,7 @@ function parseYamlValue(value) {
   const trimmed = String(value || "").trim();
   if (trimmed === "true") return true;
   if (trimmed === "false") return false;
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
     return trimmed.slice(1, -1);
   }
   return trimmed;
@@ -32,17 +29,15 @@ function parseYamlValue(value) {
 
 function parseFrontMatter(raw) {
   if (!raw.startsWith("---")) return { data: {}, body: raw };
-
   const end = raw.indexOf("\n---", 3);
   if (end === -1) return { data: {}, body: raw };
 
   const yaml = raw.slice(3, end).trim();
   const body = raw.slice(end + 4).trim();
   const data = {};
-  const lines = yaml.split(/\r?\n/);
   let activeListKey = null;
 
-  for (const line of lines) {
+  for (const line of yaml.split(/\r?\n/)) {
     if (!line.trim()) continue;
 
     const listMatch = line.match(/^\s*-\s+(.+)$/);
@@ -120,7 +115,7 @@ function markdownToHtml(markdown) {
     if (trimmed.startsWith("# ")) {
       flushParagraph();
       flushList();
-      html.push(`<h1>${inlineMarkdown(trimmed.slice(2))}</h1>`);
+      html.push(`<h2>${inlineMarkdown(trimmed.slice(2))}</h2>`);
       continue;
     }
 
@@ -140,50 +135,88 @@ function markdownToHtml(markdown) {
   return html.join("\n");
 }
 
-function pageShell({ title, description, canonical, content }) {
-  return `<!doctype html>
+function siteHead({ title, description, canonical, type = "website", image = "/assets/images/og/home.jpg" }) {
+  const fullImage = image.startsWith("http") ? image : `https://arsenalmediaco.com${image}`;
+  return `<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>${escapeHtml(title)}</title>
+<meta content="${escapeHtml(description)}" name="description"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<meta content="Arsenal Media" name="author"/>
+<link href="${escapeHtml(canonical)}" rel="canonical"/>
+<meta content="${escapeHtml(title)}" property="og:title"/>
+<meta content="${escapeHtml(description)}" property="og:description"/>
+<meta content="${type}" property="og:type"/>
+<meta content="${escapeHtml(canonical)}" property="og:url"/>
+<meta content="Arsenal Media" property="og:site_name"/>
+<meta content="${escapeHtml(fullImage)}" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="${escapeHtml(title)}" name="twitter:title"/>
+<meta content="${escapeHtml(description)}" name="twitter:description"/>
+<meta content="${escapeHtml(fullImage)}" name="twitter:image"/>
+<link href="/assets/css/style-v8.css?v=9" rel="stylesheet"/>
+<link href="/assets/css/blog.css?v=1" rel="stylesheet"/>
+</head>`;
+}
+
+function siteHeader(active = "blog") {
+  return `<a class="skip" href="#main">Skip to content</a>
+<header class="siteHeader">
+  <div class="container nav">
+    <a aria-label="Arsenal Media home" class="brand" href="/"><img alt="Arsenal Media" src="/assets/images/arsenal-logo-white.png"/></a>
+    <button aria-expanded="false" class="menuBtn" data-menu="">Menu</button>
+    <nav aria-label="Main navigation" class="navLinks" data-nav="">
+      <a class="${active === "home" ? "active" : ""}" href="/">Home</a>
+      <a class="${active === "services" ? "active" : ""}" href="/services/">Services</a>
+      <a class="${active === "portfolio" ? "active" : ""}" href="/portfolio/">Portfolio</a>
+      <a class="${active === "blog" ? "active" : ""}" href="/blog/">Blog</a>
+      <a class="" href="/about.html">About</a>
+      <a class="" href="/contact.html">Contact</a>
+      <a class="navCta" href="/contact.html">Start a Project</a>
+    </nav>
+  </div>
+</header>`;
+}
+
+function siteFooter() {
+  return `<div class="mobileCta"><a class="btn primary" href="/contact.html">Start a Project</a></div>
+<footer class="footer">
+  <div class="container footerGrid">
+    <div>
+      <div class="footerBrand"><img alt="Arsenal Media logo" src="/assets/images/arsenal-logo-white.png"/></div>
+      <p>Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for service businesses in Waxahachie and across the Dallas-Fort Worth Metroplex.</p>
+      <p class="footerSmall">From Dallas, Fort Worth, Plano, Arlington, Irving, Richardson, Frisco, and McKinney to teams in Ellis County, Dallas County, Tarrant County, and Collin County, we help North Texas contractors turn messy workflows into cleaner systems.</p>
+      <p class="footerSmall"><a href="/contact.html">Need a practical app or website in the DFW area? Start a project.</a></p>
+    </div>
+    <div class="footerLinks">
+      <a href="/services/">Services</a>
+      <a href="/services/custom-app-development/">Custom App Development</a>
+      <a href="/services/contractor-crm-software/">Contractor CRM Software</a>
+      <a href="/services/website-design/">Website Design</a>
+      <a href="/services/seo-services/">SEO Services</a>
+      <a href="/portfolio/">Portfolio</a>
+      <a href="/portfolio/mfr-roofing/">MFR Roofing App</a>
+      <a href="/portfolio/decorative-curbing-landscape/">Decorative Curbing</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+  </div>
+  <div class="container subfooter">© 2026 Arsenal Media Co. Custom apps, websites, SEO, and brand creative for service businesses.</div>
+</footer>
+<script src="/assets/js/main.js"></script>`;
+}
+
+function pageShell({ title, description, canonical, type, image, content, jsonLd = "" }) {
+  const head = siteHead({ title, description, canonical, type, image }).replace("</head>", `${jsonLd}\n</head>`);
+  return `<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>${escapeHtml(title)}</title>
-  <meta name="description" content="${escapeHtml(description)}">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <link rel="canonical" href="${escapeHtml(canonical)}">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="${escapeHtml(title)}">
-  <meta property="og:description" content="${escapeHtml(description)}">
-  <meta property="og:url" content="${escapeHtml(canonical)}">
-  <meta property="og:site_name" content="Arsenal Media">
-  <link rel="stylesheet" href="/assets/css/style-v8.css?v=9">
-</head>
+${head}
 <body>
-  <header class="site-header">
-    <div class="nav-shell">
-      <a class="brand" href="/" aria-label="Arsenal Media Home">
-        <span class="brand-mark">AM</span>
-        <span>Arsenal Media</span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="/services/">Services</a>
-        <a href="/portfolio/">Portfolio</a>
-        <a href="/blog/">Blog</a>
-        <a href="/#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
-  <main>
-    ${content}
-  </main>
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <p class="eyebrow">Arsenal Media</p>
-        <p>Custom apps, contractor CRM software, websites, and SEO for service businesses in Waxahachie and across DFW.</p>
-      </div>
-      <p><a href="/">Home</a> · <a href="/services/">Services</a> · <a href="/portfolio/">Portfolio</a></p>
-    </div>
-  </footer>
+${siteHeader("blog")}
+<main id="main">
+${content}
+</main>
+${siteFooter()}
 </body>
 </html>`;
 }
@@ -216,22 +249,63 @@ for (const post of posts) {
   const title = post.seo_title || post.title || "Arsenal Media Blog";
   const description = post.seo_description || post.excerpt || "Practical notes from Arsenal Media.";
   const canonical = `https://arsenalmediaco.com/blog/${slug}/`;
+  const image = post.featured_image || "/assets/images/og/home.jpg";
+  const author = post.author || "Arsenal Media";
+  const displayDate = post.date || "";
+
+  const jsonLd = `
+<script type="application/ld+json">
+${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title || title,
+    "description": description,
+    "image": image.startsWith("http") ? image : `https://arsenalmediaco.com${image}`,
+    "author": { "@type": "Person", "name": author },
+    "publisher": { "@type": "Organization", "name": "Arsenal Media", "logo": { "@type": "ImageObject", "url": "https://arsenalmediaco.com/assets/images/arsenal-logo-white.png" } },
+    "datePublished": displayDate,
+    "dateModified": displayDate,
+    "mainEntityOfPage": canonical
+  }, null, 2)}
+</script>`;
 
   const postHtml = pageShell({
     title,
     description,
     canonical,
+    type: "article",
+    image,
+    jsonLd,
     content: `
-<section class="section blog-article">
-  <div class="container narrow">
-    <p class="eyebrow">Arsenal Media Blog</p>
+<section class="pageHero blogArticleHero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/">Home</a> / <a href="/blog/">Blog</a></div>
+    <span class="kicker">Arsenal Media Blog</span>
     <h1>${escapeHtml(post.title || title)}</h1>
-    <p class="muted">${escapeHtml(post.date || "")} · ${escapeHtml(post.author || "Arsenal Media")}</p>
-    ${post.featured_image ? `<img src="${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.image_alt || post.title || title)}" class="article-hero">` : ""}
-    <article class="prose">
-      ${post.html}
+    <p class="lede">${escapeHtml(post.excerpt || description)}</p>
+    <p class="blogMeta">${escapeHtml(displayDate)} · ${escapeHtml(author)}</p>
+  </div>
+</section>
+
+<section class="section white">
+  <div class="container blogArticleLayout">
+    <article class="blogPostPanel">
+      ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(post.image_alt || post.title || title)}" class="articleHeroImage" loading="eager"/>` : ""}
+      <div class="prose">
+        ${post.html}
+      </div>
+      <div class="blogPostActions">
+        <a class="btn secondary" href="/blog/">Back to Blog</a>
+        <a class="btn primary" href="/contact.html">Talk About a Project</a>
+      </div>
     </article>
-    <p><a href="/blog/">Back to blog</a></p>
+    <aside class="blogAside">
+      <div class="asideCard">
+        <h3>Need a better system?</h3>
+        <p>Arsenal Media builds practical apps, contractor CRM tools, service business websites, and SEO pages for teams that need cleaner workflows.</p>
+        <a class="btn primary" href="/contact.html">Start a Project</a>
+      </div>
+    </aside>
   </div>
 </section>`
   });
@@ -242,12 +316,18 @@ for (const post of posts) {
 const cards = posts
   .map((post) => {
     const slug = post.slug || post.source.replace(/\.md$/, "");
+    const image = post.featured_image || "/assets/images/og/home.jpg";
     return `
-<article class="blog-card">
-  ${post.featured_image ? `<img src="${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.image_alt || post.title || "Blog post image")}">` : ""}
-  <p class="eyebrow">${escapeHtml(post.date || "")}</p>
-  <h2><a href="/blog/${escapeHtml(slug)}/">${escapeHtml(post.title || "Untitled Post")}</a></h2>
-  <p>${escapeHtml(post.excerpt || post.seo_description || "")}</p>
+<article class="blogCard card">
+  <a href="/blog/${escapeHtml(slug)}/" class="blogCardImageLink">
+    <img src="${escapeHtml(image)}" alt="${escapeHtml(post.image_alt || post.title || "Arsenal Media blog post image")}" loading="lazy"/>
+  </a>
+  <div class="body">
+    <p class="eyebrow">${escapeHtml(post.date || "")}</p>
+    <h2><a href="/blog/${escapeHtml(slug)}/">${escapeHtml(post.title || "Untitled Post")}</a></h2>
+    <p>${escapeHtml(post.excerpt || post.seo_description || "")}</p>
+    <a class="btn secondary" href="/blog/${escapeHtml(slug)}/">Read Article</a>
+  </div>
 </article>`;
   })
   .join("\n");
@@ -256,17 +336,20 @@ const indexHtml = pageShell({
   title: "Blog | Arsenal Media",
   description: "Articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media.",
   canonical: "https://arsenalmediaco.com/blog/",
+  type: "website",
+  image: "/assets/images/og/home.jpg",
   content: `
-<section class="section blog-hero">
+<section class="pageHero blogIndexHero">
   <div class="container">
-    <p class="eyebrow">Arsenal Media Blog</p>
+    <div class="breadcrumb"><a href="/">Home</a> / Blog</div>
+    <span class="kicker">Arsenal Media Blog</span>
     <h1>Practical notes on apps, websites, SEO, and business systems.</h1>
-    <p class="lead">Ideas for contractors and service businesses that want better tools, cleaner websites, and less chaos in the day-to-day.</p>
+    <p class="lede">Ideas for contractors and service businesses that want better tools, cleaner websites, and less chaos in the day-to-day.</p>
   </div>
 </section>
 
-<section class="section">
-  <div class="container blog-grid">
+<section class="section white">
+  <div class="container blogGrid">
     ${cards || "<p>No posts published yet.</p>"}
   </div>
 </section>`
