@@ -5,29 +5,32 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Cache-Control: public, max-age=3600, must-revalidate
+  Cache-Control: public, max-age=300, must-revalidate
 
 /*.html
   Content-Type: text/html; charset=utf-8
-  Cache-Control: public, max-age=3600, must-revalidate
-
-/services/*.html
-  Content-Type: text/html; charset=utf-8
-  Cache-Control: public, max-age=3600, must-revalidate
-
-/portfolio/*.html
-  Content-Type: text/html; charset=utf-8
-  Cache-Control: public, max-age=3600, must-revalidate
+  Cache-Control: public, max-age=300, must-revalidate
 
 /assets/css/*
   Content-Type: text/css; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, must-revalidate
+
+/css/*
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=300, must-revalidate
 
 /assets/js/*
   Content-Type: application/javascript; charset=utf-8
   Cache-Control: public, max-age=31536000, immutable
 
+/js/*
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+
 /assets/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
   Cache-Control: public, max-age=31536000, immutable
 
 /screenshots/*
@@ -36,23 +39,14 @@
 /social-designs/*
   Cache-Control: public, max-age=31536000, immutable
 
-/*.png
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.jpg
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.webp
-  Cache-Control: public, max-age=31536000, immutable
-
 /robots.txt
   Content-Type: text/plain; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300
 
 /sitemap.xml
   Content-Type: application/xml; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300
 
 /llms.txt
   Content-Type: text/plain; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300
