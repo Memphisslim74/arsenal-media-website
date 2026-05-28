@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MFR Project Tracking Demo | Arsenal Media</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D1B3E;--blue:#2563EB;--green:#16A34A;--orange:#D97706;--gray:#F1F5F9;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;--border:#E2E8F0;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+body{font-family:var(--font);background:var(--gray);color:var(--text);min-height:100vh;padding:20px}
+.container{max-width:800px;margin:0 auto}
+.header{background:var(--navy);color:white;padding:24px;border-radius:12px 12px 0 0;text-align:center}
+.logo{font-size:24px;font-weight:900;margin-bottom:8px}
+.logo span{color:#93C5FD}
+.subtitle{font-size:14px;color:rgba(255,255,255,.7)}
+.card{background:white;border:1px solid var(--border);border-radius:0 0 12px 12px;overflow:hidden}
+.section{padding:24px;border-bottom:1px solid var(--border)}
+.section:last-child{border-bottom:none}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--navy)}
+.address{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.job-id{font-size:13px;color:var(--text3)}
+
+/* Progress Tracker */
+.progress-wrap{position:relative;padding:0 20px}
+.progress-bar{position:absolute;top:20px;left:20px;right:20px;height:4px;background:var(--border);z-index:1}
+.progress-fill{height:100%;background:var(--green);transition:width .5s}
+.progress-steps{display:flex;justify-content:space-between;position:relative;z-index:2}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;text-align:center}
+.step-icon{width:40px;height:40px;border-radius:50%;background:white;border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px;transition:all .3s}
+.step.active .step-icon{border-color:var(--blue);background:var(--blue);color:white}
+.step.complete .step-icon{border-color:var(--green);background:var(--green);color:white}
+.step-label{font-size:11px;font-weight:600;color:var(--text3);max-width:80px;line-height:1.3}
+.step.active .step-label,.step.complete .step-label{color:var(--text)}
+.current-stage{background:var(--blue);color:white;padding:8px 16px;border-radius:6px;font-size:14px;font-weight:600;display:inline-block;margin-top:16px}
+
+/* Photos Grid */
+.photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.photo{aspect-ratio:1;background:var(--gray);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .2s;position:relative}
+.photo:hover{transform:scale(1.05)}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+/* Documents */
+.doc-list{display:flex;flex-direction:column;gap:8px}
+.doc{display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray);border-radius:8px;text-decoration:none;color:var(--text);transition:background .2s}
+.doc:hover{background:var(--border)}
+.doc-icon{font-size:24px}
+.doc-info{flex:1}
+.doc-name{font-size:14px;font-weight:600}
+.doc-size{font-size:12px;color:var(--text3)}
+.doc-download{color:var(--blue);font-size:12px;font-weight:600}
+
+/* Contact */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.contact-item{display:flex;align-items:center;gap:12px;padding:16px;background:var(--gray);border-radius:8px}
+.contact-icon{font-size:24px}
+.contact-info h4{font-size:12px;font-weight:600;color:var(--text3);margin-bottom:4px}
+.contact-info p{font-size:14px;font-weight:600;color:var(--navy)}
+.contact-info a{color:var(--blue);text-decoration:none}
+
+/* Empty State */
+.empty{text-align:center;padding:40px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px}
+
+/* Error */
+.error-wrap{text-align:center;padding:60px 20px}
+.error-icon{font-size:64px;margin-bottom:16px}
+.error-title{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.error-text{font-size:14px;color:var(--text2)}
+
+/* Loading */
+.loading{text-align:center;padding:60px 20px}
+.spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Estimate */
+.estimate-amount{font-size:32px;font-weight:800;color:var(--green);margin-bottom:8px}
+.estimate-label{font-size:13px;color:var(--text3)}
+
+/* Mobile */
+@media(max-width:640px){
+  body{padding:0}
+  .container{max-width:100%}
+  .header{border-radius:0}
+  .card{border-radius:0;border-left:none;border-right:none}
+  .progress-steps{flex-wrap:wrap}
+  .step{flex-basis:33.333%;margin-bottom:20px}
+  .photos-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+.am-demo-close-button{position:fixed;right:16px;bottom:16px;z-index:99999;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;border-radius:999px;background:#0f172a;color:#fff!important;text-decoration:none;font-weight:950;font-size:13px;box-shadow:0 16px 38px rgba(15,23,42,.26);border:1px solid rgba(255,255,255,.18)}.am-demo-close-button:hover{background:#dc2626}.am-demo-close-button__x{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.14);font-size:16px;line-height:1}@media(max-width:760px){.am-demo-close-button{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));padding:13px 16px}body{padding-bottom:72px!important;overflow-x:hidden!important}.container{max-width:100%!important}.hero,.header,.quote-shell,.card{border-radius:0!important}.project-card,.summary-grid,.contact-grid{grid-template-columns:1fr!important}.progress-wrap{padding:0!important;overflow-x:auto}.progress-steps{min-width:620px}.line-item{max-width:100%;overflow-wrap:anywhere}.photos-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+</style>
+
+<!-- Arsenal Media v42 crawl/social metadata -->
+<meta name="description" content="Customer-facing project tracking demo for MFR Roofing Command Center with status updates, milestones, and project progress.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://arsenalmediaco.com/mfr-command-center/track.html">
+<meta property="og:title" content="MFR Project Tracking Demo | Arsenal Media">
+<meta property="og:description" content="Customer-facing project tracking demo for MFR Roofing Command Center with status updates, milestones, and project progress.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://arsenalmediaco.com/mfr-command-center/track.html">
+<meta property="og:site_name" content="Arsenal Media">
+<meta property="og:image" content="https://arsenalmediaco.com/mfr-command-center/track-social-preview-v42.jpg?v=42">
+<meta property="og:image:secure_url" content="https://arsenalmediaco.com/mfr-command-center/track-social-preview-v42.jpg?v=42">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MFR Roofing customer project tracking preview.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MFR Project Tracking Demo | Arsenal Media">
+<meta name="twitter:description" content="Customer-facing project tracking demo for MFR Roofing Command Center with status updates, milestones, and project progress.">
+<meta name="twitter:image" content="https://arsenalmediaco.com/mfr-command-center/track-social-preview-v42.jpg?v=42">
+<meta name="twitter:image:alt" content="MFR Roofing customer project tracking preview.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://arsenalmediaco.com/mfr-command-center/track.html#webpage", "url": "https://arsenalmediaco.com/mfr-command-center/track.html", "name": "MFR Project Tracking Demo | Arsenal Media", "description": "Customer-facing project tracking demo for MFR Roofing Command Center with status updates, milestones, and project progress.", "isPartOf": {"@type": "WebSite", "name": "Arsenal Media", "url": "https://arsenalmediaco.com/"}, "image": "https://arsenalmediaco.com/mfr-command-center/track-social-preview-v42.jpg?v=42"}</script>
+<!-- /Arsenal Media v42 crawl/social metadata -->
+</head>
+<body><a class="am-demo-close-button" href="../index.html#work" data-am-close-demo aria-label="Close demo and return to Arsenal Media website"><span class="am-demo-close-button__x" aria-hidden="true">×</span><span>Close Demo</span></a>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">MY FAMILY <span>ROOFER</span></div>
+    <div class="subtitle">Your Project Status</div>
+  </div>
+  
+  <div id="app">
+    <div class="card">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>Loading your project...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = 'https://qhfjarnyrobdylwkvrmn.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoZmphcm55cm9iZHlsd2t2cm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MjcyNzUsImV4cCI6MjA5MzAwMzI3NX0.fk1fEAFsYpeWmyayKo0PMYd_0oI2DuV7SIjmqZZ9QSg';
+let _sb;
+
+const STAGE_MAP = {
+  'lead': { label: 'Lead Received', icon: '📋', order: 1 },
+  'inspection_scheduled': { label: 'Inspection Scheduled', icon: '📅', order: 2 },
+  'inspected': { label: 'Inspection Complete', icon: '✅', order: 3 },
+  'estimate_sent': { label: 'Estimate Sent', icon: '💰', order: 4 },
+  'contract_signed': { label: 'Contract Signed', icon: '✍️', order: 5 },
+  'claim_filed': { label: 'Claim Filed', icon: '📄', order: 6 },
+  'claim_approved': { label: 'Claim Approved', icon: '👍', order: 7 },
+  'in_production': { label: 'In Production', icon: '🏗️', order: 8 },
+  'complete': { label: 'Work Complete', icon: '🎉', order: 9 },
+  'invoiced': { label: 'Final Invoice', icon: '💳', order: 10 },
+  'paid': { label: 'Paid & Closed', icon: '✨', order: 11 }
+};
+
+const MAIN_STAGES = ['lead', 'inspection_scheduled', 'inspected', 'estimate_sent', 'contract_signed', 'in_production', 'complete', 'paid'];
+
+async function init() {
+  _sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code') || window.location.pathname.split('/').pop();
+  
+  if (!code || code === 'track.html' || code === 'customer-tracker.html') {
+    history.replaceState(null,'','?code=TRACK-THOMPSON');
+    await loadJob('TRACK-THOMPSON');
+    return;
+  }
+  
+  await loadJob(code);
+}
+
+async function loadJob(code) {
+  try {
+    const { data: job, error } = await _sb
+      .from('jobs')
+      .select('*')
+      .eq('customer_tracking_code', code)
+      .single();
+    
+    if (error || !job) {
+      showError('Job Not Found', 'We couldn\'t find a project with this tracking code. Please check the link and try again.');
+      return;
+    }
+    
+    renderTracker(job);
+  } catch(e) {
+    showError('Error Loading Project', 'Something went wrong. Please try again later.');
+  }
+}
+
+function renderTracker(job) {
+  const currentStageOrder = STAGE_MAP[job.status]?.order || 1;
+  const progressPercent = ((currentStageOrder - 1) / (MAIN_STAGES.length - 1)) * 100;
+  
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <!-- Job Info -->
+      <div class="section">
+        <div class="address">${job.address || 'Your Roofing Project'}</div>
+        <div class="job-id">Tracking Code: ${job.customer_tracking_code}</div>
+        <div class="current-stage">${STAGE_MAP[job.status]?.icon || '📋'} ${STAGE_MAP[job.status]?.label || 'In Progress'}</div>
+      </div>
+      
+      <!-- Progress Tracker -->
+      <div class="section">
+        <div class="section-title">Project Progress</div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${progressPercent}%"></div></div>
+          <div class="progress-steps">
+            ${MAIN_STAGES.map(stage => {
+              const stageOrder = STAGE_MAP[stage].order;
+              const status = stageOrder < currentStageOrder ? 'complete' : stageOrder === currentStageOrder ? 'active' : '';
+              return `<div class="step ${status}">
+                <div class="step-icon">${STAGE_MAP[stage].icon}</div>
+                <div class="step-label">${STAGE_MAP[stage].label}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Estimate -->
+      ${job.contract_value ? `
+      <div class="section">
+        <div class="section-title">Your Estimate</div>
+        <div class="estimate-amount">$${Number(job.contract_value).toLocaleString()}</div>
+        <div class="estimate-label">Project Total</div>
+      </div>` : ''}
+      
+      <!-- Photos -->
+      <div class="section" id="photos-section">
+        <div class="section-title">Inspection Photos</div>
+        <div id="photos-wrap"><div class="empty"><div class="empty-icon">📸</div><div class="empty-text">Photos will appear here after your inspection</div></div></div>
+      </div>
+      
+      <!-- Documents -->
+      <div class="section">
+        <div class="section-title">Documents</div>
+        <div class="doc-list" id="docs-list">
+          <div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Documents will appear as your project progresses</div></div>
+        </div>
+      </div>
+      
+      <!-- Contact -->
+      <div class="section">
+        <div class="section-title">Need Help?</div>
+        <div class="contact-grid">
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <div class="contact-info">
+              <h4>CALL US</h4>
+              <p><a href="tel:+19705551234">(970) 555-ROOF</a></p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">✉️</div>
+            <div class="contact-info">
+              <h4>EMAIL US</h4>
+              <p><a href="mailto:info@myfamilyroofer.com">info@myfamilyroofer.com</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Load photos
+  loadPhotos(job.id);
+  
+  // Load documents
+  loadDocuments(job.id);
+}
+
+async function loadPhotos(jobId) {
+  try {
+    const { data: allPhotos } = await _sb
+      .from('job_photos')
+      .select('*')
+      .eq('job_id', jobId)
+      .order('created_at', { ascending: false });
+    
+    const photos = (allPhotos || []).filter(p => p.is_customer_visible !== false);
+    if (!photos || photos.length === 0) return;
+    
+    const photosWrap = document.getElementById('photos-wrap');
+    photosWrap.innerHTML = `<div class="photos-grid">
+      ${photos.map(p => `
+        <div class="photo" onclick="window.open('${p.photo_url}', '_blank')" title="${p.caption || p.photo_type || 'Project photo'}">
+          <img src="${p.photo_url}" alt="${p.caption || p.photo_type || 'Project photo'}" loading="lazy">
+          ${(p.caption || p.photo_type) ? `<div style="position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);color:white;font-size:11px;padding:6px">${p.caption || (p.photo_type || '').replace(/_/g,' ')}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>`;
+  } catch(e) {
+    console.error('Photo load error:', e);
+  }
+}
+
+async function loadDocuments(jobId) {
+  const docs = [];
+  
+  // Check for AI report
+  try {
+    const { data: reports } = await _sb
+      .from('inspection_reports')
+      .select('*')
+      .eq('job_id', jobId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+    
+    if (reports && reports.length > 0) {
+      docs.push({
+        name: 'Inspection Report',
+        icon: '📋',
+        url: '#',
+        type: 'AI Report',
+        content: reports[0].report_text
+      });
+    }
+  } catch(e) {}
+  
+  // Check for uploaded documents (contract, warranty, etc.)
+  try {
+    const { data: files } = await _sb
+      .from('job_documents')
+      .select('*')
+      .eq('job_id', jobId);
+    
+    if (files) {
+      files.forEach(f => {
+        docs.push({
+          name: f.document_name || f.document_type || 'Document',
+          icon: f.document_type === 'contract' ? '✍️' : f.document_type === 'warranty' ? '🛡️' : '📄',
+          url: f.document_url,
+          type: f.document_type
+        });
+      });
+    }
+  } catch(e) {}
+  
+  if (docs.length === 0) return;
+  
+  const docsList = document.getElementById('docs-list');
+  docsList.innerHTML = docs.map(d => `
+    <a href="${d.url}" class="doc" target="_blank" ${d.content ? `onclick="showReport(event, ${JSON.stringify(d.content).replace(/"/g, '&quot;')})"` : ''}>
+      <div class="doc-icon">${d.icon}</div>
+      <div class="doc-info">
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-size">${d.type || 'Document'}</div>
+      </div>
+      <div class="doc-download">View →</div>
+    </a>
+  `).join('');
+}
+
+function showReport(e, content) {
+  e.preventDefault();
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>Inspection Report</title>
+    <style>body{font-family:sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.6}</style>
+    </head><body><h1>Inspection Report</h1><div>${content.replace(/\n/g, '<br>')}</div></body></html>
+  `);
+}
+
+function showError(title, message) {
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <div class="error-wrap">
+        <div class="error-icon">⚠️</div>
+        <div class="error-title">${title}</div>
+        <div class="error-text">${message}</div>
+      </div>
+    </div>
+  `;
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+
+<script id="am-close-demo-js">(function(){function closeDemo(){try{window.close();}catch(e){}setTimeout(function(){if(document.referrer){history.back();}else{location.href='../index.html#work';}},120)}document.addEventListener('click',function(e){var a=e.target.closest('[data-am-close-demo]');if(a){e.preventDefault();closeDemo();}});})();
+(function(){
+  const job={id:'job-thompson',customer_tracking_code:'TRACK-THOMPSON',address:'1234 Oak Ridge Drive, Fort Collins, CO 80524',status:'in_production',project_progress:62,created_at:new Date().toISOString(),customer_name:'Jordan Thompson',customer_phone:'(970) 555-0142',customer_email:'jordan.thompson@example.com'};
+  const photos=[{id:'photo-1',job_id:'job-thompson',photo_url:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900',photo_type:'Inspection',caption:'Demo roof inspection photo',is_customer_visible:true,created_at:new Date().toISOString()},{id:'photo-2',job_id:'job-thompson',photo_url:'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=900',photo_type:'Progress',caption:'Demo project progress photo',is_customer_visible:true,created_at:new Date().toISOString()}];
+  const docs=[{id:'doc-1',job_id:'job-thompson',document_name:'Demo Hail Intelligence Report',document_type:'report',document_url:'#'}];
+  class Q{constructor(t){this.table=t;this.filters=[];this._single=false;this._payload=null}select(){return this}eq(k,v){this.filters.push({k,v});return this}order(){return this}limit(){return this}single(){this._single=true;return this}then(r,j){return this.exec().then(r,j)}catch(j){return this.exec().catch(j)}async exec(){let data=[]; if(this.table==='jobs')data=[job]; else if(this.table==='job_photos')data=photos; else if(this.table==='job_documents')data=docs; else if(this.table==='inspection_reports')data=[{job_id:'job-thompson',report_text:'Demo inspection report generated from sample data.'}]; for(const f of this.filters)data=data.filter(x=>String(x[f.k])===String(f.v)); if(this._single)data=data[0]||null; return{data,error:null}}}
+  if(window.supabase&&window.supabase.createClient){window.supabase.createClient=function(){return{from:function(t){return new Q(t)}}};}
+})();
+
+</script>
+</body>
+</html>

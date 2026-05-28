@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#111827" name="theme-color"/>
+<title>Video Confessional Demo | Custom Video Booth App | Arsenal Media</title>
+<style>
+    :root {
+      --bg: #f7f3ed;
+      --card: rgba(255,255,255,.94);
+      --ink: #1f2937;
+      --muted: #687282;
+      --line: #ded6ca;
+      --accent: #1f2937;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --success: #067647;
+      --success-bg: #ecfdf3;
+      --warning: #b54708;
+      --warning-bg: #fffaeb;
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --shadow: 0 22px 55px rgba(31,41,55,.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(204,181,167,.34), transparent 32rem),
+        radial-gradient(circle at bottom right, rgba(126,158,138,.18), transparent 26rem),
+        linear-gradient(180deg, #fbfaf7 0%, var(--bg) 100%);
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding: 12px;
+    }
+
+    .app {
+      width: min(900px, 100%);
+      min-height: calc(100dvh - 24px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topbar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid rgba(222,214,202,.95);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.84);
+      box-shadow: 0 10px 30px rgba(31,41,55,.07);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .brand strong {
+      font-size: clamp(1.35rem, 3.2vw, 1.9rem);
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: clamp(.88rem, 1.8vw, 1rem);
+      line-height: 1.25;
+    }
+
+    .status-pill {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: #fff;
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .status-pill.ready {
+      color: var(--success);
+      background: var(--success-bg);
+      border-color: rgba(6,118,71,.22);
+    }
+
+    .status-pill.recording {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border-color: rgba(180,35,24,.22);
+    }
+
+    .video-card {
+      flex: 1 1 auto;
+      min-height: 0;
+      border: 1px solid rgba(222,214,202,.95);
+      border-radius: var(--radius-lg);
+      background: #111827;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .video-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 360px;
+      background: #111827;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    #sourceVideo {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    #portraitCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #111827;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .empty {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: clamp(22px, 5vw, 42px);
+      color: rgba(255,255,255,.92);
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,.08), transparent 32rem),
+        linear-gradient(180deg, rgba(17,24,39,.18), rgba(17,24,39,.38));
+    }
+
+    .empty h1 {
+      margin: 0 0 16px;
+      font-size: clamp(3.4rem, 10vw, 6.4rem);
+      line-height: .9;
+      letter-spacing: -.08em;
+    }
+
+    .empty p {
+      max-width: 620px;
+      margin: 0 auto;
+      color: rgba(255,255,255,.76);
+      line-height: 1.42;
+      font-size: clamp(1.02rem, 2.4vw, 1.35rem);
+    }
+
+    .timer {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 2;
+      display: none;
+      border-radius: 999px;
+      padding: 10px 15px;
+      background: rgba(17,24,39,.78);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 950;
+      letter-spacing: .08em;
+      backdrop-filter: blur(10px);
+    }
+
+    .timer.show {
+      display: block;
+    }
+
+    .panel {
+      flex: 0 0 auto;
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(222,214,202,.95);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .instructions {
+      display: grid;
+      gap: 6px;
+    }
+
+    .instructions h2 {
+      margin: 0;
+      font-size: clamp(1.25rem, 3vw, 1.65rem);
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+
+    .instructions p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.32;
+      font-size: clamp(.9rem, 2vw, 1rem);
+    }
+
+    .notice {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      color: var(--muted);
+      padding: 11px 13px;
+      line-height: 1.34;
+      font-size: .92rem;
+    }
+
+    .notice.success {
+      color: var(--success);
+      background: var(--success-bg);
+      border-color: rgba(6,118,71,.22);
+    }
+
+    .notice.warning {
+      color: var(--warning);
+      background: var(--warning-bg);
+      border-color: rgba(181,71,8,.22);
+    }
+
+    .notice.danger {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border-color: rgba(180,35,24,.22);
+    }
+
+    .progress-wrap {
+      display: none;
+      gap: 8px;
+    }
+
+    .progress-wrap.show {
+      display: grid;
+    }
+
+    .progress-track {
+      height: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #eee7dc;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      transition: width .22s ease;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .buttons .wide {
+      grid-column: 1 / -1;
+    }
+
+    button {
+      min-height: 58px;
+      border: 0;
+      border-radius: 17px;
+      padding: 13px 15px;
+      color: #fff;
+      background: var(--accent);
+      font: inherit;
+      font-size: .98rem;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(31,41,55,.14);
+      transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .secondary {
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .danger {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border: 1px solid rgba(180,35,24,.22);
+      box-shadow: none;
+    }
+
+    .successBtn {
+      color: #fff;
+      background: var(--success);
+    }
+
+    @media (orientation: portrait) {
+      .app {
+        grid-template-rows: auto auto auto;
+      }
+
+      .video-card {
+        flex-basis: 46dvh;
+        height: 46dvh;
+        max-height: 540px;
+      }
+
+      .video-stage {
+        min-height: 0;
+      }
+    }
+
+    @media (orientation: landscape) {
+      .app {
+        width: min(1180px, 100%);
+      }
+
+      .layout-landscape {
+        display: contents;
+      }
+
+      .video-card {
+        min-height: 0;
+      }
+    }
+
+    @media (min-width: 920px) and (orientation: landscape) {
+      .app {
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .booth-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, .65fr);
+        gap: 14px;
+        min-height: 0;
+      }
+
+      .video-card {
+        height: auto;
+      }
+
+      .panel {
+        align-self: stretch;
+        align-content: start;
+      }
+
+      .buttons {
+        margin-top: auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 10px;
+      }
+
+      .app {
+        gap: 10px;
+      }
+
+      .topbar {
+        padding: 12px 14px;
+        border-radius: 24px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .status-pill {
+        font-size: .82rem;
+        padding: 8px 11px;
+      }
+
+      .video-card {
+        height: 43dvh;
+        flex-basis: 43dvh;
+      }
+
+      .panel {
+        padding: 12px;
+        gap: 10px;
+      }
+
+      .instructions h2 {
+        font-size: 1.2rem;
+      }
+
+      .instructions p {
+        font-size: .88rem;
+      }
+
+      .notice {
+        padding: 10px 11px;
+        border-radius: 16px;
+        font-size: .86rem;
+      }
+
+      button {
+        min-height: 54px;
+        font-size: .92rem;
+      }
+    }
+  </style>
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GCDYP7KS2C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GCDYP7KS2C');
+</script>
+<style id="arsenal-back-to-site-style">
+  .arsenal-back-to-site{
+    position:fixed;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:99999;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 16px;
+    border-radius:16px;
+    background:rgba(196,30,30,.97);
+    color:#fff!important;
+    text-decoration:none!important;
+    font:800 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    letter-spacing:.02em;
+    box-shadow:0 18px 40px rgba(0,0,0,.32);
+    border:1px solid rgba(255,255,255,.18);
+  }
+  .arsenal-back-to-site:hover{filter:brightness(1.08);}
+  .arsenal-back-to-site::before{content:'↩';font-size:14px;line-height:1;}
+  @media(max-width:760px){
+    .arsenal-back-to-site{right:12px;top:auto;bottom:18px;transform:none;padding:11px 14px;font-size:12px;border-radius:999px;}
+  }
+</style><link href="../favicon.ico" rel="icon"/><link href="../favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/><link href="../favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/><link href="../apple-touch-icon.png" rel="apple-touch-icon" type="image/png"/>
+<style id="v38-page-overflow-guard">
+html,body{width:100%;max-width:100%;overflow-x:hidden!important;}
+*,*::before,*::after{box-sizing:border-box;min-width:0;}
+img,svg,video,canvas,iframe{max-width:100%;height:auto;}
+pre,code{max-width:100%;white-space:pre-wrap;word-break:break-word;}
+@media(max-width:900px){
+  body{max-width:100vw!important;}
+  .container,.wrap,.page,.page-wrap,.content,.section,.hero,.card,.panel,.modal,.modal-sheet,.login-box,.app-body{max-width:100%!important;}
+  .grid,.row,.cards,.form-grid,.stats-grid,.toolbar,.filters{min-width:0!important;max-width:100%!important;}
+  input,select,textarea,button{max-width:100%;}
+  .btn,.button,a[class*="btn"]{white-space:normal;}
+  table{max-width:100%;}
+  .table-wrap,.table-card,.table-panel,[class*="table"]{max-width:100%;}
+}
+</style>
+
+
+<style id="am-demo-close-style">
+  .am-demo-close-button,
+  .arsenal-back-to-site.am-demo-close-button{
+    position:fixed!important;
+    top:max(14px, env(safe-area-inset-top))!important;
+    right:max(14px, env(safe-area-inset-right))!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    z-index:2147483647!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    width:auto!important;
+    max-width:calc(100vw - 28px)!important;
+    padding:10px 14px!important;
+    border-radius:12px!important;
+    border:1px solid rgba(255,255,255,.18)!important;
+    background:rgba(9,12,18,.92)!important;
+    color:#fff!important;
+    box-shadow:0 18px 42px rgba(0,0,0,.28)!important;
+    font-family:Inter, Arial, Helvetica, sans-serif!important;
+    font-size:13px!important;
+    line-height:1!important;
+    font-weight:900!important;
+    letter-spacing:.01em!important;
+    text-decoration:none!important;
+    backdrop-filter:blur(14px)!important;
+    -webkit-backdrop-filter:blur(14px)!important;
+  }
+  .am-demo-close-button::before,
+  .arsenal-back-to-site.am-demo-close-button::before{content:none!important;display:none!important;}
+  .am-demo-close-button__x{
+    display:grid!important;place-items:center!important;
+    width:18px!important;height:18px!important;border-radius:6px!important;
+    background:#dc2626!important;color:#fff!important;
+    font-size:15px!important;line-height:18px!important;font-weight:950!important;
+  }
+  .am-demo-close-button:hover,
+  .arsenal-back-to-site.am-demo-close-button:hover{
+    color:#fff!important;filter:brightness(1.06)!important;transform:translateY(-1px)!important;
+  }
+  .am-demo-close-button:focus-visible,
+  .arsenal-back-to-site.am-demo-close-button:focus-visible{
+    outline:3px solid rgba(220,38,38,.45)!important;
+    outline-offset:3px!important;
+  }
+  @media (max-width:560px){
+    .am-demo-close-button,
+    .arsenal-back-to-site.am-demo-close-button{
+      top:max(10px, env(safe-area-inset-top))!important;
+      right:max(10px, env(safe-area-inset-right))!important;
+      padding:9px 11px!important;
+      border-radius:10px!important;
+      font-size:12px!important;
+      max-width:calc(100vw - 20px)!important;
+    }
+    .am-demo-close-button__x{width:17px!important;height:17px!important;font-size:14px!important;}
+  }
+  @media print{
+    .am-demo-close-button,
+    .arsenal-back-to-site.am-demo-close-button{display:none!important;}
+  }
+</style>
+
+<!-- Arsenal Media v42 crawl/social metadata -->
+<meta name="description" content="Video Confessional demo for a simple booth-style recording experience with start, pause, submit, and admin review workflows.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://arsenalmediaco.com/video-confessional/">
+<meta property="og:title" content="Video Confessional Demo | Custom Video Booth App | Arsenal Media">
+<meta property="og:description" content="Video Confessional demo for a simple booth-style recording experience with start, pause, submit, and admin review workflows.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://arsenalmediaco.com/video-confessional/">
+<meta property="og:site_name" content="Arsenal Media">
+<meta property="og:image" content="https://arsenalmediaco.com/video-confessional/social-preview-v42.jpg?v=42">
+<meta property="og:image:secure_url" content="https://arsenalmediaco.com/video-confessional/social-preview-v42.jpg?v=42">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Video Confessional booth app demo preview.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Video Confessional Demo | Custom Video Booth App | Arsenal Media">
+<meta name="twitter:description" content="Video Confessional demo for a simple booth-style recording experience with start, pause, submit, and admin review workflows.">
+<meta name="twitter:image" content="https://arsenalmediaco.com/video-confessional/social-preview-v42.jpg?v=42">
+<meta name="twitter:image:alt" content="Video Confessional booth app demo preview.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://arsenalmediaco.com/video-confessional/#webpage", "url": "https://arsenalmediaco.com/video-confessional/", "name": "Video Confessional Demo | Custom Video Booth App | Arsenal Media", "description": "Video Confessional demo for a simple booth-style recording experience with start, pause, submit, and admin review workflows.", "isPartOf": {"@type": "WebSite", "name": "Arsenal Media", "url": "https://arsenalmediaco.com/"}, "image": "https://arsenalmediaco.com/video-confessional/social-preview-v42.jpg?v=42"}</script>
+<!-- /Arsenal Media v42 crawl/social metadata -->
+</head>
+<body>
+<a class="arsenal-back-to-site am-demo-close-button" href="../portfolio/index.html" data-am-close-demo aria-label="Close demo and return to Arsenal Media website"><span class="am-demo-close-button__x" aria-hidden="true">×</span><span>Close Demo</span></a>
+<main class="app">
+<header class="topbar">
+<div class="brand">
+<strong>Video Confessional</strong>
+<span>Record your response, then submit.</span>
+</div>
+<div class="status-pill" id="statusPill">Not started</div>
+</header>
+<div class="booth-grid">
+<article class="video-card">
+<div class="video-stage">
+<video autoplay="" id="sourceVideo" muted="" playsinline=""></video>
+<canvas height="1920" id="portraitCanvas" width="1080"></canvas>
+<div class="empty" id="emptyState">
+<div>
+<h1>Ready?</h1>
+<p>Tap “Start Recording” when you are ready. You can pause, restart, or stop and submit.</p>
+</div>
+</div>
+<div class="timer" id="timer">00:00</div>
+</div>
+</article>
+<aside class="panel">
+<div class="instructions">
+<h2>Booth Controls</h2>
+<p>Use the card provided for your prompt. This screen is only for recording and submitting your video.</p>
+</div>
+<div class="notice" id="messageBox">
+          First step: tap Start Recording. The iPad may ask for camera and microphone permission.
+        </div>
+<div class="progress-wrap" id="progressWrap">
+<div class="progress-track">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="notice" id="progressText">Preparing upload...</div>
+</div>
+<div class="buttons">
+<button class="wide" id="startBtn">Start Recording</button>
+<button class="secondary" disabled="" id="pauseBtn">Pause Recording</button>
+<button class="danger" disabled="" id="restartBtn">Restart Recording</button>
+<button class="successBtn wide" disabled="" id="stopSubmitBtn">Stop &amp; Submit</button>
+</div>
+<div class="notice warning">
+          Current MVP target: up to about 7 minutes. Keep iPad plugged in and Auto-Lock set to Never.
+        </div>
+</aside>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const WORKER_UPLOAD_URL = "https://video-confessional-upload.stevesmith.workers.dev/upload";
+
+    const SUPABASE_URL = "https://hzxhwfatfydngdcguzyl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_C3vfoKi5y2Chh3sO3riPWQ_LdKGVRe6";
+    const TABLE_NAME = "video_confessionals";
+
+    const OUTPUT_WIDTH = 1080;
+    const OUTPUT_HEIGHT = 1920;
+    const OUTPUT_FPS = 30;
+
+    const MAX_RECORDING_SECONDS = 420;
+    const MAX_UPLOAD_MB = 95;
+
+    /*
+      iPad portrait reframing controls:
+      - ZOOM crops the ultra-wide iPad camera so the image feels natural.
+      - VERTICAL_SHIFT moves the source image down/up in the final portrait frame.
+        Negative values move the crop lower in the source image, which usually reduces ceiling-heavy framing.
+      - HORIZONTAL_SHIFT lets us nudge left/right if needed.
+    */
+    const IS_IPAD = /iPad|Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1;
+
+    // iPad booth framing gets priority. Desktop uses a lighter crop for testing.
+    const ZOOM = IS_IPAD ? 1.06 : 1.0;
+    const VERTICAL_SHIFT = IS_IPAD ? -0.10 : 0;
+    const HORIZONTAL_SHIFT = 0;
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const els = {
+      sourceVideo: document.getElementById("sourceVideo"),
+      portraitCanvas: document.getElementById("portraitCanvas"),
+      emptyState: document.getElementById("emptyState"),
+      timer: document.getElementById("timer"),
+      statusPill: document.getElementById("statusPill"),
+      messageBox: document.getElementById("messageBox"),
+      progressWrap: document.getElementById("progressWrap"),
+      progressBar: document.getElementById("progressBar"),
+      progressText: document.getElementById("progressText"),
+      startBtn: document.getElementById("startBtn"),
+      pauseBtn: document.getElementById("pauseBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      stopSubmitBtn: document.getElementById("stopSubmitBtn")
+    };
+
+    const canvasContext = els.portraitCanvas.getContext("2d");
+
+    let cameraStream = null;
+    let recordingStream = null;
+    let recorder = null;
+    let chunks = [];
+    let recordedBlob = null;
+    let recordingStartedAt = null;
+    let elapsedBeforePause = 0;
+    let timerInterval = null;
+    let animationFrameId = null;
+    let selectedMimeType = "";
+    let lastDurationSeconds = 0;
+    let isSubmitting = false;
+    let wakeLock = null;
+
+    function setMessage(text, type = "") {
+      els.messageBox.className = `notice ${type}`.trim();
+      els.messageBox.textContent = text;
+    }
+
+    function setStatus(text, state = "") {
+      els.statusPill.className = `status-pill ${state}`.trim();
+      els.statusPill.textContent = text;
+    }
+
+    function chooseMimeType() {
+      const candidates = [
+        "video/mp4;codecs=h264,aac",
+        "video/mp4",
+        "video/webm;codecs=vp9,opus",
+        "video/webm;codecs=vp8,opus",
+        "video/webm"
+      ];
+
+      for (const type of candidates) {
+        if (window.MediaRecorder && MediaRecorder.isTypeSupported(type)) {
+          return type;
+        }
+      }
+
+      return "";
+    }
+
+    function extensionFromMime(type) {
+      const lower = String(type || "").toLowerCase();
+      if (lower.includes("mp4")) return "mp4";
+      if (lower.includes("quicktime")) return "mov";
+      if (lower.includes("webm")) return "webm";
+      return "webm";
+    }
+
+    function formatTime(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function setProgress(percent, text) {
+      els.progressWrap.classList.add("show");
+      els.progressBar.style.width = `${percent}%`;
+      els.progressText.textContent = text;
+    }
+
+    function resetProgress() {
+      els.progressWrap.classList.remove("show");
+      els.progressBar.style.width = "0%";
+      els.progressText.textContent = "Preparing upload...";
+    }
+
+    async function findBestFrontCameraId() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return "";
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cameras = devices.filter(device => device.kind === "videoinput");
+
+        const frontCamera = cameras.find(camera =>
+          /front|user|facetime/i.test(camera.label || "")
+        );
+
+        return frontCamera ? frontCamera.deviceId : "";
+      } catch (error) {
+        console.warn("Could not enumerate cameras. Falling back to facingMode:user.", error);
+        return "";
+      }
+    }
+
+    async function ensureCamera() {
+      if (cameraStream) return;
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera access is not available in this browser.");
+      }
+
+      const frontCameraVideoSettings = {
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        aspectRatio: { ideal: 1.777777778 },
+        frameRate: { ideal: OUTPUT_FPS, max: OUTPUT_FPS }
+      };
+
+      const constraintsToTry = [];
+
+      const bestFrontCameraId = await findBestFrontCameraId();
+
+      if (bestFrontCameraId) {
+        constraintsToTry.push({
+          video: {
+            deviceId: { exact: bestFrontCameraId },
+            ...frontCameraVideoSettings
+          },
+          audio: true
+        });
+      }
+
+      constraintsToTry.push({
+        video: {
+          facingMode: { exact: "user" },
+          ...frontCameraVideoSettings
+        },
+        audio: true
+      });
+
+      constraintsToTry.push({
+        video: {
+          facingMode: "user",
+          ...frontCameraVideoSettings
+        },
+        audio: true
+      });
+
+      let lastError = null;
+
+      for (const constraints of constraintsToTry) {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+          break;
+        } catch (error) {
+          lastError = error;
+          cameraStream = null;
+        }
+      }
+
+      if (!cameraStream) {
+        throw lastError || new Error("Could not open the front camera.");
+      }
+
+      selectedMimeType = chooseMimeType();
+
+      els.sourceVideo.srcObject = cameraStream;
+      await els.sourceVideo.play();
+
+      els.emptyState.style.display = "none";
+      startCanvasPreview();
+    }
+
+    function startCanvasPreview() {
+      if (animationFrameId) return;
+
+      function draw() {
+        drawPortraitFrame();
+        animationFrameId = requestAnimationFrame(draw);
+      }
+
+      draw();
+    }
+
+    function stopCanvasPreview() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+
+    function drawPortraitFrame() {
+      const video = els.sourceVideo;
+      const canvas = els.portraitCanvas;
+      const ctx = canvasContext;
+
+      ctx.fillStyle = "#111827";
+      ctx.fillRect(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
+
+      if (!video.videoWidth || !video.videoHeight) return;
+
+      const sourceW = video.videoWidth;
+      const sourceH = video.videoHeight;
+
+      const outputRatio = OUTPUT_WIDTH / OUTPUT_HEIGHT;
+      const sourceRatio = sourceW / sourceH;
+
+      let cropW = sourceW;
+      let cropH = sourceH;
+
+      if (sourceRatio > outputRatio) {
+        cropH = sourceH;
+        cropW = cropH * outputRatio;
+      } else {
+        cropW = sourceW;
+        cropH = cropW / outputRatio;
+      }
+
+      cropW = cropW / ZOOM;
+      cropH = cropH / ZOOM;
+
+      const sx = Math.max(0, Math.min(sourceW - cropW, (sourceW - cropW) / 2 + sourceW * HORIZONTAL_SHIFT));
+      const sy = Math.max(0, Math.min(sourceH - cropH, (sourceH - cropH) / 2 - sourceH * VERTICAL_SHIFT));
+
+      ctx.drawImage(
+        video,
+        sx,
+        sy,
+        cropW,
+        cropH,
+        0,
+        0,
+        OUTPUT_WIDTH,
+        OUTPUT_HEIGHT
+      );
+    }
+
+    function buildRecordingStream() {
+      const canvasStream = els.portraitCanvas.captureStream(OUTPUT_FPS);
+      const audioTracks = cameraStream ? cameraStream.getAudioTracks() : [];
+
+      recordingStream = new MediaStream([
+        ...canvasStream.getVideoTracks(),
+        ...audioTracks
+      ]);
+
+      return recordingStream;
+    }
+
+
+    async function requestWakeLock() {
+      try {
+        if ("wakeLock" in navigator) {
+          wakeLock = await navigator.wakeLock.request("screen");
+
+          wakeLock.addEventListener("release", () => {
+            console.log("Screen wake lock was released.");
+          });
+
+          console.log("Screen wake lock is active.");
+        } else {
+          console.warn("Screen Wake Lock is not supported in this browser.");
+        }
+      } catch (error) {
+        console.warn("Could not activate screen wake lock:", error);
+      }
+    }
+
+    async function releaseWakeLock() {
+      try {
+        if (wakeLock) {
+          await wakeLock.release();
+          wakeLock = null;
+        }
+      } catch (error) {
+        console.warn("Could not release screen wake lock:", error);
+      }
+    }
+
+    function isRecordingOrSubmitting() {
+      return isSubmitting || (recorder && recorder.state !== "inactive");
+    }
+
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState === "visible" && isRecordingOrSubmitting()) {
+        await requestWakeLock();
+      }
+    });
+
+    async function startRecording() {
+      if (isSubmitting) return;
+
+      try {
+        await requestWakeLock();
+        await ensureCamera();
+
+        chunks = [];
+        recordedBlob = null;
+        elapsedBeforePause = 0;
+        lastDurationSeconds = 0;
+        resetProgress();
+
+        const streamToRecord = buildRecordingStream();
+
+        recorder = selectedMimeType
+          ? new MediaRecorder(streamToRecord, {
+              mimeType: selectedMimeType,
+              videoBitsPerSecond: 1050000,
+              audioBitsPerSecond: 80000
+            })
+          : new MediaRecorder(streamToRecord, {
+              videoBitsPerSecond: 1050000,
+              audioBitsPerSecond: 80000
+            });
+
+        recorder.ondataavailable = event => {
+          if (event.data && event.data.size > 0) chunks.push(event.data);
+        };
+
+        recorder.onstop = async () => {
+          recordedBlob = new Blob(chunks, { type: recorder.mimeType || selectedMimeType || "video/webm" });
+          stopTimer();
+
+          if (isSubmitting) {
+            await submitVideo();
+          }
+        };
+
+        recorder.start(1000);
+        recordingStartedAt = Date.now();
+        startTimer();
+
+        els.startBtn.disabled = true;
+        els.pauseBtn.disabled = false;
+        els.restartBtn.disabled = false;
+        els.stopSubmitBtn.disabled = false;
+
+        setStatus("Recording", "recording");
+        setMessage("Recording now. You can pause, restart, or stop and submit.", "");
+      } catch (error) {
+        console.error(error);
+        setStatus("Camera error");
+        setMessage(error.message || "Could not open camera. Check camera/microphone permissions.", "danger");
+      }
+    }
+
+    function pauseOrResume() {
+      if (!recorder || isSubmitting) return;
+
+      if (recorder.state === "recording") {
+        recorder.pause();
+        elapsedBeforePause += Date.now() - recordingStartedAt;
+        stopTimer(false);
+        els.pauseBtn.textContent = "Resume Recording";
+        setStatus("Paused");
+        setMessage("Recording paused. Tap Resume Recording to continue.", "warning");
+      } else if (recorder.state === "paused") {
+        recorder.resume();
+        recordingStartedAt = Date.now();
+        startTimer();
+        els.pauseBtn.textContent = "Pause Recording";
+        setStatus("Recording", "recording");
+        setMessage("Recording resumed.", "");
+      }
+    }
+
+    function stopAndSubmit() {
+      if (!recorder || recorder.state === "inactive" || isSubmitting) return;
+
+      isSubmitting = true;
+      els.pauseBtn.disabled = true;
+      els.restartBtn.disabled = true;
+      els.stopSubmitBtn.disabled = true;
+      setStatus("Submitting");
+      setMessage("Stopping recording and preparing upload. Please wait.", "warning");
+
+      const elapsed = elapsedBeforePause + (recordingStartedAt ? Date.now() - recordingStartedAt : 0);
+      lastDurationSeconds = Math.max(1, Math.round(elapsed / 1000));
+      recorder.stop();
+    }
+
+    async function restartRecording() {
+      if (isSubmitting) return;
+
+      if (recorder && recorder.state !== "inactive") {
+        recorder.onstop = null;
+        recorder.stop();
+      }
+
+      chunks = [];
+      recordedBlob = null;
+      elapsedBeforePause = 0;
+      lastDurationSeconds = 0;
+      isSubmitting = false;
+      stopTimer();
+      resetProgress();
+
+      els.startBtn.disabled = false;
+      els.pauseBtn.textContent = "Pause Recording";
+      els.pauseBtn.disabled = true;
+      els.restartBtn.disabled = true;
+      els.stopSubmitBtn.disabled = true;
+
+      await releaseWakeLock();
+      setStatus("Ready", "ready");
+      setMessage("Restarted. Tap Start Recording when ready.", "success");
+    }
+
+    function startTimer() {
+      els.timer.classList.add("show");
+      clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        const elapsed = elapsedBeforePause + (Date.now() - recordingStartedAt);
+        const seconds = Math.floor(elapsed / 1000);
+        lastDurationSeconds = seconds;
+        els.timer.textContent = formatTime(seconds);
+
+        if (seconds >= MAX_RECORDING_SECONDS) {
+          stopAndSubmit();
+          setMessage("Max recording time reached. Submitting now.", "warning");
+        }
+      }, 250);
+    }
+
+    function stopTimer(hide = true) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      if (hide) els.timer.classList.remove("show");
+    }
+
+    async function submitVideo() {
+      if (!recordedBlob) {
+        isSubmitting = false;
+        setMessage("No video is ready to submit yet.", "danger");
+        return;
+      }
+
+      const fileSizeMb = recordedBlob.size / 1024 / 1024;
+      if (fileSizeMb > MAX_UPLOAD_MB) {
+        isSubmitting = false;
+        els.startBtn.disabled = false;
+        setStatus("Upload too large");
+        setMessage(`This recording is ${fileSizeMb.toFixed(1)} MB. Please restart and make a shorter recording.`, "danger");
+        return;
+      }
+
+      const project = "Unassigned";
+      const name = "Unassigned";
+      const question = "Metadata to be added by Archivist";
+      const mimeType = recordedBlob.type || selectedMimeType || "video/webm";
+      const extension = extensionFromMime(mimeType);
+      const now = new Date();
+      const dateFolder = now.toISOString().slice(0, 10);
+      const stamp = now.toISOString().replace(/[:.]/g, "-");
+      const fileName = `video_confessional_portrait_1080x1920_${stamp}.${extension}`;
+
+      try {
+        setProgress(15, "Preparing upload...");
+
+        const formData = new FormData();
+        formData.append("video", recordedBlob, fileName);
+        formData.append("project", project);
+        formData.append("name", name);
+        formData.append("question", question);
+        formData.append("mimeType", mimeType);
+        formData.append("dateFolder", dateFolder);
+        formData.append("fileName", fileName);
+
+        setProgress(35, "Uploading video to Google Drive...");
+
+        const response = await fetch(WORKER_UPLOAD_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || !result || !result.ok) {
+          throw new Error(result?.error || "Google Drive upload failed.");
+        }
+
+        setProgress(78, "Saving submission record...");
+
+        const insertResult = await sb
+          .from(TABLE_NAME)
+          .insert({
+            project,
+            name,
+            question,
+            drive_file_id: result.fileId,
+            drive_file_name: result.fileName,
+            drive_web_view_link: result.webViewLink,
+            drive_folder_id: result.folderId,
+            mime_type: mimeType,
+            file_size_mb: Math.round(fileSizeMb * 100) / 100,
+            duration_seconds: Math.round(lastDurationSeconds || 0),
+            status: "New",
+            notes: `Portrait booth capture. Output canvas: 1080x1920. MVP bitrate target: 1.05Mbps. Metadata pending Archivist review. Device profile: ${IS_IPAD ? "iPad" : "desktop/other"}.`
+          });
+
+        if (insertResult.error) throw insertResult.error;
+
+        setProgress(100, "Upload complete.");
+        setStatus("Submitted", "ready");
+        setMessage("Thank you. Your video has been submitted successfully.", "success");
+
+        await releaseWakeLock();
+        setTimeout(resetForNextPerson, 3500);
+      } catch (error) {
+        console.error(error);
+        isSubmitting = false;
+        els.startBtn.disabled = false;
+        els.restartBtn.disabled = false;
+        setStatus("Upload failed");
+        setMessage(error.message || "Upload failed. Please notify the booth attendant.", "danger");
+      }
+    }
+
+    function resetForNextPerson() {
+      chunks = [];
+      recordedBlob = null;
+      elapsedBeforePause = 0;
+      lastDurationSeconds = 0;
+      isSubmitting = false;
+      stopTimer();
+      resetProgress();
+
+      els.startBtn.disabled = false;
+      els.pauseBtn.textContent = "Pause Recording";
+      els.pauseBtn.disabled = true;
+      els.restartBtn.disabled = true;
+      els.stopSubmitBtn.disabled = true;
+
+      setStatus("Ready", "ready");
+      setMessage("Ready for the next person. Tap Start Recording when ready.", "success");
+    }
+
+    els.startBtn.addEventListener("click", startRecording);
+    els.pauseBtn.addEventListener("click", pauseOrResume);
+    els.restartBtn.addEventListener("click", restartRecording);
+    els.stopSubmitBtn.addEventListener("click", stopAndSubmit);
+  </script>
+
+<script id="am-demo-close-script">
+(function(){
+  function getFallback(btn){
+    return (btn && btn.getAttribute('href')) || './index.html#work';
+  }
+  function sameSiteReferrer(){
+    if(!document.referrer) return false;
+    try{
+      var ref = new URL(document.referrer);
+      return ref.origin === window.location.origin || ref.protocol === 'file:';
+    }catch(e){
+      return false;
+    }
+  }
+  document.addEventListener('click', function(event){
+    var btn = event.target.closest && event.target.closest('[data-am-close-demo]');
+    if(!btn) return;
+    event.preventDefault();
+    var fallback = getFallback(btn);
+    if(window.opener && !window.opener.closed){
+      window.close();
+      window.setTimeout(function(){ window.location.href = fallback; }, 250);
+      return;
+    }
+    if(window.history.length > 1 && sameSiteReferrer()){
+      window.history.back();
+      return;
+    }
+    window.location.href = fallback;
+  });
+})();
+</script>
+</body>
+</html>

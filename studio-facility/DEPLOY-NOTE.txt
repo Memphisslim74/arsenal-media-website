@@ -1,0 +1,123 @@
+StudioOps v45 Clean Deploy Package
+
+This ZIP is for Cloudflare Pages upload/deployment.
+
+Included:
+- index.html
+- README.txt if present
+
+Removed:
+- supabase-schema.sql
+- supabase-clean-demo-data.sql
+- supabase-verify-no-demo-data.sql
+
+Use the separate v44 SQL files only if schema changes or cleanup are needed.
+Do not upload SQL files to Cloudflare Pages.
+
+
+v46 update:
+- Downtime module is DB-backed.
+- Requires the downtime_events table from prior schema versions.
+
+
+v47 update:
+- Preventive Maintenance / PM Templates are DB-backed.
+- Requires pm_schedules table. SQL is provided separately, not inside deploy ZIP.
+
+
+v48 update:
+- Fixed startup hydration for all converted DB-backed modules.
+- Downtime is now explicitly loaded on every app start/refresh.
+- Meters and PM Schedules are also explicitly loaded on every app start/refresh.
+- Deploy ZIP contains no SQL files.
+
+
+v49 update:
+- Renamed sidebar item from Procedures to Preventive Maintenance so the PM module is easier to find.
+- No SQL files included.
+
+
+v50 update:
+- All Team is DB-backed.
+- Requires team_members table. SQL is provided separately.
+
+
+v51 update:
+- Fixed All Team refresh/reload persistence.
+- Startup loader explicitly includes team_members.
+- Direct refresh on #team also hydrates Team if it has not loaded yet.
+- No SQL files included.
+
+
+v52 update:
+- Removed fallback demo asset records from the app file.
+- Removed old demo work order comments.
+- Removed hardcoded Stage A daily walk default.
+- Replaced daily walk sample checklist copy with generic operational checklist language.
+- No SQL files included.
+
+
+v54 update:
+- Rolled back to v52 working build.
+- Safely hid the Meters sidebar item only.
+- Did not remove underlying Meters code to avoid breaking app syntax.
+- No SQL files included.
+
+
+v55 update:
+- Added Work Order Activity Hub.
+- Activity supports comments and multi-file uploads.
+- Attachments appear inline in activity and in a separate Attachments section.
+- Requires separate Work Order Activity SQL and Storage bucket setup.
+
+
+v56 update:
+- Fixed malformed Work Order desktop layout.
+- Left content and right sidebar now sit in the same detail grid again.
+- Activity Hub stays in the main content column.
+- Operational Snapshot / Time / Costs now sit in a proper right sidebar on desktop.
+- Mobile still stacks cleanly.
+
+
+v57 update:
+- Reporting is no longer hardcoded demo data.
+- Reports now calculate from the DB-backed module state currently loaded in the app.
+- Added Team Load Report.
+- No SQL files included.
+
+
+v59 update:
+- Rolled back to the working v57 codebase.
+- Applied only targeted visible copy cleanup.
+- Avoided global replacements so code/config strings are not touched.
+- No SQL files included.
+
+
+v60 update:
+- Fixed missing cycleStatus function.
+- Work Order detail Update Status button now cycles Open -> In Progress -> Waiting on Vendor -> Completed.
+- Status changes save to Supabase and log to Activity Hub when available.
+- No SQL files included.
+
+
+v62 update:
+- Added Work Order view selector with Status List, Priority List, Location List, Calendar View, Table View, Board View, PM List, and PM Calendar.
+- Board View supports drag/drop status changes.
+- Calendar View supports drag/drop due date changes.
+- Calendar due date changes save to existing work_orders.due_text.
+- No SQL files included.
+
+
+v63 update:
+- Softened the Work Order views dropdown with a lighter translucent background.
+- Improved mobile responsiveness for the view selector and toolbar.
+- View menu now becomes full-width on small screens and scrolls if needed.
+- Selecting a view now closes the menu automatically.
+- No SQL files included.
+
+
+v64 update:
+- Added Week / Month toggle to Work Order Calendar View and PM Calendar View.
+- Calendar navigation now moves by week when in Week mode and by month when in Month mode.
+- Week/Month selection is remembered locally.
+- No SQL files included.
