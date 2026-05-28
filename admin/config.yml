@@ -1,14 +1,7 @@
-# Arsenal Media Blog CMS configuration
-# IMPORTANT:
-# 1. Replace YOUR-GITHUB-USERNAME with your GitHub username or organization.
-# 2. Replace YOUR-AUTH-WORKER-URL after we set up the free Cloudflare Worker login.
-# 3. Until those are replaced, /admin/ will load but login will not work yet.
-
 backend:
   name: github
-  repo: YOUR-GITHUB-USERNAME/arsenal-media-website
+  repo: Memphisslim74/arsenal-media-website
   branch: main
-  base_url: YOUR-AUTH-WORKER-URL
 
 media_folder: "uploads/blog"
 public_folder: "/uploads/blog"
@@ -50,6 +43,7 @@ collections:
         name: "seo_title"
         widget: "string"
         required: false
+        hint: "Keep it close to 55-60 characters when possible."
       - label: "SEO Description"
         name: "seo_description"
         widget: "text"
