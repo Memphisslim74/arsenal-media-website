@@ -1,0 +1,72 @@
+# Arsenal Media Blog CMS configuration
+# IMPORTANT:
+# 1. Replace YOUR-GITHUB-USERNAME with your GitHub username or organization.
+# 2. Replace YOUR-AUTH-WORKER-URL after we set up the free Cloudflare Worker login.
+# 3. Until those are replaced, /admin/ will load but login will not work yet.
+
+backend:
+  name: github
+  repo: YOUR-GITHUB-USERNAME/arsenal-media-website
+  branch: main
+  base_url: YOUR-AUTH-WORKER-URL
+
+media_folder: "uploads/blog"
+public_folder: "/uploads/blog"
+
+collections:
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "content/blog"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - label: "Title"
+        name: "title"
+        widget: "string"
+      - label: "Slug"
+        name: "slug"
+        widget: "string"
+        hint: "Example: custom-software-for-contractors"
+      - label: "Publish Date"
+        name: "date"
+        widget: "datetime"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: "Author"
+        name: "author"
+        widget: "string"
+        default: "Steve Smith"
+      - label: "Featured Image"
+        name: "featured_image"
+        widget: "image"
+        required: false
+      - label: "Image Alt Text"
+        name: "image_alt"
+        widget: "string"
+        required: false
+      - label: "SEO Title"
+        name: "seo_title"
+        widget: "string"
+        required: false
+      - label: "SEO Description"
+        name: "seo_description"
+        widget: "text"
+        required: false
+        hint: "Keep this under 160 characters."
+      - label: "Excerpt"
+        name: "excerpt"
+        widget: "text"
+        required: false
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+      - label: "Draft"
+        name: "draft"
+        widget: "boolean"
+        default: false
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
