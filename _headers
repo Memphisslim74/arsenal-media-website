@@ -1,7 +1,6 @@
 /*
   X-Robots-Tag: index, follow
   X-Frame-Options: SAMEORIGIN
-  X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -11,19 +10,27 @@
   Content-Type: text/html; charset=utf-8
   Cache-Control: public, max-age=300, must-revalidate
 
-/assets/css/*
+/*.css
   Content-Type: text/css; charset=utf-8
   Cache-Control: public, max-age=300, must-revalidate
 
-/css/*
+/css/*.css
   Content-Type: text/css; charset=utf-8
   Cache-Control: public, max-age=300, must-revalidate
 
-/assets/js/*
+/assets/css/*.css
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=300, must-revalidate
+
+/*.js
   Content-Type: application/javascript; charset=utf-8
   Cache-Control: public, max-age=31536000, immutable
 
-/js/*
+/js/*.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/*.js
   Content-Type: application/javascript; charset=utf-8
   Cache-Control: public, max-age=31536000, immutable
 

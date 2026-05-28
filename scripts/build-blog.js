@@ -5,6 +5,17 @@ const root = process.cwd();
 const postsDir = path.join(root, "content", "blog");
 const blogDir = path.join(root, "blog");
 
+function readCss(relativePath) {
+  try {
+    return fs.readFileSync(path.join(root, relativePath), "utf8").replace(/<\/style>/gi, "<\\/style>");
+  } catch (error) {
+    return "";
+  }
+}
+
+const inlineMainCss = readCss("assets/css/style-v8.css");
+const inlineBlogCss = readCss("assets/css/blog.css");
+
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
@@ -155,8 +166,12 @@ function siteHead({ title, description, canonical, type = "website", image = "/a
 <meta content="${escapeHtml(title)}" name="twitter:title"/>
 <meta content="${escapeHtml(description)}" name="twitter:description"/>
 <meta content="${escapeHtml(fullImage)}" name="twitter:image"/>
-<link href="/assets/css/style-v8.css?v=9" rel="stylesheet"/>
-<link href="/assets/css/blog.css?v=1" rel="stylesheet"/>
+<link href="/assets/css/style-v8.css?v=14" rel="stylesheet"/>
+<link href="/css/style-v8.css?v=14" rel="stylesheet"/>
+<link href="/assets/css/blog.css?v=14" rel="stylesheet"/>
+<link href="/css/blog.css?v=14" rel="stylesheet"/>
+${inlineMainCss ? `<style id="am-inline-style-v8">${inlineMainCss}</style>` : ""}
+${inlineBlogCss ? `<style id="am-inline-blog-css">${inlineBlogCss}</style>` : ""}
 </head>`;
 }
 
@@ -164,7 +179,7 @@ function siteHeader(active = "blog") {
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="siteHeader">
   <div class="container nav">
-    <a aria-label="Arsenal Media home" class="brand" href="/"><img alt="Arsenal Media" src="/assets/images/arsenal-logo-white.png"/></a>
+    <a aria-label="Arsenal Media home" class="brand" href="/"><img alt="Arsenal Media" src="/assets/arsenal-command-logo.webp"/></a>
     <button aria-expanded="false" class="menuBtn" data-menu="">Menu</button>
     <nav aria-label="Main navigation" class="navLinks" data-nav="">
       <a class="${active === "home" ? "active" : ""}" href="/">Home</a>
@@ -184,7 +199,7 @@ function siteFooter() {
 <footer class="footer">
   <div class="container footerGrid">
     <div>
-      <div class="footerBrand"><img alt="Arsenal Media logo" src="/assets/images/arsenal-logo-white.png"/></div>
+      <div class="footerBrand"><img alt="Arsenal Media logo" src="/assets/arsenal-command-logo.webp"/></div>
       <p>Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for service businesses in Waxahachie and across the Dallas-Fort Worth Metroplex.</p>
       <p class="footerSmall">From Dallas, Fort Worth, Plano, Arlington, Irving, Richardson, Frisco, and McKinney to teams in Ellis County, Dallas County, Tarrant County, and Collin County, we help North Texas contractors turn messy workflows into cleaner systems.</p>
       <p class="footerSmall"><a href="/contact.html">Need a practical app or website in the DFW area? Start a project.</a></p>
@@ -262,7 +277,7 @@ ${JSON.stringify({
     "description": description,
     "image": image.startsWith("http") ? image : `https://arsenalmediaco.com${image}`,
     "author": { "@type": "Person", "name": author },
-    "publisher": { "@type": "Organization", "name": "Arsenal Media", "logo": { "@type": "ImageObject", "url": "https://arsenalmediaco.com/assets/images/arsenal-logo-white.png" } },
+    "publisher": { "@type": "Organization", "name": "Arsenal Media", "logo": { "@type": "ImageObject", "url": "https://arsenalmediaco.com/assets/arsenal-command-logo.webp" } },
     "datePublished": displayDate,
     "dateModified": displayDate,
     "mainEntityOfPage": canonical
