@@ -15,23 +15,6 @@ draft: false
 
 # What Is a Facility Management Dashboard? A Better Way to Manage Work Orders, Assets, and Maintenance
 
-**Meta title:** Facility Management Dashboard for Work Orders, Assets & Maintenance
-
-**Meta description:** A facility management dashboard helps teams manage work orders, assets, vendors, preventive maintenance, inventory, and daily operations from one central command center.
-
-**Suggested URL slug:**
-`/blog/facility-management-dashboard`
-
-**Image alt text ideas:**
-
-1. Facility management dashboard showing work orders, assets, and maintenance tasks
-2. Studio Facility Commander work order dashboard for facility operations
-3. Facility operations dashboard for asset tracking and preventive maintenance
-4. Maintenance management dashboard for facility managers and operations teams
-5. Cloud-based facility management software for work orders and asset tracking
-
-## Introduction
-
 Facility operations can get messy fast.
 
 A repair request comes in by text. A vendor update is buried in email. A maintenance task lives in a spreadsheet. Inventory is tracked in one place, asset details are stored somewhere else, and nobody is completely sure which work orders are overdue until someone starts asking around.
