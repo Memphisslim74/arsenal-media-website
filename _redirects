@@ -2,6 +2,8 @@
 /index.html / 301
 /services /services/ 301
 /portfolio /portfolio/ 301
+/about /about/ 301
+/about.html /about/ 301
 /contact/ /contact.html 301
 
 # Clean service page canonicals
@@ -57,9 +59,6 @@
 /security-demo /security-operations-platform-demo.html 301
 /portfolio/studio /portfolio/studio-facility/ 301
 /portfolio/video /portfolio/video-confessional/ 301
-
-# Hash redirects like /index.html#services cannot be handled by Cloudflare _redirects because browsers do not send fragments to the server.
-# assets/js/main.js handles legacy home hash links for services, portfolio/work, and contact on the client.
 
 # Blog clean URL helpers
 /blog.html /blog/ 301
