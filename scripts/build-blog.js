@@ -200,9 +200,9 @@ function siteFooter() {
   <div class="container footerGrid">
     <div>
       <div class="footerBrand"><img alt="Arsenal Media logo" src="/assets/arsenal-command-logo.webp"/></div>
-      <p>Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for service businesses in Waxahachie and across the Dallas-Fort Worth Metroplex.</p>
-      <p class="footerSmall">From Dallas, Fort Worth, Plano, Arlington, Irving, Richardson, Frisco, and McKinney to teams in Ellis County, Dallas County, Tarrant County, and Collin County, we help North Texas contractors turn messy workflows into cleaner systems.</p>
-      <p class="footerSmall"><a href="/contact.html">Need a practical app or website in the DFW area? Start a project.</a></p>
+      <p>Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for service businesses in Fort Collins and across the Northern Colorado Front Range.</p>
+      <p class="footerSmall">From Fort Collins, Loveland, Windsor, Greeley, Longmont, Boulder, and Denver to teams in Larimer County, Weld County, Boulder County, and the surrounding Front Range counties, we help Northern Colorado contractors turn messy workflows into cleaner systems.</p>
+      <p class="footerSmall"><a href="/contact.html">Need a practical app or website in the Northern Colorado? Start a project.</a></p>
     </div>
     <div class="footerLinks">
       <a href="/services/">Services</a>

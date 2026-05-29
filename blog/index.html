@@ -1,721 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Blog | Arsenal Media</title>
-<meta content="Articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media." name="description"/>
-<meta content="index, follow, max-image-preview:large" name="robots"/>
-<meta content="Arsenal Media" name="author"/>
-<link href="https://arsenalmediaco.com/blog/" rel="canonical"/>
-<meta content="Blog | Arsenal Media" property="og:title"/>
-<meta content="Articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media." property="og:description"/>
-<meta content="website" property="og:type"/>
-<meta content="https://arsenalmediaco.com/blog/" property="og:url"/>
-<meta content="Arsenal Media" property="og:site_name"/>
-<meta content="https://arsenalmediaco.com/assets/images/og/home.jpg" property="og:image"/>
-<meta content="summary_large_image" name="twitter:card"/>
-<meta content="Blog | Arsenal Media" name="twitter:title"/>
-<meta content="Articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media." name="twitter:description"/>
-<meta content="https://arsenalmediaco.com/assets/images/og/home.jpg" name="twitter:image"/>
-<link href="/assets/css/style-v8.css?v=9" rel="stylesheet"/>
-<link href="/assets/css/blog.css?v=1" rel="stylesheet"/>
-
-
-<style id="am-inline-style-v8">
-
-:root{
-  --black:#07080b;--ink:#15171c;--text:#272b33;--muted:#69707d;--soft:#f6f4f1;--soft2:#eeebe6;--line:#e4ded6;--white:#fff;
-  --red:#d71920;--red2:#b11118;--blue:#0f5bd8;--clay:#ccb5a7;--gold:#d7a856;--green:#2e7d4f;
-  --shadow:0 18px 42px rgba(15,17,22,.10);--shadow2:0 8px 24px rgba(15,17,22,.08);--radius:18px;--radius2:10px;--max:1180px;
-}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--soft);line-height:1.6;overflow-x:hidden}a{color:inherit}img{max-width:100%;display:block}.container{width:min(var(--max),calc(100% - 40px));margin:0 auto}.skip{position:absolute;left:-999px;top:auto}.skip:focus{left:18px;top:14px;background:#fff;color:#000;z-index:9999;padding:10px 14px;border-radius:10px}.siteHeader{background:rgba(7,8,11,.96);position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;text-decoration:none;min-width:220px}.brand img{width:232px;height:auto}.navLinks{display:flex;align-items:center;gap:4px}.navLinks a{color:#eef0f5;text-decoration:none;font-size:14px;font-weight:750;padding:10px 12px;border-radius:999px}.navLinks a:hover,.navLinks a.active{background:rgba(255,255,255,.1)}.navCta{background:var(--red)!important;color:#fff!important;margin-left:8px}.menuBtn{display:none;background:#15171c;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:10px 14px;font-weight:800}.hero{background:linear-gradient(135deg,#fff 0%,#f7f4ef 46%,#ece8e1 100%);border-bottom:1px solid var(--line);position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:auto -10% -32% auto;width:54%;height:76%;background:linear-gradient(135deg,rgba(215,25,32,.16),rgba(15,91,216,.08));transform:skewX(-14deg);border-left:14px solid rgba(215,25,32,.9)}.heroGrid{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center;padding:76px 0}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--red2);font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.eyebrow:before{content:"";width:26px;height:3px;background:var(--red);display:block}.hero h1,.pageHero h1{font-size:clamp(34px,5vw,64px);line-height:1.02;letter-spacing:-.045em;margin:12px 0 18px;color:var(--ink)}.hero h1 span{color:var(--red)}.lede{font-size:clamp(17px,2vw,21px);color:#505762;margin:0 0 28px;max-width:760px}.heroActions,.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:999px;border:1px solid transparent;text-decoration:none;font-weight:900;font-size:14px;cursor:pointer;transition:.18s ease}.btn.primary{background:var(--red);color:#fff;box-shadow:0 14px 22px rgba(215,25,32,.22)}.btn.primary:hover{background:var(--red2);transform:translateY(-1px)}.btn.secondary{background:#fff;color:var(--ink);border-color:#ddd5cc}.btn.dark{background:var(--ink);color:#fff}.heroVisual{background:#0d0f14;border-radius:28px;padding:18px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.06);position:relative}.heroVisual:before{content:"Featured app";position:absolute;top:18px;right:18px;background:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.12em;font-weight:900;font-size:11px;padding:8px 12px;border-radius:999px;z-index:2}.heroVisual img{border-radius:18px;width:100%;aspect-ratio:1.35/1;object-fit:cover}.statRow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.stat{background:#fff;border-radius:14px;padding:14px;border:1px solid var(--line)}.stat b{font-size:22px;color:var(--ink);display:block;line-height:1}.stat span{font-size:12px;color:var(--muted);font-weight:800}.section{padding:74px 0}.section.white{background:#fff}.section.dark{background:var(--ink);color:#fff}.sectionHeader{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}.sectionHeader h2{font-size:clamp(28px,4vw,44px);line-height:1.08;letter-spacing:-.035em;margin:0;color:inherit}.sectionHeader p{margin:0;color:var(--muted);max-width:620px}.dark .sectionHeader p,.dark p{color:#c8ced8}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.02)}.card.pad{padding:24px}.card h3{font-size:22px;line-height:1.15;margin:12px 0 10px;color:var(--ink);letter-spacing:-.02em}.card p{color:var(--muted);margin:0 0 18px}.card:hover{box-shadow:var(--shadow2);transform:translateY(-2px);transition:.18s ease}.dark .card{background:#11141b;border-color:#282d38}.dark .card h3{color:#fff}.tag{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900;background:#f0ede7;color:#3d424a}.tag.red{background:#fff0f0;color:#b11118}.tag.blue{background:#edf4ff;color:#0f5bd8}.tag.green{background:#eaf6ef;color:#2e7d4f}.tag.gold{background:#fff6df;color:#8a5d00}.featureCard img,.workCard img{width:100%;aspect-ratio:16/10;object-fit:cover;background:#111}.workCard .body,.featureCard .body{padding:22px}.featureCard.large{display:grid;grid-template-columns:1.15fr .85fr;align-items:stretch}.featureCard.large img{height:100%;aspect-ratio:auto}.bullets{display:grid;gap:10px;margin:18px 0}.bullet{display:flex;gap:10px;align-items:flex-start;color:#4c535e;font-weight:700}.bullet:before{content:"";width:9px;height:9px;background:var(--red);border-radius:50%;margin-top:8px;flex:none}.strip{background:#0b0d12;color:#fff;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}.stripGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px}.stripItem{padding:22px 16px;background:rgba(255,255,255,.04)}.stripItem b{display:block;font-size:25px;line-height:1;color:#fff}.stripItem span{font-size:13px;color:#c7cdd7;font-weight:800}.pageHero{background:linear-gradient(135deg,#fff,#f2eee8);border-bottom:1px solid var(--line);padding:62px 0}.pageHero h1{max-width:920px}.breadcrumb{font-size:13px;font-weight:800;color:var(--muted);margin-bottom:16px}.breadcrumb a{color:var(--red2);text-decoration:none}.contentBand{background:#fff;border-block:1px solid var(--line);padding:34px 0}.twoCol{display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;align-items:start}.miniList{display:grid;gap:14px}.miniItem{display:flex;gap:14px;align-items:flex-start}.miniIcon{width:42px;height:42px;border-radius:12px;background:#111;color:#fff;display:grid;place-items:center;font-weight:950;flex:none}.miniItem b{display:block;color:var(--ink)}.miniItem span{display:block;color:var(--muted);font-size:14px}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px;border:1px solid var(--line)}.imageWall{display:grid;grid-template-columns:1fr 1fr;gap:12px}.imageWall img{border-radius:16px;border:1px solid var(--line);aspect-ratio:16/10;object-fit:cover}.contactBox{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow2)}.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field.full{grid-column:1/-1}.field label{display:block;font-weight:900;font-size:13px;margin-bottom:6px;color:var(--ink)}input,select,textarea{width:100%;border:1px solid #d9d2c8;border-radius:12px;padding:12px 13px;font:inherit;background:#fff;color:var(--ink)}textarea{min-height:130px;resize:vertical}.checkGrid{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}.checkPill{background:#f7f4ef;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:850;color:#464c55}.fullWidth{grid-column:1/-1}.footer{background:#07080b;color:#d6dbe4;padding:46px 0 24px}.footerGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:38px}.footerBrand img{width:260px;margin-bottom:12px}.footer a{color:#f7f8fb;text-decoration:none}.footerLinks{display:grid;grid-template-columns:1fr 1fr;gap:10px}.subfooter{border-top:1px solid rgba(255,255,255,.1);margin-top:28px;padding-top:18px;color:#9aa2b1;font-size:13px}.mobileCta{display:none}.note{font-size:13px;color:var(--muted);font-weight:750}.accentBox{background:linear-gradient(135deg,#11141b,#242936);color:#fff;border-radius:var(--radius);padding:28px;position:relative;overflow:hidden}.accentBox:after{content:"";position:absolute;right:-38px;top:-30px;width:160px;height:160px;background:var(--red);transform:rotate(19deg);opacity:.9}.accentBox>*{position:relative;z-index:1}.accentBox h2{margin:0 0 8px;font-size:30px;line-height:1.1}.accentBox p{color:#d6dbe4}.kicker{font-size:14px;font-weight:900;color:var(--red2);text-transform:uppercase;letter-spacing:.1em}.serviceNav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.serviceNav a{background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:999px;font-weight:850;text-decoration:none;font-size:13px}.serviceNav a:hover{border-color:var(--red);color:var(--red2)}.logoProof{background:#07080b;border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,.1);box-shadow:var(--shadow)}.logoProof img{width:min(100%,440px);height:auto}.pageActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.quote{font-size:22px;line-height:1.4;color:#3b4048;border-left:4px solid var(--red);padding-left:18px;margin:0}.demoRibbon{display:inline-flex;background:#111;color:#fff;border-radius:999px;padding:7px 10px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
-@media(max-width:900px){.menuBtn{display:inline-flex}.nav{height:auto;min-height:74px}.brand img{width:210px}.navLinks{position:absolute;left:20px;right:20px;top:76px;display:none;flex-direction:column;background:#0d0f14;border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:12px;align-items:stretch}.navLinks.open{display:flex}.navLinks a{border-radius:12px}.heroGrid,.twoCol,.featureCard.large,.footerGrid{grid-template-columns:1fr}.heroGrid{padding:52px 0}.heroVisual:before{font-size:10px}.grid3,.grid2{grid-template-columns:1fr}.sectionHeader{display:block}.sectionHeader h2{margin-bottom:10px}.stripGrid{grid-template-columns:repeat(2,1fr)}.gallery{grid-template-columns:1fr 1fr}.formGrid{grid-template-columns:1fr}.mobileCta{display:block;position:fixed;bottom:14px;left:14px;right:14px;z-index:60}.mobileCta .btn{width:100%;box-shadow:0 12px 30px rgba(0,0,0,.2)}body{padding-bottom:76px}.footerLinks{grid-template-columns:1fr}.section{padding:54px 0}.pageHero{padding:44px 0}}
-@media(max-width:560px){.container{width:min(100% - 28px,var(--max))}.brand{min-width:auto}.brand img{width:185px}.hero h1,.pageHero h1{font-size:36px}.heroVisual{border-radius:20px;padding:10px}.heroVisual img{border-radius:14px}.statRow{grid-template-columns:1fr}.stripGrid,.gallery,.imageWall{grid-template-columns:1fr}.card.pad,.contactBox{padding:18px}.navLinks{left:14px;right:14px}.footerBrand img{width:220px}}
-
-
-/* v4 content, demos, and case study additions */
-.storyGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:start}.contentPanel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow2)}.contentPanel h2,.contentPanel h3{margin-top:0;color:var(--ink)}.contentPanel p{color:#4d5562}.contentPanel ul{padding-left:20px;margin:12px 0}.contentPanel li{margin:8px 0;color:#4d5562}.caseMeta{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.caseMeta div{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px}.caseMeta b{display:block;color:var(--ink);font-size:13px}.caseMeta span{font-size:13px;color:var(--muted);font-weight:750}.demoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.demoCard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow2)}.demoCard img{width:100%;aspect-ratio:16/10;object-fit:cover;background:#111}.demoCard .body{padding:20px}.demoCard h3{margin:0 0 8px;color:var(--ink)}.demoCard p{color:#59616d;font-size:14px;margin-bottom:16px}.miniGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.miniCard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.miniCard b{display:block;color:var(--ink);margin-bottom:6px}.miniCard span{font-size:13px;color:var(--muted);font-weight:750}.screenshotBand{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.screenshotBand img{aspect-ratio:16/10;object-fit:cover;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow2)}.seoCopy{columns:2;column-gap:34px}.seoCopy p{break-inside:avoid;color:#4d5562}.demoLaunch{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.calloutList{display:grid;gap:12px}.calloutList div{border-left:4px solid var(--red);background:#fff;padding:14px 16px;border-radius:0 12px 12px 0;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.caseBadge{display:inline-flex;align-items:center;gap:8px;background:#111;color:#fff;border-radius:999px;padding:7px 11px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em}.footerSmall{font-size:13px;color:#9aa2b1!important}.curbDemoHero{min-height:76vh;background:linear-gradient(110deg,rgba(0,0,0,.58),rgba(0,0,0,.18)),var(--curb-bg);background-size:cover;background-position:center;display:grid;align-items:center;color:#fff}.curbDemoHero h1{font-size:clamp(38px,6vw,70px);line-height:.98;margin:10px 0 16px}.curbDemoHero p{max-width:700px;font-size:19px;color:#f0f2f5}.curbServices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.curbService{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}.curbService h3{margin-top:0}.stickyDemoClose{position:fixed;right:16px;top:16px;z-index:200;background:#111;color:#fff;text-decoration:none;border-radius:999px;padding:10px 14px;font-weight:900;box-shadow:0 16px 36px rgba(0,0,0,.28)}
-@media(max-width:900px){.storyGrid,.demoGrid,.miniGrid,.screenshotBand,.curbServices{grid-template-columns:1fr}.seoCopy{columns:1}.caseMeta{grid-template-columns:1fr}}
-
-/* v5 professional spacing and layout polish */
-body{background:#f5f3ef;color:#262b33;}
-.siteHeader{box-shadow:0 1px 0 rgba(255,255,255,.06),0 12px 24px rgba(0,0,0,.08);}
-.brand img{max-height:54px;object-fit:contain;}
-.heroGrid{padding:92px 0 88px;gap:58px;}
-.hero h1,.pageHero h1{letter-spacing:-.035em;}
-.lede{line-height:1.72;}
-.heroActions,.actions,.pageActions{gap:14px;}
-.btn{min-height:46px;padding:13px 20px;}
-.btn.secondary:hover{border-color:#c7bfb5;background:#f8f6f1;transform:translateY(-1px);}
-.section{padding:92px 0;}
-.section.white{background:#fff;}
-.section + .section{border-top:1px solid rgba(228,222,214,.72);}
-.sectionHeader{align-items:flex-start;margin-bottom:42px;gap:36px;}
-.sectionHeader h2{max-width:760px;font-size:clamp(30px,3.25vw,42px);line-height:1.13;letter-spacing:-.028em;}
-.sectionHeader p{font-size:16px;line-height:1.75;max-width:560px;}
-.sectionHeader.centered{display:block;text-align:center;max-width:820px;margin-left:auto;margin-right:auto;}
-.sectionHeader.centered h2{margin-left:auto;margin-right:auto;}
-.sectionHeader.centered p{margin:14px auto 0;}
-.kicker{display:inline-block;margin-bottom:10px;}
-.grid3,.grid2,.demoGrid,.portfolio-grid{gap:28px;}
-.card,.demoCard,.contentPanel,.contactBox{box-shadow:0 12px 32px rgba(15,17,22,.055);}
-.card{border-color:#e5ded4;}
-.card.pad{padding:30px;}
-.card .body{padding:24px;}
-.card .body h3,.demoCard h3{margin-top:0;}
-.card p,.demoCard p,.contentPanel p{line-height:1.72;}
-.featureCard.large{grid-template-columns:1.05fr .95fr;}
-.featureCard.large .body{padding:34px;}
-.featureCard.large img{min-height:460px;object-fit:cover;}
-.demoGrid{align-items:stretch;}
-.demoCard{display:flex;flex-direction:column;}
-.demoCard .body{padding:24px;display:flex;flex-direction:column;flex:1;}
-.demoCard .body .btn{margin-top:auto;align-self:flex-start;}
-.demoCard img{height:auto;}
-.stripItem{padding:28px 22px;}
-.stripItem b{font-size:24px;margin-bottom:6px;}
-.accentBox{background:linear-gradient(135deg,#10131a 0%,#1c2230 65%,#242936 100%);padding:38px;border-radius:24px;box-shadow:0 22px 52px rgba(15,17,22,.14);}
-.accentBox:after{right:-80px;top:-82px;width:230px;height:230px;border-radius:50%;transform:none;opacity:.16;background:radial-gradient(circle at center,var(--red),transparent 68%);}
-.accentBox h2{font-size:clamp(28px,3vw,38px);line-height:1.16;margin-bottom:12px;}
-.accentBox p{font-size:16px;line-height:1.75;margin-bottom:24px;max-width:780px;}
-.processSection{background:linear-gradient(180deg,#fff 0%,#faf8f4 100%);}
-.processGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.processCard{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 14px 34px rgba(15,17,22,.06);position:relative;overflow:hidden;}
-.processCard:before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--red),var(--blue));}
-.stepNum{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:#10131a;color:#fff;font-weight:950;font-size:13px;margin-bottom:22px;}
-.processCard h3{font-size:22px;line-height:1.18;margin:0 0 12px;color:var(--ink);letter-spacing:-.02em;}
-.processCard p{margin:0;color:#59616d;line-height:1.72;}
-.finalCtaSection{background:#0b0d12;color:#fff;padding:88px 0;}
-.finalCtaPanel{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;background:linear-gradient(135deg,#111722,#171d28 48%,#261216 100%);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:44px;box-shadow:0 24px 70px rgba(0,0,0,.28);position:relative;overflow:hidden;}
-.finalCtaPanel:before{content:"";position:absolute;right:-90px;top:-90px;width:260px;height:260px;border-radius:50%;background:rgba(215,25,32,.24);}
-.finalCtaPanel>*{position:relative;z-index:1;}
-.finalCtaPanel h2{font-size:clamp(30px,3.4vw,44px);line-height:1.12;margin:0 0 14px;color:#fff;letter-spacing:-.028em;}
-.finalCtaPanel p{margin:0;color:#d6dbe4;line-height:1.75;max-width:730px;}
-.kicker.light{color:#ffb4b8;}
-.finalCtaActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end;}
-.btn.ghostLight{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.22);}
-.btn.ghostLight:hover{background:rgba(255,255,255,.13);}
-.footer{padding:56px 0 26px;background:linear-gradient(180deg,#08090d 0%,#050609 100%);}
-.footerGrid{grid-template-columns:1fr 1fr;align-items:start;}
-.footer p{max-width:620px;line-height:1.75;color:#c5cbd6;}
-.footerLinks{gap:12px 18px;align-content:start;}
-.footerLinks a{font-size:14px;color:#eef0f5;opacity:.92;}
-.footerLinks a:hover{color:#fff;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:4px;}
-.subfooter{margin-top:34px;padding-top:22px;}
-.logoProof{border-radius:24px;padding:34px;}
-.logoProof img{margin:auto;}
-@media(max-width:1000px){
-  .heroGrid{gap:36px;}
-  .featureCard.large img{min-height:360px;}
-  .finalCtaPanel{grid-template-columns:1fr;}
-  .finalCtaActions{justify-content:flex-start;}
-}
-@media(max-width:900px){
-  .section{padding:68px 0;}
-  .sectionHeader{display:block;margin-bottom:32px;}
-  .sectionHeader p{margin-top:14px;}
-  .processGrid{grid-template-columns:1fr;}
-  .heroGrid{padding:58px 0;}
-  .featureCard.large .body{padding:26px;}
-  .finalCtaSection{padding:64px 0;}
-  .finalCtaPanel{padding:30px;}
-}
-@media(max-width:560px){
-  .container{width:min(100% - 30px,var(--max));}
-  .section{padding:54px 0;}
-  .heroGrid{padding:48px 0;}
-  .hero h1,.pageHero h1{font-size:34px;}
-  .grid3,.grid2,.demoGrid{gap:18px;}
-  .card.pad,.card .body,.demoCard .body,.processCard,.contentPanel,.contactBox{padding:22px;}
-  .finalCtaPanel{border-radius:22px;padding:24px;}
-  .finalCtaActions .btn,.heroActions .btn,.pageActions .btn{width:100%;}
-  .footerGrid{gap:26px;}
-}
-
-
-/* v6 case study polish */
-.caseHero{background:linear-gradient(135deg,#fff 0%,#f7f4ef 55%,#ece8e1 100%);border-bottom:1px solid var(--line)}
-.caseHeroGrid{display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center;padding:70px 0}.caseHero h1{font-size:clamp(34px,5vw,60px);line-height:1.02;letter-spacing:-.045em;margin:12px 0 18px;color:var(--ink)}.caseHero .lede{max-width:780px}.caseHeroVisual{background:#fff;border:1px solid var(--line);border-radius:28px;padding:14px;box-shadow:var(--shadow);overflow:hidden}.caseHeroVisual img{width:100%;border-radius:18px;aspect-ratio:16/10;object-fit:cover}.caseMetaGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:24px}.caseMeta{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.caseMeta span{display:block;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.caseMeta strong{display:block;color:var(--ink);font-size:16px;margin-top:5px}.caseStudyBody{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:34px;align-items:start}.caseSection{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:var(--shadow2);margin-bottom:22px}.caseSection h2{font-size:clamp(25px,3vw,38px);letter-spacing:-.035em;line-height:1.08;margin:0 0 12px}.caseSection h3{font-size:20px;letter-spacing:-.02em;margin:24px 0 8px}.caseSection p{color:#4d535d;margin:0 0 14px}.featureList{display:grid;gap:10px;margin:18px 0}.featureItem{display:grid;grid-template-columns:28px 1fr;gap:11px;align-items:start;color:#383d46}.featureItem:before{content:'✓';width:24px;height:24px;border-radius:50%;background:rgba(215,25,32,.10);color:var(--red);font-weight:1000;display:grid;place-items:center;font-size:13px}.statGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}.caseStat{background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:18px}.caseStat strong{display:block;font-size:26px;color:var(--ink);line-height:1}.caseStat span{display:block;color:var(--muted);font-size:13px;margin-top:8px}.caseAside{position:sticky;top:96px}.asideCard{background:#11151b;color:#fff;border-radius:24px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}.asideCard h3{margin:0 0 10px;color:#fff}.asideCard p{color:#d9dce2}.asideCard .btn{width:100%;margin-top:10px}.caseGallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}.caseGallery img{border-radius:20px;border:1px solid var(--line);box-shadow:var(--shadow2);aspect-ratio:16/10;object-fit:cover;background:#fff}.processList{counter-reset:step;display:grid;gap:14px}.processItem{counter-increment:step;background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:18px 18px 18px 58px;position:relative}.processItem:before{content:counter(step);position:absolute;left:18px;top:18px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:1000;font-size:13px}.caseFooterCta{background:linear-gradient(135deg,#11151b,#252a32);color:#fff;border-radius:28px;padding:34px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}.caseFooterCta h2{color:#fff;margin:0 0 8px}.caseFooterCta p{color:#d9dce2;margin:0}@media(max-width:980px){.caseHeroGrid,.caseStudyBody{grid-template-columns:1fr}.caseAside{position:relative;top:auto}.caseMetaGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.caseFooterCta{grid-template-columns:1fr}}@media(max-width:680px){.caseMetaGrid,.statGrid,.caseGallery{grid-template-columns:1fr}.caseHeroGrid{padding:48px 0}.caseSection{padding:22px}.caseFooterCta{padding:24px}}
-
-
-/* v7 professional case study layout polish */
-.caseStudyPage .caseHero{
-  background:linear-gradient(135deg,#fff 0%,#f8f5ef 58%,#ece7df 100%);
-}
-.caseStudyPage .caseHeroGrid{
-  grid-template-columns:minmax(0,1fr) minmax(320px,500px);
-  gap:56px;
-  padding:64px 0;
-}
-.caseStudyPage .caseHero h1{
-  font-size:clamp(34px,4.2vw,54px);
-  letter-spacing:-.035em;
-  max-width:760px;
-}
-.caseStudyPage .caseHero .lede{
-  font-size:clamp(16px,1.75vw,19px);
-  line-height:1.72;
-  max-width:720px;
-}
-.caseStudyPage .caseHeroVisual{
-  max-width:500px;
-  justify-self:end;
-  border-radius:24px;
-  padding:12px;
-  box-shadow:0 18px 42px rgba(15,17,22,.10);
-}
-.caseStudyPage .caseHeroVisual img{
-  border-radius:15px;
-  aspect-ratio:16/10;
-  max-height:340px;
-  object-fit:contain;
-  background:#0d0f14;
-}
-.caseStudyPage.photoCase .caseHeroVisual img{
-  object-fit:cover;
-  background:#f6f4f1;
-}
-.caseStudyPage .caseMetaGrid{
-  gap:12px;
-  margin-top:30px;
-}
-.caseStudyPage .caseMeta{
-  padding:14px;
-  border-radius:14px;
-}
-.caseStudyPage .caseMeta strong{
-  font-size:15px;
-  line-height:1.25;
-}
-.caseStudyPage .caseStudyBody{
-  grid-template-columns:minmax(0,760px) minmax(280px,340px);
-  gap:44px;
-  justify-content:space-between;
-}
-.caseStudyPage .caseSection{
-  padding:34px;
-  margin-bottom:30px;
-  border-radius:22px;
-  box-shadow:0 12px 34px rgba(15,17,22,.055);
-}
-.caseStudyPage .caseSection h2{
-  font-size:clamp(24px,2.35vw,34px);
-  line-height:1.14;
-  letter-spacing:-.026em;
-  margin-bottom:14px;
-}
-.caseStudyPage .caseSection p,
-.caseStudyPage .featureItem,
-.caseStudyPage .processItem{
-  font-size:15.5px;
-  line-height:1.72;
-}
-.caseStudyPage .statGrid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:14px;
-  margin-top:24px;
-}
-.caseStudyPage .caseStat{
-  padding:18px;
-  border-radius:16px;
-}
-.caseStudyPage .caseStat strong{
-  font-size:24px;
-}
-.caseStudyPage .caseGallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:18px;
-  margin-top:24px;
-}
-.caseStudyPage .caseShot{
-  margin:0;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:10px;
-  box-shadow:0 10px 26px rgba(15,17,22,.055);
-}
-.caseStudyPage .caseShot img{
-  width:100%;
-  height:168px;
-  aspect-ratio:auto;
-  border:0;
-  border-radius:12px;
-  box-shadow:none;
-  object-fit:contain;
-  background:#f7f7f7;
-}
-.caseStudyPage.photoCase .caseShot img{
-  object-fit:cover;
-  background:#f6f4f1;
-}
-.caseStudyPage .caseShot figcaption{
-  margin:10px 4px 2px;
-  color:#59616d;
-  font-size:12.5px;
-  line-height:1.35;
-  font-weight:850;
-}
-.caseStudyPage .asideCard{
-  border-radius:22px;
-  padding:24px;
-}
-.caseStudyPage .backPortfolioLink{
-  display:block;
-  text-align:center;
-  color:var(--red2);
-  font-weight:900;
-  text-decoration:none;
-  margin-top:16px;
-  font-size:14px;
-}
-.caseStudyPage .backPortfolioLink:hover{text-decoration:underline;text-underline-offset:4px;}
-.caseStudyPage .caseFooterCta{
-  border-radius:24px;
-  padding:36px;
-}
-@media(max-width:1080px){
-  .caseStudyPage .caseHeroGrid{grid-template-columns:1fr;gap:34px;padding:56px 0;}
-  .caseStudyPage .caseHeroVisual{justify-self:start;max-width:620px;}
-  .caseStudyPage .caseStudyBody{grid-template-columns:1fr;gap:30px;}
-}
-@media(max-width:760px){
-  .caseStudyPage .caseMetaGrid,
-  .caseStudyPage .statGrid{grid-template-columns:1fr 1fr;}
-  .caseStudyPage .caseSection{padding:24px;margin-bottom:22px;}
-  .caseStudyPage .caseGallery{grid-template-columns:1fr;}
-  .caseStudyPage .caseShot img{height:auto;max-height:240px;}
-}
-@media(max-width:520px){
-  .caseStudyPage .caseHeroGrid{padding:42px 0;}
-  .caseStudyPage .caseMetaGrid,
-  .caseStudyPage .statGrid{grid-template-columns:1fr;}
-  .caseStudyPage .caseHeroVisual{padding:9px;border-radius:20px;}
-  .caseStudyPage .caseHeroVisual img{border-radius:13px;}
-  .caseStudyPage .caseFooterCta{padding:24px;}
-}
-
-
-/* v8 professional spacing + cache-busted layout repair
-   Fixes cramped/bunched content, case study meta cards, oversized header logo,
-   and uneven spacing across service, portfolio, demo hub, and case-study pages. */
-:root{
-  --section-pad-lg: 88px;
-  --section-pad-md: 72px;
-  --section-gap: 36px;
-}
-body{background:#f6f4f1;letter-spacing:0;-webkit-font-smoothing:antialiased;}
-.container{width:min(var(--max),calc(100% - 48px));}
-.siteHeader{box-shadow:0 10px 28px rgba(0,0,0,.08);}
-.nav{min-height:86px;height:auto;padding:10px 0;align-items:center;}
-.brand{min-width:0;max-width:260px;overflow:hidden;}
-.brand img{width:auto;max-width:245px;max-height:62px;object-fit:contain;object-position:left center;}
-.navLinks{gap:8px;flex-wrap:nowrap;}
-.navLinks a{line-height:1.2;white-space:nowrap;padding:11px 14px;}
-.navCta{box-shadow:0 10px 22px rgba(215,25,32,.18);}
-
-.heroGrid{padding:88px 0;gap:58px;}
-.pageHero{padding:82px 0 70px;}
-.pageHero .lede{margin-top:16px;}
-.pageActions,.heroActions,.actions{gap:14px;margin-top:28px;}
-.section{padding:var(--section-pad-lg) 0;}
-.section.white{background:#fff;}
-.sectionHeader{margin-bottom:42px;align-items:flex-start;}
-.sectionHeader h2{max-width:720px;}
-.sectionHeader p{line-height:1.75;}
-.grid3,.grid2,.portfolio-grid,.cards,.demoGrid{gap:28px;}
-.card,.featureCard,.workCard,.demoCard,.contentPanel,.contactBox,.accentBox,.logoProof{border-radius:22px;}
-.card.pad{padding:32px;}
-.workCard .body,.featureCard .body,.demoCard .body{padding:28px;}
-.card h3,.workCard h3,.featureCard h3,.demoCard h3{margin-top:0;}
-.card p,.workCard p,.featureCard p,.demoCard p{line-height:1.72;}
-.contentBand{padding:54px 0;}
-.twoCol{gap:54px;}
-.miniList{gap:20px;}
-.footer{padding-top:64px;}
-.footerGrid{gap:56px;}
-.footerBrand img{max-height:72px;width:auto;max-width:285px;object-fit:contain;}
-.footerLinks{gap:14px 24px;}
-
-/* Case study layout repair */
-.caseStudyPage .caseHero{padding:0;background:linear-gradient(135deg,#fff 0%,#f8f5ef 55%,#eee9e1 100%);}
-.caseStudyPage .caseHeroGrid{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(320px,500px)!important;
-  gap:60px!important;
-  align-items:center!important;
-  padding:78px 0 70px!important;
-}
-.caseStudyPage .breadcrumb{margin-bottom:22px;line-height:1.45;}
-.caseStudyPage .eyebrow{margin-bottom:6px;}
-.caseStudyPage .caseHero h1{margin:18px 0 20px;max-width:760px;}
-.caseStudyPage .caseHero .lede{margin:0;max-width:740px;line-height:1.75;}
-.caseStudyPage .caseHero .heroActions{margin-top:30px;margin-bottom:0;}
-.caseStudyPage .caseMetaGrid{
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:16px!important;
-  margin-top:36px!important;
-  width:100%;
-  clear:both;
-}
-.caseStudyPage .caseMeta{
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:flex-start!important;
-  gap:7px!important;
-  background:#fff!important;
-  border:1px solid var(--line)!important;
-  border-radius:16px!important;
-  padding:18px!important;
-  min-height:92px!important;
-  box-shadow:0 8px 22px rgba(15,17,22,.055)!important;
-}
-.caseStudyPage .caseMeta span{
-  display:block!important;
-  color:#747b87!important;
-  font-size:11px!important;
-  font-weight:950!important;
-  letter-spacing:.11em!important;
-  text-transform:uppercase!important;
-  line-height:1.2!important;
-}
-.caseStudyPage .caseMeta strong{
-  display:block!important;
-  color:var(--ink)!important;
-  font-size:15px!important;
-  line-height:1.35!important;
-  font-weight:900!important;
-  margin:0!important;
-}
-.caseStudyPage .caseHeroVisual{align-self:center;justify-self:end;max-width:500px;width:100%;}
-.caseStudyPage .caseHeroVisual img{max-height:330px;width:100%;object-fit:contain;background:#0d0f14;}
-.caseStudyPage.photoCase .caseHeroVisual img{object-fit:cover;background:#f6f4f1;}
-.caseStudyPage .caseStudyBody{
-  display:grid!important;
-  grid-template-columns:minmax(0,780px) minmax(285px,340px)!important;
-  gap:52px!important;
-  align-items:start!important;
-}
-.caseStudyPage .caseSection{padding:38px!important;margin-bottom:34px!important;border-radius:24px!important;}
-.caseStudyPage .caseSection h2{margin:0 0 18px!important;}
-.caseStudyPage .caseSection h3{margin-top:30px;}
-.caseStudyPage .caseSection p{line-height:1.78;margin-bottom:18px;}
-.caseStudyPage .featureList{gap:14px;margin:24px 0;}
-.caseStudyPage .featureItem{gap:14px;line-height:1.75;}
-.caseStudyPage .statGrid{gap:18px!important;margin-top:28px!important;}
-.caseStudyPage .caseStat{padding:22px!important;min-height:112px;}
-.caseStudyPage .caseGallery{gap:22px!important;margin-top:28px!important;}
-.caseStudyPage .caseShot{padding:12px!important;border-radius:20px!important;}
-.caseStudyPage .caseShot img{height:180px!important;object-fit:contain!important;background:#f7f7f7!important;}
-.caseStudyPage.photoCase .caseShot img{height:220px!important;object-fit:cover!important;}
-.caseStudyPage .caseShot figcaption{margin:12px 6px 4px!important;}
-.caseStudyPage .processList{gap:18px;}
-.caseStudyPage .processItem{padding:22px 22px 22px 64px!important;line-height:1.72;}
-.caseStudyPage .processItem:before{left:22px;top:22px;}
-.caseStudyPage .caseAside{top:112px;}
-.caseStudyPage .asideCard{padding:28px!important;margin-bottom:22px!important;}
-.caseStudyPage .asideCard .btn{margin-top:12px;}
-.caseStudyPage .caseFooterCta{padding:42px!important;gap:28px!important;}
-
-/* Portfolio and service page breathing room */
-.portfolio-card,.workCard,.featureCard{box-shadow:0 8px 26px rgba(15,17,22,.055);}
-.serviceNav{gap:12px;margin-top:26px;}
-.serviceNav a{padding:11px 14px;}
-.gallery,.imageWall{gap:18px;}
-.gallery img,.imageWall img{border-radius:20px;}
-
-@media(max-width:1120px){
-  .navLinks{gap:4px;}
-  .navLinks a{padding:10px 10px;font-size:13px;}
-  .brand img{max-width:220px;}
-  .caseStudyPage .caseHeroGrid{grid-template-columns:1fr!important;gap:38px!important;}
-  .caseStudyPage .caseHeroVisual{justify-self:start;max-width:620px;}
-  .caseStudyPage .caseStudyBody{grid-template-columns:1fr!important;gap:34px!important;}
-  .caseStudyPage .caseAside{position:relative;top:auto;}
-}
-@media(max-width:900px){
-  .container{width:min(100% - 38px,var(--max));}
-  .nav{min-height:76px;padding:8px 0;}
-  .brand img{max-height:54px;max-width:210px;}
-  .navLinks{top:76px;gap:6px;}
-  .heroGrid{padding:64px 0;gap:38px;}
-  .pageHero{padding:62px 0 54px;}
-  .section{padding:70px 0;}
-  .sectionHeader{margin-bottom:30px;}
-  .grid3,.grid2,.portfolio-grid,.cards,.demoGrid{gap:22px;}
-  .caseStudyPage .caseHeroGrid{padding:58px 0!important;}
-  .caseStudyPage .caseMetaGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-  .caseStudyPage .caseSection{padding:28px!important;margin-bottom:26px!important;}
-  .caseStudyPage .caseShot img{height:auto!important;max-height:260px!important;}
-}
-@media(max-width:620px){
-  .container{width:min(100% - 30px,var(--max));}
-  .brand img{max-width:190px;max-height:48px;}
-  .pageActions,.heroActions,.actions{gap:10px;}
-  .pageActions .btn,.heroActions .btn,.actions .btn{width:100%;}
-  .section{padding:56px 0;}
-  .pageHero{padding:48px 0 42px;}
-  .caseStudyPage .caseHeroGrid{padding:44px 0!important;gap:28px!important;}
-  .caseStudyPage .caseHero h1{font-size:34px;}
-  .caseStudyPage .caseHero .lede{font-size:16px;}
-  .caseStudyPage .caseMetaGrid,.caseStudyPage .statGrid{grid-template-columns:1fr!important;}
-  .caseStudyPage .caseMeta{min-height:auto!important;padding:16px!important;}
-  .caseStudyPage .caseSection{padding:22px!important;border-radius:20px!important;}
-  .caseStudyPage .caseGallery{grid-template-columns:1fr!important;}
-  .caseStudyPage .caseFooterCta{padding:24px!important;}
-  .footerBrand img{max-width:240px;}
-}
-
-
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.faqSection{background:linear-gradient(180deg,#fff,#f7f4ef)}
-.faqGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-.faqItem{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
-.faqItem h3{margin:0 0 8px;color:var(--ink);font-size:20px;line-height:1.2;letter-spacing:-.02em}
-.faqItem p{margin:0;color:var(--muted)}
-.footerSmall{font-size:14px;color:#aeb5c2;margin-top:10px}
-.footerSmall a{font-weight:850;color:#fff;text-decoration:underline;text-underline-offset:4px}
-@media(max-width:900px){.grid4,.faqGrid{grid-template-columns:1fr}.faqItem{padding:18px}}
-
-/* v9 clean URL + content additions */
-.footerSocials{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
-.footerSocials a{font-size:13px;font-weight:850;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 10px}
-.caseGallery{align-items:start}
-.caseShot img{width:100%;max-height:360px;object-fit:cover}
-.serviceNav{margin-bottom:0}
-
-/* Blog system */
-.blogHero {
-  padding-top: 86px;
-  padding-bottom: 38px;
-}
-
-.blogHero h1,
-.blogArticleHero h1 {
-  max-width: 980px;
-}
-
-.blogGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 28px;
-}
-
-.blogCard {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 24px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.045);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
-}
-
-.blogCard img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 18px;
-  margin-bottom: 16px;
-  display: block;
-}
-
-.blogCard h2 {
-  font-size: clamp(1.3rem, 2vw, 1.75rem);
-  margin: 8px 0 10px;
-  line-height: 1.15;
-}
-
-.blogCard h2 a,
-.textLink {
-  color: inherit;
-  text-decoration: none;
-}
-
-.textLink {
-  display: inline-flex;
-  margin-top: 8px;
-  font-weight: 800;
-  color: var(--clay, #CCB5A7);
-}
-
-.blogMeta {
-  color: rgba(255, 255, 255, 0.72);
-  font-weight: 700;
-  margin-top: 18px;
-}
-
-.articleHeroImage {
-  width: 100%;
-  max-height: 480px;
-  object-fit: cover;
-  border-radius: 28px;
-  margin-top: 30px;
-  display: block;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.prose {
-  font-size: 1.07rem;
-  line-height: 1.85;
-}
-
-.prose h2,
-.prose h3 {
-  margin-top: 38px;
-  margin-bottom: 12px;
-}
-
-.prose p,
-.prose li {
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.prose ul,
-.prose ol {
-  padding-left: 1.4rem;
-}
-
-.articleCta {
-  margin-top: 44px;
-  padding: 28px;
-  border-radius: 28px;
-  background: rgba(204, 181, 167, 0.12);
-  border: 1px solid rgba(204, 181, 167, 0.28);
-}
-
-.footerLogo {
-  max-width: 190px;
-  height: auto;
-  margin-bottom: 16px;
-}
-
-@media (max-width: 960px) {
-  .blogGrid {
-    grid-template-columns: 1fr;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog | Arsenal Media</title>
+  <meta name="description" content="Practical articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Arsenal Media">
+  <link rel="canonical" href="https://arsenalmediaco.com/blog/">
+  <meta property="og:title" content="Blog | Arsenal Media">
+  <meta property="og:description" content="Practical articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://arsenalmediaco.com/blog/">
+  <meta property="og:site_name" content="Arsenal Media">
+  <meta property="og:image" content="https://arsenalmediaco.com/social-preview.jpg">
+  <meta property="og:image:alt" content="Blog | Arsenal Media">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog | Arsenal Media">
+  <meta name="twitter:description" content="Practical articles about custom apps, contractor software, websites, SEO, and business systems from Arsenal Media.">
+  <meta name="twitter:image" content="https://arsenalmediaco.com/social-preview.jpg">
+  <link rel="stylesheet" href="/assets/css/style-v8.css?v=12">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Arsenal Media Blog",
+  "url": "https://arsenalmediaco.com/blog/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Arsenal Media",
+    "url": "https://arsenalmediaco.com"
   }
-
-  .blogHero,
-  .blogArticleHero {
-    padding-top: 48px;
-  }
-}
-
-</style>
-
-<style id="am-inline-blog-css">
-/* Arsenal Media blog styling generated for Git-based blog pages */
-.blogIndexHero,.blogArticleHero{padding:70px 0 58px;}
-.blogMeta{margin:18px 0 0;color:var(--muted);font-size:14px;font-weight:850;}
-.blogGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:stretch;}
-.blogCard{display:flex;flex-direction:column;overflow:hidden;}
-.blogCardImageLink{display:block;background:#0d0f14;text-decoration:none;}
-.blogCard img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0f14;}
-.blogCard .body{padding:26px;display:flex;flex-direction:column;flex:1;}
-.blogCard h2{font-size:clamp(24px,2.4vw,34px);line-height:1.12;letter-spacing:-.03em;margin:10px 0 12px;color:var(--ink);}
-.blogCard h2 a{text-decoration:none;color:inherit;}
-.blogCard h2 a:hover{color:var(--red2);}
-.blogCard p:not(.eyebrow){color:var(--muted);line-height:1.72;margin:0 0 22px;}
-.blogCard .btn{margin-top:auto;align-self:flex-start;}
-.blogArticleLayout{display:grid;grid-template-columns:minmax(0,820px) minmax(260px,340px);gap:38px;align-items:start;}
-.blogPostPanel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:var(--shadow2);}
-.articleHeroImage{width:100%;max-height:460px;object-fit:cover;border-radius:20px;border:1px solid var(--line);margin-bottom:30px;background:#0d0f14;}
-.prose{font-size:1.06rem;line-height:1.82;color:#3f4650;}
-.prose p{margin:0 0 20px;}
-.prose h2{font-size:clamp(25px,2.6vw,36px);line-height:1.15;letter-spacing:-.025em;color:var(--ink);margin:36px 0 12px;}
-.prose h3{font-size:22px;line-height:1.22;color:var(--ink);margin:30px 0 10px;}
-.prose ul{display:grid;gap:9px;margin:0 0 24px;padding-left:1.3rem;}
-.prose li{padding-left:4px;}
-.blogPostActions{display:flex;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:30px;padding-top:24px;}
-.blogAside{position:sticky;top:96px;}
-.blogAside .asideCard p{margin-bottom:18px;}
-@media(max-width:980px){.blogGrid,.blogArticleLayout{grid-template-columns:1fr}.blogAside{position:relative;top:auto}.blogIndexHero,.blogArticleHero{padding:54px 0 44px;}}
-@media(max-width:600px){.blogGrid{gap:20px}.blogCard .body,.blogPostPanel{padding:22px}.blogPostActions .btn{width:100%;}.articleHeroImage{border-radius:16px;margin-bottom:22px;}}
-
-</style>
+}</script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="siteHeader">
-  <div class="container nav">
-    <a aria-label="Arsenal Media home" class="brand" href="/"><img alt="Arsenal Media" src="/assets/arsenal-command-logo.webp"/></a>
-    <button aria-expanded="false" class="menuBtn" data-menu="">Menu</button>
-    <nav aria-label="Main navigation" class="navLinks" data-nav="">
-      <a class="" href="/">Home</a>
-      <a class="" href="/services/">Services</a>
-      <a class="" href="/portfolio/">Portfolio</a><a class="active" href="/blog/">Blog</a>
-      
-      <a class="" href="/about.html">About</a>
-      <a class="" href="/contact.html">Contact</a>
-      <a class="navCta" href="/contact.html">Start a Project</a>
-    </nav>
-  </div>
-</header>
-<main id="main">
+  <header class="siteHeader">
+    <div class="container nav">
+      <a class="brand" href="/" aria-label="Arsenal Media home">
+        <img src="/assets/arsenal-command-logo.webp" alt="Arsenal Media logo">
+      </a>
+      <button class="navToggle" type="button" aria-label="Open menu" data-nav-toggle><span></span><span></span><span></span></button>
+      <nav aria-label="Main navigation" class="navLinks" data-nav><a class="" href="/">Home</a><a class="" href="/services/">Services</a><a class="" href="/portfolio/">Portfolio</a><a class="active" href="/blog/">Blog</a><a class="" href="/about.html">About</a><a class="" href="/contact.html">Contact</a><a class="navCta" href="/contact.html">Start a Project</a></nav>
+    </div>
+  </header>
 
-<section class="pageHero blogIndexHero">
+  <main>
+    <section class="section blogHero">
   <div class="container">
-    <div class="breadcrumb"><a href="/">Home</a> / Blog</div>
-    <span class="kicker">Arsenal Media Blog</span>
-    <h1>Practical notes on apps, websites, SEO, and business systems.</h1>
-    <p class="lede">Ideas for contractors and service businesses that want better tools, cleaner websites, and less chaos in the day-to-day.</p>
+    <p class="eyebrow">Arsenal Media Blog</p>
+    <h1>Practical notes on apps, websites, SEO, and better business systems.</h1>
+    <p class="lead">Ideas for contractors and service businesses that want cleaner tools, better websites, and less day-to-day chaos.</p>
   </div>
 </section>
-
-<section class="section white">
+<section class="section">
   <div class="container blogGrid">
-    
-<article class="blogCard card">
-  <a href="/blog/better-contractor-website/" class="blogCardImageLink">
-    <img src="/assets/images/website-arsenal-media-real-v30.webp" alt="Contractor website design example for service businesses in Texas" loading="lazy"/>
-  </a>
-  <div class="body">
-    <p class="eyebrow">2026-05-17</p>
-    <h2><a href="/blog/better-contractor-website/">What a Better Contractor Website Should Actually Do</a></h2>
-    <p>A good contractor website is not just a digital brochure. It should help people understand what you do, trust your work, and contact you fast.</p>
-    <a class="btn secondary" href="/blog/better-contractor-website/">Read Article</a>
-  </div>
+    <article class="blogCard">
+  <a href="/blog/better-contractor-website/"><img src="/assets/images/portfolio/curb-design-site.jpg" alt="Contractor website design example for service businesses in Colorado"></a>
+  <p class="eyebrow">2026-05-17</p>
+  <h2><a href="/blog/better-contractor-website/">What a Better Contractor Website Should Actually Do</a></h2>
+  <p>A good contractor website is not just a digital brochure. It should help people understand what you do, trust your work, and contact you fast.</p>
+  <a class="textLink" href="/blog/better-contractor-website/">Read the article</a>
 </article>
-
-<article class="blogCard card">
-  <a href="/blog/why-contractors-outgrow-spreadsheets/" class="blogCardImageLink">
-    <img src="/assets/images/mfr-dashboard.webp" alt="Custom contractor CRM dashboard for managing leads jobs estimates and workflow automation" loading="lazy"/>
-  </a>
-  <div class="body">
-    <p class="eyebrow">2026-05-17</p>
-    <h2><a href="/blog/why-contractors-outgrow-spreadsheets/">Why Contractors Outgrow Spreadsheets</a></h2>
-    <p>Spreadsheets work for a while, but contractors usually outgrow them once leads, estimates, crews, and follow-up start piling up.</p>
-    <a class="btn secondary" href="/blog/why-contractors-outgrow-spreadsheets/">Read Article</a>
-  </div>
+<article class="blogCard">
+  <a href="/blog/why-contractors-outgrow-spreadsheets/"><img src="/assets/images/portfolio/mfr-command-dashboard.jpg" alt="Custom contractor CRM dashboard for managing leads jobs estimates and workflow automation"></a>
+  <p class="eyebrow">2026-05-17</p>
+  <h2><a href="/blog/why-contractors-outgrow-spreadsheets/">Why Contractors Outgrow Spreadsheets</a></h2>
+  <p>Spreadsheets work for a while, but contractors usually outgrow them once leads, estimates, crews, and follow-up start piling up.</p>
+  <a class="textLink" href="/blog/why-contractors-outgrow-spreadsheets/">Read the article</a>
 </article>
   </div>
 </section>
-</main>
-<div class="mobileCta"><a class="btn primary" href="/contact.html">Start a Project</a></div>
-<footer class="footer">
-  <div class="container footerGrid">
-    <div>
-      <div class="footerBrand"><img alt="Arsenal Media logo" src="/assets/arsenal-command-logo.webp"/></div>
-      <p>Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for service businesses in Waxahachie and across the Dallas-Fort Worth Metroplex.</p>
-      <p class="footerSmall">From Dallas, Fort Worth, Plano, Arlington, Irving, Richardson, Frisco, and McKinney to teams in Ellis County, Dallas County, Tarrant County, and Collin County, we help North Texas contractors turn messy workflows into cleaner systems.</p>
-      <p class="footerSmall"><a href="/contact.html">Need a practical app or website in the DFW area? Start a project.</a></p>
+  </main>
+
+  <footer class="siteFooter">
+    <div class="container footerGrid">
+      <div>
+        <img src="/assets/arsenal-command-logo.webp" alt="Arsenal Media" class="footerLogo">
+        <p>Arsenal Media builds custom apps, contractor CRMs, websites, and SEO-ready digital systems for service businesses in Fort Collins, Northern Colorado, and the Front Range.</p>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <a href="/services/">Services</a>
+        <a href="/portfolio/">Portfolio</a>
+        <a href="/blog/">Blog</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+      <div>
+        <h3>Social</h3>
+        <a href="https://www.facebook.com/arsenalmediaco">Facebook</a>
+        <a href="https://www.instagram.com/arsenalmediaco/">Instagram</a>
+        <a href="https://www.linkedin.com/company/arsenal-media-co">LinkedIn</a>
+      </div>
     </div>
-    <div class="footerLinks">
-      <a href="/services/">Services</a>
-      <a href="/services/custom-app-development/">Custom App Development</a>
-      <a href="/services/contractor-crm-software/">Contractor CRM Software</a>
-      <a href="/services/website-design/">Website Design</a>
-      <a href="/services/seo-services/">SEO Services</a>
-      <a href="/portfolio/">Portfolio</a>
-      <a href="/portfolio/mfr-roofing/">MFR Roofing App</a>
-      <a href="/portfolio/decorative-curbing-landscape/">Decorative Curbing</a>
-      <a href="/contact.html">Contact</a>
-    </div>
-  </div>
-  <div class="container subfooter">© 2026 Arsenal Media Co. Custom apps, websites, SEO, and brand creative for service businesses.</div>
-</footer>
-<script src="/assets/js/main.js"></script>
+  </footer>
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>
