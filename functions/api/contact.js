@@ -332,8 +332,8 @@ export async function onRequestPost(context) {
     if (error.detail) console.error('Resend detail:', error.detail);
     return jsonResponse({
       ok: false,
-      message: error.publicMessage || 'The form did not send because the email service rejected it. Please try again shortly.'
-    }, 502);
+      message: error.publicMessage || 'The form reached the server, but the email service rejected it. Please check the Cloudflare Function logs and Resend settings.'
+    }, 500);
   }
 
   const customerPayload = {
@@ -359,9 +359,47 @@ export async function onRequestPost(context) {
 }
 
 export async function onRequest(context) {
-  if (context.request.method === 'POST') {
-    return onRequestPost(context);
-  }
+  try {
+    const method = context.request.method.toUpperCase();
 
-  return jsonResponse({ ok: false, message: 'Method not allowed.' }, 405);
+    if (method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'access-control-allow-origin': '*',
+          'access-control-allow-methods': 'POST, GET, OPTIONS',
+          'access-control-allow-headers': 'content-type',
+          'cache-control': 'no-store'
+        }
+      });
+    }
+
+    if (method === 'GET') {
+      const env = context.env || {};
+      return jsonResponse({
+        ok: true,
+        endpoint: '/api/contact',
+        message: 'Arsenal Media contact API is deployed.',
+        config: {
+          RESEND_API_KEY: Boolean(env.RESEND_API_KEY),
+          CONTACT_TO_EMAIL: Boolean(env.CONTACT_TO_EMAIL),
+          RESEND_FROM_EMAIL: Boolean(env.RESEND_FROM_EMAIL),
+          CONTACT_REPLY_TO_EMAIL: Boolean(env.CONTACT_REPLY_TO_EMAIL),
+          SITE_URL: Boolean(env.SITE_URL)
+        }
+      });
+    }
+
+    if (method === 'POST') {
+      return await onRequestPost(context);
+    }
+
+    return jsonResponse({ ok: false, message: 'Method not allowed.' }, 405);
+  } catch (error) {
+    console.error('Unhandled /api/contact error:', error && (error.stack || error.message || error));
+    return jsonResponse({
+      ok: false,
+      message: 'The form reached the server, but the contact function hit an unexpected error. Check Cloudflare Pages Function logs for the exact cause.'
+    }, 500);
+  }
 }

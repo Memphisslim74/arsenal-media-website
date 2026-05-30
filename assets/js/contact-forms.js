@@ -26,7 +26,11 @@
     try {
       return JSON.parse(text);
     } catch (error) {
-      return { message: text };
+      const cleaned = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      if (cleaned.toLowerCase().includes('bad gateway') || response.status === 502) {
+        return { message: 'The contact API returned a Cloudflare 502. Check the Cloudflare Pages Function logs and Resend settings.' };
+      }
+      return { message: cleaned || 'The form reached the site, but the server returned an unexpected response.' };
     }
   }
 
