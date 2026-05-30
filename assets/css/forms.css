@@ -1,2 +1,94 @@
-/* Arsenal Media form enhancements */
-.fieldHelp{display:block;margin:6px 0 0;color:var(--muted,#5f6670);font-size:12px;line-height:1.45}.formStatus{display:none;border-radius:14px;padding:12px 14px;margin:0;font-weight:850;line-height:1.45}.formStatus.is-success{display:block;background:#ecfdf3;color:#027a48;border:1px solid #abefc6}.formStatus.is-error{display:block;background:#fff1f3;color:#b42318;border:1px solid #fecdd6}.hpField{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}.contactBox button[disabled]{opacity:.7;cursor:wait}.contactBox select,.contactBox input,.contactBox textarea{font:inherit}.contactBox textarea{min-height:150px}
+/* Arsenal Media form enhancements + contact page layout update */
+.fieldHelp{display:block;margin:6px 0 0;color:var(--muted,#5f6670);font-size:12px;line-height:1.45}
+.formStatus{display:none;border-radius:14px;padding:12px 14px;margin:0;font-weight:850;line-height:1.45}
+.formStatus.is-success{display:block;background:#ecfdf3;color:#027a48;border:1px solid #abefc6}
+.formStatus.is-error{display:block;background:#fff1f3;color:#b42318;border:1px solid #fecdd6}
+.hpField{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+.contactBox button[disabled]{opacity:.7;cursor:wait}
+.contactBox select,.contactBox input,.contactBox textarea{font:inherit}
+.contactBox textarea{min-height:128px}
+
+/* -------------------------------------------------------
+   CONTACT PAGE BALANCE FIX
+   Makes the form wider on desktop so it does not feel tall
+   and skinny beside the intro card.
+------------------------------------------------------- */
+.contactReviewSection{background:#fff;}
+.contactReviewGrid{
+  grid-template-columns:minmax(280px,.74fr) minmax(720px,1.55fr)!important;
+  gap:30px!important;
+  align-items:start!important;
+}
+.contactIntroPanel{
+  position:sticky;
+  top:96px;
+  padding:28px!important;
+}
+.contactIntroPanel h2{font-size:clamp(25px,2.4vw,36px);line-height:1.1;margin-bottom:12px;}
+.contactIntroPanel p{font-size:15.5px;line-height:1.72;}
+.contactIntroPanel .miniList{gap:12px;margin-top:20px;}
+.contactIntroPanel .miniItem{align-items:flex-start;}
+.contactIntroPanel .miniIcon{width:38px;height:38px;border-radius:11px;}
+.contactIntroPanel .miniItem span{line-height:1.5;}
+
+.contactReviewForm{
+  padding:30px!important;
+  border-radius:28px!important;
+}
+.formHeader{
+  border-bottom:1px solid var(--line,rgba(15,17,22,.12));
+  padding-bottom:18px;
+  margin-bottom:18px;
+}
+.formHeader h2{
+  margin:8px 0 6px;
+  font-size:clamp(26px,2.4vw,38px);
+  line-height:1.08;
+  letter-spacing:-.03em;
+  color:var(--ink,#171a21);
+}
+.formHeader p{margin:0;color:#535b67;line-height:1.65;max-width:760px;}
+.contactReviewForm .formGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:14px 16px!important;
+}
+.contactReviewForm .field.full{grid-column:1/-1;}
+.contactReviewForm .field.wide{grid-column:span 2;}
+.contactReviewForm label{font-size:12.5px;letter-spacing:.01em;}
+.contactReviewForm input,
+.contactReviewForm select,
+.contactReviewForm textarea{
+  min-height:48px;
+  border-radius:14px;
+  border-color:#d8d0c5;
+  background:#fff;
+}
+.contactReviewForm textarea{
+  min-height:132px;
+}
+.contactReviewForm .fullWidth{grid-column:1/-1;}
+.contactReviewForm .btn.fullWidth{
+  width:auto;
+  justify-self:start;
+  min-width:260px;
+}
+.contactReviewForm .note.fullWidth{
+  max-width:780px;
+  margin-top:-2px;
+}
+
+@media(max-width:1100px){
+  .contactReviewGrid{grid-template-columns:1fr!important;}
+  .contactIntroPanel{position:relative;top:auto;}
+  .contactReviewForm .formGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .contactReviewForm .field.wide{grid-column:1/-1;}
+}
+@media(max-width:680px){
+  .contactReviewForm{padding:22px!important;border-radius:22px!important;}
+  .contactReviewForm .formGrid{grid-template-columns:1fr!important;}
+  .contactReviewForm .field,
+  .contactReviewForm .field.wide,
+  .contactReviewForm .field.full{grid-column:1/-1;}
+  .contactReviewForm .btn.fullWidth{width:100%;min-width:0;}
+  .contactIntroPanel{padding:22px!important;}
+}

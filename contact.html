@@ -22,7 +22,7 @@
 <meta content="Get help turning scattered customers, tasks, jobs, and follow-ups into one clearer business command center." name="twitter:description"/>
 <meta content="https://arsenalmediaco.com/assets/images/og/contact.jpg" name="twitter:image"/>
 <link href="/assets/css/style-v8.css?v=20" rel="stylesheet"/>
-<link href="/assets/css/forms.css?v=20" rel="stylesheet"/>
+<link href="/assets/css/forms.css?v=22" rel="stylesheet"/>
 <script type="application/ld+json">{
   "@context":"https://schema.org",
   "@type":"ContactPage",
@@ -57,10 +57,10 @@
     <div class="pageActions"><a class="btn primary" href="#workflow-review-form">Request a Workflow Review</a><a class="btn secondary" href="/portfolio/">View Work</a></div>
   </div>
 </section>
-<section class="section white">
-  <div class="container storyGrid">
+<section class="section white contactReviewSection">
+  <div class="container storyGrid contactReviewGrid">
     <div>
-      <div class="contentPanel">
+      <div class="contentPanel contactIntroPanel">
         <h2>What happens after you send this?</h2>
         <p>This is not a generic “contact us” form. The goal is to understand what your business is trying to track, where things are falling through the cracks, and whether you need a custom dashboard, contractor CRM, website, SEO support, or a smaller first step.</p>
         <div class="miniList">
@@ -70,7 +70,12 @@
         </div>
       </div>
     </div>
-    <form id="workflow-review-form" action="/api/contact" method="post" class="contactBox" data-contact-form="">
+    <form id="workflow-review-form" action="/api/contact" method="post" class="contactBox contactReviewForm" data-contact-form="">
+      <div class="formHeader">
+        <span class="eyebrow">Start here</span>
+        <h2>Request a Workflow Review</h2>
+        <p>Share the basics. I’ll look for where visibility, accountability, or response time could improve.</p>
+      </div>
       <div class="formGrid">
         <div class="field">
           <label for="name">Name</label>
@@ -96,7 +101,7 @@
           <label for="location">Location</label>
           <input id="location" name="location" placeholder="Fort Collins, Loveland, Denver, etc." autocomplete="address-level2"/>
         </div>
-        <div class="field full">
+        <div class="field wide">
           <label for="project_type">What kind of help do you need?</label>
           <select id="project_type" name="project_type" required="">
             <option value="">Choose the closest fit</option>
@@ -109,7 +114,7 @@
             <option>Not sure yet</option>
           </select>
         </div>
-        <div class="field full">
+        <div class="field wide">
           <label for="challenge">What is the biggest issue right now?</label>
           <select id="challenge" name="challenge">
             <option value="">Choose one if it fits</option>
@@ -122,12 +127,12 @@
             <option>Other / not sure yet</option>
           </select>
         </div>
-        <div class="field full">
+        <div class="field wide">
           <label for="current_system">What are you using now?</label>
           <input id="current_system" name="current_system" placeholder="Example: spreadsheets, Jobber, HubSpot, Monday, texts, email, whiteboard, etc."/>
           <span class="fieldHelp">This helps me understand what needs to be replaced, improved, or connected.</span>
         </div>
-        <div class="field full">
+        <div class="field">
           <label for="timeline">When would you like to start?</label>
           <select id="timeline" name="timeline">
             <option value="">Choose one</option>
