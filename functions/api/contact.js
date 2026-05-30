@@ -214,6 +214,36 @@ function buildCustomerTextEmail(fields) {
   ].filter(Boolean).join('\n');
 }
 
+function publicResendErrorMessage(detail = '') {
+  const text = String(detail || '').toLowerCase();
+
+  if (text.includes('domain') && (text.includes('verified') || text.includes('not found') || text.includes('not registered'))) {
+    return 'The form reached the server, but Resend rejected the sender address. Check that RESEND_FROM_EMAIL uses a verified Resend domain.';
+  }
+
+  if (text.includes('api key') || text.includes('unauthorized') || text.includes('invalid api')) {
+    return 'The form reached the server, but the Resend API key was rejected. Check the RESEND_API_KEY secret in Cloudflare.';
+  }
+
+  if (text.includes('from')) {
+    return 'The form reached the server, but the sender email is not accepted by Resend. Check RESEND_FROM_EMAIL in Cloudflare.';
+  }
+
+  if (text.includes('to') || text.includes('recipient')) {
+    return 'The form reached the server, but the recipient email was not accepted. Check CONTACT_TO_EMAIL in Cloudflare.';
+  }
+
+  return 'The form reached the server, but the email service rejected it. Check the Resend domain, sender email, and Cloudflare variables.';
+}
+
+function validateEmailConfig(env) {
+  const missing = [];
+  if (!env.RESEND_API_KEY) missing.push('RESEND_API_KEY');
+  if (!env.CONTACT_TO_EMAIL) missing.push('CONTACT_TO_EMAIL');
+  if (!env.RESEND_FROM_EMAIL) missing.push('RESEND_FROM_EMAIL');
+  return missing;
+}
+
 async function sendResendEmail(env, payload) {
   const resendResponse = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -228,6 +258,8 @@ async function sendResendEmail(env, payload) {
     const detail = await resendResponse.text();
     const error = new Error(detail || 'Resend email failed');
     error.status = resendResponse.status;
+    error.publicMessage = publicResendErrorMessage(detail);
+    error.detail = detail;
     throw error;
   }
 
@@ -274,10 +306,12 @@ export async function onRequestPost(context) {
     return jsonResponse({ ok: false, message: errors[0], errors }, 400);
   }
 
-  if (!env.RESEND_API_KEY || !env.CONTACT_TO_EMAIL || !env.RESEND_FROM_EMAIL) {
+  const missingConfig = validateEmailConfig(env);
+  if (missingConfig.length) {
+    console.error('Missing contact form environment variables:', missingConfig.join(', '));
     return jsonResponse({
       ok: false,
-      message: 'The form is almost ready, but email settings are missing. Please contact Arsenal Media directly.'
+      message: `The form is almost ready, but email settings are missing: ${missingConfig.join(', ')}.`
     }, 500);
   }
 
@@ -294,10 +328,11 @@ export async function onRequestPost(context) {
   try {
     await sendResendEmail(env, internalPayload);
   } catch (error) {
-    console.error('Resend internal notification error:', error.message);
+    console.error('Resend internal notification error:', error.status || '', error.message);
+    if (error.detail) console.error('Resend detail:', error.detail);
     return jsonResponse({
       ok: false,
-      message: 'The form did not send. Please try again or email Arsenal Media directly.'
+      message: error.publicMessage || 'The form did not send because the email service rejected it. Please try again shortly.'
     }, 502);
   }
 

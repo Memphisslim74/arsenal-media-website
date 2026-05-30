@@ -20,6 +20,16 @@
     return data;
   }
 
+  async function readJsonSafely(response) {
+    const text = await response.text();
+    if (!text) return {};
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      return { message: text };
+    }
+  }
+
   forms.forEach((form) => {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -41,10 +51,10 @@
           body: JSON.stringify(getFormData(form))
         });
 
-        const result = await response.json().catch(() => ({}));
+        const result = await readJsonSafely(response);
 
         if (!response.ok || result.ok === false) {
-          throw new Error(result.message || 'Something went wrong. Please try again.');
+          throw new Error(result.message || 'The form reached the site, but the email did not send. Please try again shortly.');
         }
 
         setMessage(form, result.message || 'Thanks. Your request was sent.', 'success');
