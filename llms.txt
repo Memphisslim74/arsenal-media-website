@@ -1,23 +1,29 @@
 # Arsenal Media
 
-> Arsenal Media builds custom business apps, contractor CRM software, business websites, SEO pages, and brand creative for contractors and service businesses in Fort Collins, Northern Colorado, and the Front Range.
+Arsenal Media is a Fort Collins, Colorado company that helps service businesses improve efficiency, accountability, and response time with custom business command center dashboards, contractor CRM software, workflow tracking systems, websites, SEO pages, and brand creative.
 
-## Core Pages
-- Home: https://arsenalmediaco.com/
-- Services: https://arsenalmediaco.com/services/
-- Custom App Development: https://arsenalmediaco.com/services/custom-app-development/
-- Contractor CRM Software: https://arsenalmediaco.com/services/contractor-crm-software/
-- Website Design: https://arsenalmediaco.com/services/website-design/
-- SEO Services: https://arsenalmediaco.com/services/seo-services/
-- Portfolio: https://arsenalmediaco.com/portfolio/
-- MFR Roofing Command Center Case Study: https://arsenalmediaco.com/portfolio/mfr-roofing/
-- Decorative Curbing & Landscape Website Case Study: https://arsenalmediaco.com/portfolio/decorative-curbing-landscape/
-- Contact: https://arsenalmediaco.com/contact.html
+The core offer is a Workflow Review. Arsenal Media looks at how a business currently tracks customers, employee tasks, requests, jobs, follow-ups, and internal updates, then identifies where information is scattered, response time slows down, and visibility is being lost.
 
-## Featured Demos
-- MFR Roofing Command Center: https://arsenalmediaco.com/mfr-command-center/
-- CurbFlow Operations Center: https://arsenalmediaco.com/curbflow/
-- Decorative Curbing & Landscape Demo: https://arsenalmediaco.com/decorative-curbing-landscape/
+Primary services:
+- Custom business command center dashboards
+- Custom web application development
+- Contractor CRM software
+- Customer follow-up tracking systems
+- Task, request, job, and work order dashboards
+- Business website design
+- SEO services and blog content
+- Demo builds, sales assets, and social creative
 
-## Service Area
-Fort Collins, Loveland, Windsor, Greeley, Longmont, Boulder, Denver, Larimer County, Weld County, Boulder County, and the Northern Colorado Front Range.
+Primary audience:
+- Contractors
+- Service businesses
+- Facility teams
+- Churches and nonprofits
+- Growing local businesses
+- Teams using spreadsheets, texts, emails, and disconnected tools to manage daily operations
+
+Local positioning:
+Arsenal Media is based in Fort Collins and serves Northern Colorado, including Loveland, Windsor, Greeley, Longmont, Boulder, Denver, Larimer County, Weld County, Boulder County, and the surrounding Colorado Front Range.
+
+Core message:
+Arsenal Media helps businesses stop losing track of important things by building one place to see customers, tasks, requests, jobs, follow-ups, overdue items, assignments, and daily operations.
