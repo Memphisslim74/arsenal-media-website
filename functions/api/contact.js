@@ -25,6 +25,11 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function getFirstName(name = '') {
+  const first = normalize(name).split(/\s+/)[0];
+  return first || 'there';
+}
+
 async function readSubmission(request) {
   const contentType = request.headers.get('content-type') || '';
 
@@ -44,7 +49,18 @@ async function readSubmission(request) {
   return {};
 }
 
-function buildHtmlEmail(fields) {
+function emailButton(url, label) {
+  return `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:22px 0 0;">
+      <tr>
+        <td style="border-radius:999px;background:#c8102e;">
+          <a href="${escapeHtml(url)}" style="display:inline-block;padding:13px 20px;border-radius:999px;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.01em;">${escapeHtml(label)}</a>
+        </td>
+      </tr>
+    </table>`;
+}
+
+function buildInternalHtmlEmail(fields) {
   const rows = [
     ['Name', fields.name],
     ['Email', fields.email],
@@ -71,7 +87,7 @@ function buildHtmlEmail(fields) {
     <div style="max-width:720px;margin:0 auto;padding:28px 16px;">
       <div style="background:#0d0f14;color:#ffffff;border-radius:18px 18px 0 0;padding:24px 28px;">
         <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#f04438;font-weight:800;">New website inquiry</div>
-        <h1 style="margin:8px 0 0;font-size:26px;line-height:1.2;">Arsenal Media contact form</h1>
+        <h1 style="margin:8px 0 0;font-size:26px;line-height:1.2;color:#ffffff;">Arsenal Media contact form</h1>
       </div>
       <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 18px 18px;padding:0;overflow:hidden;">
         <table style="width:100%;border-collapse:collapse;">${rows}</table>
@@ -84,7 +100,7 @@ function buildHtmlEmail(fields) {
   </div>`;
 }
 
-function buildTextEmail(fields) {
+function buildInternalTextEmail(fields) {
   return [
     'New Arsenal Media website inquiry',
     '',
@@ -103,6 +119,119 @@ function buildTextEmail(fields) {
     'Message:',
     fields.message
   ].filter(Boolean).join('\n');
+}
+
+function buildCustomerHtmlEmail(fields, env) {
+  const firstName = getFirstName(fields.name);
+  const siteUrl = normalize(env.SITE_URL) || 'https://arsenalmediaco.com';
+  const reviewUrl = `${siteUrl.replace(/\/$/, '')}/contact.html`;
+  const projectType = normalize(fields.project_type) || 'your request';
+  const challenge = normalize(fields.challenge) || 'the workflow issue you shared';
+  const currentSystem = normalize(fields.current_system) || 'your current process';
+
+  return `
+  <div style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;color:#15171d;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+      Your team is not slow. Your information may just be scattered. Arsenal Media received your workflow review request.
+    </div>
+    <div style="max-width:680px;margin:0 auto;padding:30px 16px;">
+      <div style="background:#0d0f14;border-radius:24px 24px 0 0;padding:30px 28px;color:#ffffff;border-bottom:5px solid #c8102e;">
+        <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#ff5a5f;font-weight:900;margin-bottom:12px;">Arsenal Media</div>
+        <h1 style="margin:0;font-size:30px;line-height:1.12;letter-spacing:-.03em;color:#ffffff;">Your request made it through.</h1>
+        <p style="margin:14px 0 0;color:#d5d9e2;font-size:16px;line-height:1.65;">Thanks, ${escapeHtml(firstName)}. I’ll review what you sent and look for the places where time, follow-ups, and visibility may be getting lost.</p>
+      </div>
+
+      <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 24px 24px;overflow:hidden;">
+        <div style="padding:28px;">
+          <div style="background:#fff5f5;border:1px solid #ffd4d4;border-radius:18px;padding:18px 20px;margin-bottom:24px;">
+            <p style="margin:0;color:#111827;font-size:18px;line-height:1.55;font-weight:850;">Most businesses do not have a people problem. They have a visibility problem.</p>
+            <p style="margin:8px 0 0;color:#4b5563;font-size:15px;line-height:1.65;">Customers end up in email. Follow-ups live in someone’s head. Job updates hide in texts. Tasks sit in spreadsheets. Eventually, the owner becomes the dashboard.</p>
+          </div>
+
+          <p style="margin:0 0 18px;color:#222733;font-size:16px;line-height:1.72;">I received your request about <strong>${escapeHtml(projectType)}</strong>. You mentioned <strong>${escapeHtml(challenge)}</strong>, and your current setup looks like <strong>${escapeHtml(currentSystem)}</strong>.</p>
+
+          <p style="margin:0 0 20px;color:#222733;font-size:16px;line-height:1.72;">That is exactly the kind of thing a workflow review is meant to uncover. The goal is not to throw more software at the problem. The goal is to figure out where the process is scattered, where the next step gets missed, and what your team needs to see in one place.</p>
+
+          <div style="border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;margin:24px 0;background:#fafafa;">
+            <div style="padding:14px 18px;background:#111827;color:#ffffff;font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;">What I’ll be looking for</div>
+            <div style="padding:18px;">
+              <table role="presentation" style="width:100%;border-collapse:collapse;">
+                <tr>
+                  <td style="padding:8px 0;color:#c8102e;font-weight:900;width:26px;vertical-align:top;">•</td>
+                  <td style="padding:8px 0;color:#283040;font-size:15px;line-height:1.55;">Where customer requests, jobs, tasks, or follow-ups are being tracked today</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;color:#c8102e;font-weight:900;width:26px;vertical-align:top;">•</td>
+                  <td style="padding:8px 0;color:#283040;font-size:15px;line-height:1.55;">Where information is spread across email, texts, spreadsheets, or disconnected tools</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;color:#c8102e;font-weight:900;width:26px;vertical-align:top;">•</td>
+                  <td style="padding:8px 0;color:#283040;font-size:15px;line-height:1.55;">What your team needs to see quickly: open, assigned, overdue, waiting, and completed</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;color:#c8102e;font-weight:900;width:26px;vertical-align:top;">•</td>
+                  <td style="padding:8px 0;color:#283040;font-size:15px;line-height:1.55;">Whether a simple business command center could help your team respond faster</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <p style="margin:0;color:#222733;font-size:16px;line-height:1.72;"><strong>The problem is not always effort. A lot of the time, it is visibility.</strong> Once everyone can see what is open, who owns it, and what needs to happen next, the business usually starts to feel lighter.</p>
+
+          ${emailButton(reviewUrl, 'Visit Arsenal Media')}
+        </div>
+
+        <div style="background:#0d0f14;color:#ffffff;padding:24px 28px;">
+          <p style="margin:0;color:#f5f5f5;font-size:16px;line-height:1.65;font-weight:800;">We help businesses stop losing track of important things.</p>
+          <p style="margin:8px 0 0;color:#cbd5e1;font-size:14px;line-height:1.7;">Custom command center dashboards, contractor CRM tools, workflow tracking systems, business websites, and SEO support built around the way your team actually works.</p>
+          <p style="margin:16px 0 0;color:#9ca3af;font-size:12px;line-height:1.6;">Arsenal Media · Fort Collins, Colorado · Serving Northern Colorado and service-based businesses anywhere</p>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildCustomerTextEmail(fields) {
+  const firstName = getFirstName(fields.name);
+  return [
+    `Thanks, ${firstName}. Your request made it through.`,
+    '',
+    'Most businesses do not have a people problem. They have a visibility problem.',
+    '',
+    'Customers end up in email. Follow-ups live in someone’s head. Job updates hide in texts. Tasks sit in spreadsheets. Eventually, the owner becomes the dashboard.',
+    '',
+    `I received your request about: ${fields.project_type || 'your request'}`,
+    fields.challenge ? `Main issue: ${fields.challenge}` : '',
+    fields.current_system ? `Current setup: ${fields.current_system}` : '',
+    '',
+    'I’ll review what you sent and look for where time, follow-ups, and visibility may be getting lost.',
+    '',
+    'The problem is not always effort. A lot of the time, it is visibility.',
+    '',
+    'Arsenal Media helps businesses stop losing track of important things with custom command center dashboards, contractor CRM tools, workflow tracking systems, business websites, and SEO support.',
+    '',
+    'https://arsenalmediaco.com'
+  ].filter(Boolean).join('\n');
+}
+
+async function sendResendEmail(env, payload) {
+  const resendResponse = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!resendResponse.ok) {
+    const detail = await resendResponse.text();
+    const error = new Error(detail || 'Resend email failed');
+    error.status = resendResponse.status;
+    throw error;
+  }
+
+  return resendResponse.json();
 }
 
 export async function onRequestPost(context) {
@@ -153,31 +282,39 @@ export async function onRequestPost(context) {
   }
 
   const subjectParts = [fields.project_type, fields.company || fields.name].filter(Boolean);
-  const payload = {
+  const internalPayload = {
     from: env.RESEND_FROM_EMAIL,
     to: [env.CONTACT_TO_EMAIL],
     reply_to: fields.email,
     subject: `New Arsenal Media inquiry: ${subjectParts.join(' - ')}`,
-    html: buildHtmlEmail(fields),
-    text: buildTextEmail(fields)
+    html: buildInternalHtmlEmail(fields),
+    text: buildInternalTextEmail(fields)
   };
 
-  const resendResponse = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!resendResponse.ok) {
-    const detail = await resendResponse.text();
-    console.error('Resend error:', detail);
+  try {
+    await sendResendEmail(env, internalPayload);
+  } catch (error) {
+    console.error('Resend internal notification error:', error.message);
     return jsonResponse({
       ok: false,
       message: 'The form did not send. Please try again or email Arsenal Media directly.'
     }, 502);
+  }
+
+  const customerPayload = {
+    from: env.RESEND_FROM_EMAIL,
+    to: [fields.email],
+    reply_to: env.CONTACT_REPLY_TO_EMAIL || env.CONTACT_TO_EMAIL,
+    subject: 'Your Arsenal Media workflow review request made it through',
+    html: buildCustomerHtmlEmail(fields, env),
+    text: buildCustomerTextEmail(fields)
+  };
+
+  try {
+    await sendResendEmail(env, customerPayload);
+  } catch (error) {
+    // Do not fail the form if the internal lead email succeeded but the confirmation email had an issue.
+    console.error('Resend customer confirmation error:', error.message);
   }
 
   return jsonResponse({
