@@ -155,6 +155,47 @@
     </form>
   </div>
 </section>
+
+<!-- AM FORM SLOT: QUICK-1 -->
+<section class="section white inlineLeadSection" aria-labelledby="quick-workflow-request-a-workflow-review-arse-1">
+  <div class="container inlineLeadWrap">
+    <div class="inlineLeadCopy">
+      <span class="eyebrow">Quick workflow check</span>
+      <h2 id="quick-workflow-request-a-workflow-review-arse-1">Where is the work getting hard to track?</h2>
+      <p>Most businesses do not have a people problem. They have a visibility problem. Send the quick version and I’ll look for where customers, tasks, jobs, or follow-ups are getting scattered.</p>
+    </div>
+    <form class="contactBox amLeadForm amLeadFormCompact" action="/api/contact" method="post" data-contact-form>
+      <div class="formGrid miniFormGrid">
+        <div class="field">
+          <label>Name</label>
+          <input name="name" placeholder="Your name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label>Company</label>
+          <input name="company" placeholder="Business name" autocomplete="organization">
+        </div>
+        <div class="field">
+          <label>What do you need help with?</label>
+          <select name="project_type" required><option value="">Choose the closest fit</option><option>Workflow review / business command center</option><option>Custom web application or dashboard</option><option>Contractor CRM or customer tracking system</option><option>Work order, request, or task tracking</option><option>Business website or landing page</option><option>SEO and content strategy</option><option>Not sure yet</option></select>
+        </div>
+        <div class="field full">
+          <label>What is falling through the cracks?</label>
+          <textarea name="message" placeholder="Example: follow-ups live in texts, jobs are hard to track, or I need better visibility across the team." required></textarea>
+        </div>
+        <input type="hidden" name="source_page" value="Request a Workflow Review | Arsenal Media Contact — quick workflow form">
+        <div class="hpField" aria-hidden="true"><label>Leave this field empty</label><input name="website_url" tabindex="-1" autocomplete="off"></div>
+        <button class="btn primary" type="submit">Send Quick Review</button>
+        <p class="formStatus" data-form-message role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</section>
+<!-- /AM FORM SLOT: QUICK-1 -->
+
 </main>
 <div class="mobileCta"><a class="btn primary" href="/contact.html">Request a Workflow Review</a></div>
 <footer class="footer">
@@ -181,6 +222,6 @@
 <div class="container subfooter">© 2026 Arsenal Media Co. Custom command centers, contractor CRM software, websites, SEO, and brand creative for service businesses.</div>
 </footer>
 <script src="/assets/js/main.js"></script>
-<script src="/assets/js/contact-forms.js?v=23"></script>
+<script src="/assets/js/contact-forms.js?v=25"></script>
 </body>
 </html>

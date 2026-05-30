@@ -92,3 +92,43 @@
   .contactReviewForm .btn.fullWidth{width:100%;min-width:0;}
   .contactIntroPanel{padding:22px!important;}
 }
+
+
+/* -------------------------------------------------------
+   SITE-WIDE WORKFLOW REVIEW FORMS
+   Used on homepage, services, portfolio, about, blog, and case-study pages.
+------------------------------------------------------- */
+.inlineLeadSection{background:#fff;position:relative;}
+.inlineLeadWrap{display:grid;grid-template-columns:minmax(260px,.82fr) minmax(520px,1.18fr);gap:30px;align-items:center;}
+.inlineLeadCopy h2,.bottomLeadCopy h2{font-size:clamp(28px,3.2vw,48px);line-height:1.06;letter-spacing:-.04em;margin:8px 0 14px;color:var(--ink,#171a21);}
+.inlineLeadCopy p,.bottomLeadCopy p{font-size:clamp(16px,1.45vw,19px);line-height:1.72;color:var(--muted,#535b67);margin:0;}
+.amLeadForm{background:#fff;border:1px solid var(--line,rgba(15,17,22,.12));border-radius:26px;padding:24px;box-shadow:var(--shadow2,0 20px 60px rgba(0,0,0,.08));}
+.amLeadForm .formGrid{display:grid;gap:14px 16px;}
+.amLeadForm .miniFormGrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.amLeadForm .reviewFormGrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.amLeadForm .field{display:flex;flex-direction:column;gap:7px;}
+.amLeadForm .field.full{grid-column:1/-1;}
+.amLeadForm .field.wide{grid-column:span 1;}
+.amLeadForm label{font-size:12.5px;font-weight:850;color:var(--ink,#171a21);letter-spacing:.01em;}
+.amLeadForm label span{color:var(--muted,#535b67);font-weight:700;}
+.amLeadForm input,.amLeadForm select,.amLeadForm textarea{width:100%;min-height:48px;border:1px solid #d8d0c5;border-radius:14px;background:#fff;color:#171a21;font:inherit;padding:12px 13px;outline:none;}
+.amLeadForm textarea{min-height:112px;resize:vertical;line-height:1.55;}
+.amLeadForm input:focus,.amLeadForm select:focus,.amLeadForm textarea:focus{border-color:#c8102e;box-shadow:0 0 0 4px rgba(200,16,46,.12);}
+.amLeadForm .btn{justify-self:start;min-width:210px;}
+.amLeadFormCompact textarea{min-height:104px;}
+.bottomLeadSection{background:#0d0f14;color:#fff;position:relative;overflow:hidden;}
+.bottomLeadSection:before{content:"";position:absolute;inset:-120px -160px auto auto;width:420px;height:420px;background:radial-gradient(circle,rgba(200,16,46,.35),rgba(200,16,46,0) 68%);pointer-events:none;}
+.bottomLeadGrid{display:grid;grid-template-columns:minmax(280px,.86fr) minmax(560px,1.14fr);gap:34px;align-items:center;position:relative;z-index:1;}
+.bottomLeadCopy h2{color:#fff;}
+.bottomLeadCopy p{color:#d5d9e2;}
+.leadBullets{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:10px;}
+.leadBullets li{position:relative;padding-left:24px;color:#e5e7eb;line-height:1.55;font-weight:750;}
+.leadBullets li:before{content:"";position:absolute;left:0;top:.58em;width:9px;height:9px;border-radius:50%;background:#c8102e;box-shadow:0 0 0 5px rgba(200,16,46,.16);}
+.amLeadFormDark{background:#fff;color:#171a21;border:1px solid rgba(255,255,255,.16);}
+.compactHeader{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(15,17,22,.1);}
+.compactHeader h3{font-size:clamp(22px,2.2vw,30px);line-height:1.1;letter-spacing:-.025em;margin:0 0 6px;color:#171a21;}
+.compactHeader p{margin:0;color:#535b67;line-height:1.55;font-size:14.5px;}
+.amLeadForm .formStatus{grid-column:1/-1;}
+.amLeadForm .hpField{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important;}
+@media(max-width:1020px){.inlineLeadWrap,.bottomLeadGrid{grid-template-columns:1fr}.amLeadForm .field.wide{grid-column:1/-1}}
+@media(max-width:680px){.inlineLeadWrap,.bottomLeadGrid{gap:22px}.amLeadForm{padding:20px;border-radius:22px}.amLeadForm .miniFormGrid,.amLeadForm .reviewFormGrid{grid-template-columns:1fr}.amLeadForm .field,.amLeadForm .field.wide,.amLeadForm .field.full{grid-column:1/-1}.amLeadForm .btn{width:100%;min-width:0}.leadBullets li{font-size:14.5px}}
