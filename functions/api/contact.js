@@ -244,6 +244,68 @@ function validateEmailConfig(env) {
   return missing;
 }
 
+
+function validateTurnstileConfig(env) {
+  const missing = [];
+  if (!env.TURNSTILE_SITE_KEY) missing.push('TURNSTILE_SITE_KEY');
+  if (!env.TURNSTILE_SECRET_KEY) missing.push('TURNSTILE_SECRET_KEY');
+  return missing;
+}
+
+async function verifyTurnstile(request, env, token) {
+  const missing = validateTurnstileConfig(env);
+  if (missing.length) {
+    console.error('Missing Turnstile environment variables:', missing.join(', '));
+    return {
+      ok: false,
+      status: 500,
+      message: `The human verification is not fully configured yet. Missing: ${missing.join(', ')}.`
+    };
+  }
+
+  if (!token) {
+    return {
+      ok: false,
+      status: 400,
+      message: 'Please complete the “Are you human?” check before sending the form.'
+    };
+  }
+
+  const formData = new FormData();
+  formData.append('secret', env.TURNSTILE_SECRET_KEY);
+  formData.append('response', token);
+
+  const ip = request.headers.get('CF-Connecting-IP');
+  if (ip) formData.append('remoteip', ip);
+
+  let result;
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: formData
+    });
+    result = await response.json();
+  } catch (error) {
+    console.error('Turnstile verification request failed:', error && (error.stack || error.message || error));
+    return {
+      ok: false,
+      status: 500,
+      message: 'The human verification service could not be reached. Please refresh the page and try again.'
+    };
+  }
+
+  if (!result.success) {
+    console.warn('Turnstile verification failed:', JSON.stringify(result));
+    return {
+      ok: false,
+      status: 400,
+      message: 'The human verification did not pass. Please refresh the page and try again.'
+    };
+  }
+
+  return { ok: true };
+}
+
 async function sendResendEmail(env, payload) {
   const resendResponse = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -279,6 +341,17 @@ export async function onRequestPost(context) {
   // Honeypot field. Real users should never fill this in.
   if (normalize(submission.website_url || submission.company_url_hidden || submission._gotcha)) {
     return jsonResponse({ ok: true, message: 'Thanks. Your request has been sent.' });
+  }
+
+  const turnstileToken = normalize(
+    submission['cf-turnstile-response'] ||
+    submission.turnstile_token ||
+    submission.turnstileToken
+  );
+
+  const turnstileResult = await verifyTurnstile(request, env, turnstileToken);
+  if (!turnstileResult.ok) {
+    return jsonResponse({ ok: false, message: turnstileResult.message }, turnstileResult.status || 400);
   }
 
   const fields = {
@@ -376,6 +449,19 @@ export async function onRequest(context) {
 
     if (method === 'GET') {
       const env = context.env || {};
+      const url = new URL(context.request.url);
+
+      if (url.searchParams.get('config') === 'turnstile') {
+        return jsonResponse({
+          ok: true,
+          turnstile: {
+            enabled: Boolean(env.TURNSTILE_SITE_KEY),
+            siteKey: env.TURNSTILE_SITE_KEY || '',
+            required: true
+          }
+        });
+      }
+
       return jsonResponse({
         ok: true,
         endpoint: '/api/contact',
@@ -385,7 +471,9 @@ export async function onRequest(context) {
           CONTACT_TO_EMAIL: Boolean(env.CONTACT_TO_EMAIL),
           RESEND_FROM_EMAIL: Boolean(env.RESEND_FROM_EMAIL),
           CONTACT_REPLY_TO_EMAIL: Boolean(env.CONTACT_REPLY_TO_EMAIL),
-          SITE_URL: Boolean(env.SITE_URL)
+          SITE_URL: Boolean(env.SITE_URL),
+          TURNSTILE_SITE_KEY: Boolean(env.TURNSTILE_SITE_KEY),
+          TURNSTILE_SECRET_KEY: Boolean(env.TURNSTILE_SECRET_KEY)
         }
       });
     }

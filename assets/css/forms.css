@@ -132,3 +132,51 @@
 .amLeadForm .hpField{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important;}
 @media(max-width:1020px){.inlineLeadWrap,.bottomLeadGrid{grid-template-columns:1fr}.amLeadForm .field.wide{grid-column:1/-1}}
 @media(max-width:680px){.inlineLeadWrap,.bottomLeadGrid{gap:22px}.amLeadForm{padding:20px;border-radius:22px}.amLeadForm .miniFormGrid,.amLeadForm .reviewFormGrid{grid-template-columns:1fr}.amLeadForm .field,.amLeadForm .field.wide,.amLeadForm .field.full{grid-column:1/-1}.amLeadForm .btn{width:100%;min-width:0}.leadBullets li{font-size:14.5px}}
+
+/* -------------------------------------------------------
+   CLOUDFLARE TURNSTILE HUMAN VERIFICATION
+   Injected by assets/js/contact-forms.js on every contact form.
+------------------------------------------------------- */
+.humanCheckField{
+  grid-column:1/-1!important;
+  margin-top:2px;
+}
+.humanCheckField label{
+  display:block;
+  margin-bottom:8px;
+}
+.humanCheckField label span{
+  color:var(--muted,#535b67);
+  font-weight:700;
+}
+.turnstileBox{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  background:#fbfaf8;
+  border:1px solid #d8d0c5;
+  border-radius:16px;
+  padding:12px;
+  overflow:hidden;
+}
+.humanCheckField.has-error .turnstileBox{
+  border-color:#f04438;
+  background:#fff1f3;
+}
+.turnstileError{
+  color:#b42318;
+  font-weight:850;
+  font-size:14px;
+  line-height:1.45;
+}
+.amLeadFormDark .turnstileBox,
+.contactReviewForm .turnstileBox{
+  background:#fff;
+}
+@media(max-width:680px){
+  .turnstileBox{
+    padding:10px;
+    border-radius:14px;
+  }
+}
