@@ -9,3 +9,6 @@
 /css/forms.css
   Cache-Control: no-store, no-cache, must-revalidate, max-age=0
   Content-Type: text/css; charset=utf-8
+
+/api/contact
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0

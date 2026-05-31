@@ -1,9 +1,15 @@
 (function () {
-  const TURNSTILE_CONFIG_URL = '/api/contact?config=turnstile&v=27';
-  const TURNSTILE_API_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-  let turnstileConfigPromise;
-  let turnstileScriptPromise;
-  let observerStarted = false;
+  'use strict';
+
+  const VERSION = '28';
+  const CONFIG_URL = '/api/contact?config=turnstile&v=' + VERSION;
+  const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+  let configPromise = null;
+  let scriptPromise = null;
+
+  function log() {
+    try { console.info.apply(console, ['Arsenal Media contact forms v' + VERSION].concat(Array.from(arguments))); } catch (_) {}
+  }
 
   function ready(fn) {
     if (document.readyState === 'loading') {
@@ -13,186 +19,184 @@
     }
   }
 
-  function setMessage(form, message, type) {
-    const target = form.querySelector('[data-form-message]');
-    if (!target) return;
-    target.style.display = 'block';
-    target.textContent = message;
-    target.classList.remove('is-success', 'is-error');
-    target.classList.add(type === 'success' ? 'is-success' : 'is-error');
+  function getForms() {
+    return Array.from(document.querySelectorAll('form[data-contact-form], form[action="/api/contact"], form[action$="/api/contact"]'));
   }
 
-  function getSubmitButton(form) {
+  function messageBox(form) {
+    let box = form.querySelector('[data-form-message]');
+    if (!box) {
+      box = document.createElement('p');
+      box.className = 'formStatus fullWidth';
+      box.setAttribute('data-form-message', '');
+      box.setAttribute('role', 'status');
+      box.setAttribute('aria-live', 'polite');
+      const submit = submitButton(form);
+      if (submit && submit.parentNode) submit.parentNode.insertBefore(box, submit.nextSibling);
+      else form.appendChild(box);
+    }
+    return box;
+  }
+
+  function setMessage(form, text, type) {
+    const box = messageBox(form);
+    box.style.display = text ? 'block' : 'none';
+    box.textContent = text || '';
+    box.classList.remove('is-success', 'is-error');
+    if (type) box.classList.add(type === 'success' ? 'is-success' : 'is-error');
+  }
+
+  function submitButton(form) {
     return form.querySelector('button[type="submit"], input[type="submit"]');
   }
 
-  function getFormData(form) {
+  function readData(form) {
     const data = {};
-    new FormData(form).forEach((value, key) => {
+    new FormData(form).forEach(function (value, key) {
       data[key] = typeof value === 'string' ? value.trim() : value;
     });
     data.source_page = data.source_page || window.location.href;
     return data;
   }
 
-  async function readJsonSafely(response) {
+  async function readJson(response) {
     const text = await response.text();
     if (!text) return {};
-    try {
-      return JSON.parse(text);
-    } catch (error) {
-      const cleaned = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-      if (cleaned.toLowerCase().includes('bad gateway') || response.status === 502) {
-        return { message: 'The contact API returned a Cloudflare 502. Check the Cloudflare Pages Function logs and Resend settings.' };
-      }
-      return { message: cleaned || 'The form reached the site, but the server returned an unexpected response.' };
+    try { return JSON.parse(text); }
+    catch (_) {
+      return { ok: false, message: text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || 'Unexpected server response.' };
     }
   }
 
-  async function loadTurnstileConfig() {
-    if (!turnstileConfigPromise) {
-      turnstileConfigPromise = fetch(TURNSTILE_CONFIG_URL, { cache: 'no-store' })
-        .then(readJsonSafely)
-        .then((result) => {
-          const siteKey = result && result.turnstile && result.turnstile.siteKey;
-          if (!result.ok || !siteKey) {
-            throw new Error('Human verification is not configured yet. Add TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY in Cloudflare, then redeploy.');
-          }
-          return result.turnstile;
+  function loadConfig() {
+    if (!configPromise) {
+      configPromise = fetch(CONFIG_URL, { cache: 'no-store' })
+        .then(readJson)
+        .then(function (json) {
+          const siteKey = json && json.turnstile && json.turnstile.siteKey;
+          if (!siteKey) throw new Error('Turnstile site key was not returned by /api/contact?config=turnstile.');
+          return json.turnstile;
         });
     }
-    return turnstileConfigPromise;
+    return configPromise;
   }
 
-  function loadTurnstileScript() {
-    if (window.turnstile && typeof window.turnstile.render === 'function') {
-      return Promise.resolve(window.turnstile);
-    }
+  function loadTurnstile() {
+    if (window.turnstile && typeof window.turnstile.render === 'function') return Promise.resolve(window.turnstile);
+    if (scriptPromise) return scriptPromise;
 
-    if (!turnstileScriptPromise) {
-      turnstileScriptPromise = new Promise((resolve, reject) => {
-        const existing = document.querySelector('script[data-arsenal-turnstile]');
-        if (existing) {
-          const waitForTurnstile = window.setInterval(() => {
-            if (window.turnstile && typeof window.turnstile.render === 'function') {
-              window.clearInterval(waitForTurnstile);
-              resolve(window.turnstile);
-            }
-          }, 80);
-          window.setTimeout(() => {
-            window.clearInterval(waitForTurnstile);
-            if (window.turnstile && typeof window.turnstile.render === 'function') resolve(window.turnstile);
-            else reject(new Error('Cloudflare Turnstile loaded, but the widget API was not ready.'));
-          }, 8000);
-          return;
-        }
+    scriptPromise = new Promise(function (resolve, reject) {
+      const existing = document.querySelector('script[data-am-turnstile-script]');
 
-        const script = document.createElement('script');
-        script.src = TURNSTILE_API_URL;
-        script.async = true;
-        script.defer = true;
-        script.dataset.arsenalTurnstile = 'true';
-        script.onload = () => {
-          const waitForTurnstile = window.setInterval(() => {
-            if (window.turnstile && typeof window.turnstile.render === 'function') {
-              window.clearInterval(waitForTurnstile);
-              resolve(window.turnstile);
-            }
-          }, 80);
-          window.setTimeout(() => {
-            window.clearInterval(waitForTurnstile);
-            if (window.turnstile && typeof window.turnstile.render === 'function') resolve(window.turnstile);
-            else reject(new Error('Cloudflare Turnstile loaded, but the widget API was not ready.'));
-          }, 8000);
-        };
-        script.onerror = () => reject(new Error('Cloudflare Turnstile could not load. A browser blocker may be blocking challenges.cloudflare.com.'));
-        document.head.appendChild(script);
-      });
-    }
+      function waitForApi() {
+        const started = Date.now();
+        const timer = window.setInterval(function () {
+          if (window.turnstile && typeof window.turnstile.render === 'function') {
+            window.clearInterval(timer);
+            resolve(window.turnstile);
+          } else if (Date.now() - started > 10000) {
+            window.clearInterval(timer);
+            reject(new Error('Cloudflare Turnstile API did not become ready.'));
+          }
+        }, 100);
+      }
 
-    return turnstileScriptPromise;
+      if (existing) {
+        waitForApi();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = TURNSTILE_SCRIPT;
+      script.async = true;
+      script.defer = true;
+      script.setAttribute('data-am-turnstile-script', 'true');
+      script.onload = waitForApi;
+      script.onerror = function () {
+        reject(new Error('Cloudflare Turnstile could not load. Browser privacy tools or a content blocker may be blocking challenges.cloudflare.com.'));
+      };
+      document.head.appendChild(script);
+    });
+
+    return scriptPromise;
   }
 
-  function findInsertTarget(form) {
-    const submitButton = getSubmitButton(form);
-    if (!submitButton) return { parent: form, before: null };
-
-    const wrapper = submitButton.closest('.formActions, .formFooter, .contactActions, .leadFormActions, .buttonRow, .actions');
-    if (wrapper && wrapper.parentNode) {
-      return { parent: wrapper.parentNode, before: wrapper };
+  function insertBeforeSubmit(form, element) {
+    const submit = submitButton(form);
+    if (!submit) {
+      form.appendChild(element);
+      return;
     }
 
-    if (submitButton.parentNode) {
-      return { parent: submitButton.parentNode, before: submitButton };
-    }
-
-    return { parent: form, before: null };
+    // The current forms put the submit button inside .formGrid. Inserting before the button
+    // makes the human check visible exactly where users expect it.
+    submit.parentNode.insertBefore(element, submit);
   }
 
-  function ensureHumanCheckField(form) {
+  function ensureHumanCheck(form) {
     let field = form.querySelector('[data-human-check]');
     if (field) return field;
-
-    const hidden = document.createElement('input');
-    hidden.type = 'hidden';
-    hidden.name = 'cf-turnstile-response';
-    hidden.setAttribute('data-turnstile-token', '');
 
     field = document.createElement('div');
     field.className = 'field humanCheckField full fullWidth turnstilePending';
     field.setAttribute('data-human-check', '');
-    field.innerHTML = [
-      '<label>Are you human? <span>Required</span></label>',
-      '<div class="turnstileBox" data-turnstile-container>',
-      '  <div class="turnstileLoading">Loading human verification...</div>',
-      '</div>',
-      '<small class="fieldHelp">This quick check helps stop spam bots before they can flood the inbox.</small>'
-    ].join('');
-    field.appendChild(hidden);
 
-    const target = findInsertTarget(form);
-    target.parent.insertBefore(field, target.before);
+    const label = document.createElement('label');
+    label.textContent = 'Are you human?';
+    const req = document.createElement('span');
+    req.textContent = ' Required';
+    label.appendChild(req);
 
+    const box = document.createElement('div');
+    box.className = 'turnstileBox';
+    box.setAttribute('data-turnstile-container', '');
+    box.innerHTML = '<div class="turnstileLoading">Loading human verification...</div>';
+
+    const help = document.createElement('small');
+    help.className = 'fieldHelp';
+    help.textContent = 'This quick check helps stop spam bots before they can flood the inbox.';
+
+    const token = document.createElement('input');
+    token.type = 'hidden';
+    token.name = 'cf-turnstile-response';
+    token.setAttribute('data-turnstile-token', '');
+
+    field.appendChild(label);
+    field.appendChild(box);
+    field.appendChild(help);
+    field.appendChild(token);
+
+    insertBeforeSubmit(form, field);
     return field;
   }
 
-  function resetTurnstileForm(form) {
-    const tokenInput = form.querySelector('[data-turnstile-token]');
-    if (tokenInput) tokenInput.value = '';
-
-    const widgetId = form.dataset.turnstileWidgetId;
-    if (window.turnstile && widgetId) {
-      try {
-        window.turnstile.reset(widgetId);
-      } catch (error) {
-        console.warn('Could not reset Turnstile widget:', error);
-      }
-    }
-  }
-
-  async function setupTurnstile(form) {
-    const field = ensureHumanCheckField(form);
-    const container = field.querySelector('[data-turnstile-container]');
+  async function renderTurnstile(form) {
+    const field = ensureHumanCheck(form);
+    const box = field.querySelector('[data-turnstile-container]');
     const tokenInput = field.querySelector('[data-turnstile-token]');
 
-    if (!container || !tokenInput) return;
-    if (form.dataset.turnstileWidgetId) return;
+    if (!box || !tokenInput) return;
+    if (form.dataset.turnstileRendered === 'true') return;
 
     try {
       field.classList.add('turnstilePending');
-      container.innerHTML = '<div class="turnstileLoading">Loading human verification...</div>';
+      field.classList.remove('has-error', 'is-verified');
+      box.innerHTML = '<div class="turnstileLoading">Loading human verification...</div>';
 
-      const [config, turnstile] = await Promise.all([loadTurnstileConfig(), loadTurnstileScript()]);
+      const result = await Promise.all([loadConfig(), loadTurnstile()]);
+      const config = result[0];
+      const turnstile = result[1];
 
-      container.innerHTML = '';
-      const widgetId = turnstile.render(container, {
+      box.innerHTML = '';
+      const widgetId = turnstile.render(box, {
         sitekey: config.siteKey,
         theme: 'light',
         appearance: 'always',
         callback: function (token) {
           tokenInput.value = token;
-          field.classList.remove('has-error', 'turnstilePending');
+          field.classList.remove('turnstilePending', 'has-error');
           field.classList.add('is-verified');
+          setMessage(form, '', null);
         },
         'expired-callback': function () {
           tokenInput.value = '';
@@ -207,85 +211,94 @@
         }
       });
 
-      form.dataset.turnstileWidgetId = widgetId;
+      form.dataset.turnstileRendered = 'true';
+      form.dataset.turnstileWidgetId = String(widgetId);
       field.classList.remove('turnstilePending');
+      log('Turnstile rendered for form', form.id || form.className || form);
     } catch (error) {
+      console.error('Arsenal Media Turnstile render failed:', error);
       field.classList.remove('turnstilePending');
       field.classList.add('has-error');
-      container.innerHTML = '<div class="turnstileError">Human verification could not load. Refresh the page. If it still does not appear, check browser blockers or Cloudflare Turnstile settings.</div>';
-      console.error('Arsenal Media Turnstile setup failed:', error);
+      box.innerHTML = '<div class="turnstileError">Human verification could not load. Refresh the page. If it still does not appear, check browser blockers or Cloudflare Turnstile settings.</div>';
     }
   }
 
+  function resetWidget(form) {
+    const token = form.querySelector('[data-turnstile-token]');
+    if (token) token.value = '';
+    if (window.turnstile && form.dataset.turnstileWidgetId) {
+      try { window.turnstile.reset(form.dataset.turnstileWidgetId); } catch (_) {}
+    }
+    const field = form.querySelector('[data-human-check]');
+    if (field) field.classList.remove('is-verified');
+  }
+
   function bindForm(form) {
-    if (!form || form.dataset.contactFormBound === 'true') return;
-    form.dataset.contactFormBound = 'true';
+    if (!form || form.dataset.amContactBound === 'true') return;
+    form.dataset.amContactBound = 'true';
+    form.setAttribute('data-contact-form', '');
 
-    ensureHumanCheckField(form);
-    setupTurnstile(form);
+    ensureHumanCheck(form);
+    renderTurnstile(form);
 
-    form.addEventListener('submit', async (event) => {
+    form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
-      const submitButton = getSubmitButton(form);
-      const originalText = submitButton ? submitButton.textContent : '';
-      const tokenInput = form.querySelector('[data-turnstile-token]');
+      ensureHumanCheck(form);
+      renderTurnstile(form);
 
-      if (!tokenInput || !tokenInput.value) {
-        ensureHumanCheckField(form);
-        setupTurnstile(form);
+      const token = form.querySelector('[data-turnstile-token]');
+      if (!token || !token.value) {
         setMessage(form, 'Please complete the “Are you human?” check before sending the form.', 'error');
         return;
       }
 
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.textContent = 'Sending...';
+      const submit = submitButton(form);
+      const original = submit ? submit.textContent : '';
+      if (submit) {
+        submit.disabled = true;
+        if (submit.tagName.toLowerCase() === 'button') submit.textContent = 'Sending...';
       }
-
-      setMessage(form, 'Sending your request...', 'success');
+      setMessage(form, '', null);
 
       try {
         const response = await fetch(form.getAttribute('action') || '/api/contact', {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(getFormData(form))
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(readData(form))
         });
+        const result = await readJson(response);
+        if (!response.ok || result.ok === false) throw new Error(result.message || 'The form could not be sent.');
 
-        const result = await readJsonSafely(response);
-
-        if (!response.ok || result.ok === false) {
-          if ((result.message || '').toLowerCase().includes('human verification') || response.status === 400) {
-            resetTurnstileForm(form);
-          }
-          throw new Error(result.message || 'The form reached the site, but the email did not send. Please try again shortly.');
-        }
-
-        setMessage(form, result.message || 'Thanks. Your request was sent.', 'success');
         form.reset();
-        resetTurnstileForm(form);
+        resetWidget(form);
+        setMessage(form, result.message || 'Thanks. Your workflow review request was sent.', 'success');
       } catch (error) {
-        setMessage(form, error.message || 'The form did not send. Please try again.', 'error');
+        setMessage(form, error.message || 'Something went wrong sending the form. Please try again.', 'error');
+        resetWidget(form);
       } finally {
-        if (submitButton) {
-          submitButton.disabled = false;
-          submitButton.textContent = originalText;
+        if (submit) {
+          submit.disabled = false;
+          if (submit.tagName.toLowerCase() === 'button') submit.textContent = original;
         }
       }
     });
   }
 
-  function initForms() {
-    document.querySelectorAll('[data-contact-form]').forEach(bindForm);
-
-    if (!observerStarted) {
-      observerStarted = true;
-      const observer = new MutationObserver(() => {
-        document.querySelectorAll('[data-contact-form]').forEach(bindForm);
-      });
-      observer.observe(document.documentElement, { childList: true, subtree: true });
-    }
+  function init() {
+    const forms = getForms();
+    if (!forms.length) return;
+    forms.forEach(bindForm);
   }
 
-  ready(initForms);
+  ready(function () {
+    init();
+    window.setTimeout(init, 300);
+    window.setTimeout(init, 1200);
+
+    if ('MutationObserver' in window) {
+      const observer = new MutationObserver(function () { init(); });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+  });
 })();
