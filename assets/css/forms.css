@@ -180,3 +180,49 @@
     border-radius:14px;
   }
 }
+
+/* -------------------------------------------------------
+   TURNSTILE VISIBILITY PATCH v27
+   Keeps the human check visible even if form layouts vary.
+------------------------------------------------------- */
+.humanCheckField{
+  display:block!important;
+  grid-column:1/-1!important;
+  width:100%!important;
+  clear:both!important;
+  margin:8px 0 14px!important;
+  padding:0!important;
+}
+.humanCheckField label{
+  display:block!important;
+  margin:0 0 8px!important;
+  color:#171a21!important;
+  font-size:12.5px!important;
+  font-weight:850!important;
+}
+.turnstileBox{
+  min-height:84px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  background:#fff!important;
+  border:1px solid #d8d0c5!important;
+  border-radius:16px!important;
+  padding:12px!important;
+  overflow:hidden!important;
+}
+.turnstileLoading,
+.turnstileError{
+  font-size:14px!important;
+  line-height:1.45!important;
+  font-weight:800!important;
+}
+.turnstileLoading{color:#535b67!important;}
+.turnstileError{color:#b42318!important;}
+.humanCheckField.has-error .turnstileBox{
+  border-color:#f04438!important;
+  background:#fff1f3!important;
+}
+.humanCheckField.is-verified .turnstileBox{
+  border-color:#1f9d55!important;
+}

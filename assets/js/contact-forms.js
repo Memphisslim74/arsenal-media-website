@@ -1,11 +1,17 @@
 (function () {
-  const forms = document.querySelectorAll('[data-contact-form]');
-  if (!forms.length) return;
-
-  const TURNSTILE_CONFIG_URL = '/api/contact?config=turnstile';
+  const TURNSTILE_CONFIG_URL = '/api/contact?config=turnstile&v=27';
   const TURNSTILE_API_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
   let turnstileConfigPromise;
   let turnstileScriptPromise;
+  let observerStarted = false;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn, { once: true });
+    } else {
+      fn();
+    }
+  }
 
   function setMessage(form, message, type) {
     const target = form.querySelector('[data-form-message]');
@@ -16,9 +22,8 @@
     target.classList.add(type === 'success' ? 'is-success' : 'is-error');
   }
 
-  function setSubmitDisabled(form, disabled) {
-    const submitButton = form.querySelector('[type="submit"]');
-    if (submitButton) submitButton.disabled = disabled;
+  function getSubmitButton(form) {
+    return form.querySelector('button[type="submit"], input[type="submit"]');
   }
 
   function getFormData(form) {
@@ -49,8 +54,9 @@
       turnstileConfigPromise = fetch(TURNSTILE_CONFIG_URL, { cache: 'no-store' })
         .then(readJsonSafely)
         .then((result) => {
-          if (!result.ok || !result.turnstile || !result.turnstile.siteKey) {
-            throw new Error('The human verification is not configured yet. Add TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY in Cloudflare.');
+          const siteKey = result && result.turnstile && result.turnstile.siteKey;
+          if (!result.ok || !siteKey) {
+            throw new Error('Human verification is not configured yet. Add TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY in Cloudflare, then redeploy.');
           }
           return result.turnstile;
         });
@@ -59,14 +65,25 @@
   }
 
   function loadTurnstileScript() {
-    if (window.turnstile) return Promise.resolve(window.turnstile);
+    if (window.turnstile && typeof window.turnstile.render === 'function') {
+      return Promise.resolve(window.turnstile);
+    }
 
     if (!turnstileScriptPromise) {
       turnstileScriptPromise = new Promise((resolve, reject) => {
         const existing = document.querySelector('script[data-arsenal-turnstile]');
         if (existing) {
-          existing.addEventListener('load', () => resolve(window.turnstile));
-          existing.addEventListener('error', () => reject(new Error('Cloudflare Turnstile could not load.')));
+          const waitForTurnstile = window.setInterval(() => {
+            if (window.turnstile && typeof window.turnstile.render === 'function') {
+              window.clearInterval(waitForTurnstile);
+              resolve(window.turnstile);
+            }
+          }, 80);
+          window.setTimeout(() => {
+            window.clearInterval(waitForTurnstile);
+            if (window.turnstile && typeof window.turnstile.render === 'function') resolve(window.turnstile);
+            else reject(new Error('Cloudflare Turnstile loaded, but the widget API was not ready.'));
+          }, 8000);
           return;
         }
 
@@ -75,13 +92,41 @@
         script.async = true;
         script.defer = true;
         script.dataset.arsenalTurnstile = 'true';
-        script.onload = () => resolve(window.turnstile);
-        script.onerror = () => reject(new Error('Cloudflare Turnstile could not load.'));
+        script.onload = () => {
+          const waitForTurnstile = window.setInterval(() => {
+            if (window.turnstile && typeof window.turnstile.render === 'function') {
+              window.clearInterval(waitForTurnstile);
+              resolve(window.turnstile);
+            }
+          }, 80);
+          window.setTimeout(() => {
+            window.clearInterval(waitForTurnstile);
+            if (window.turnstile && typeof window.turnstile.render === 'function') resolve(window.turnstile);
+            else reject(new Error('Cloudflare Turnstile loaded, but the widget API was not ready.'));
+          }, 8000);
+        };
+        script.onerror = () => reject(new Error('Cloudflare Turnstile could not load. A browser blocker may be blocking challenges.cloudflare.com.'));
         document.head.appendChild(script);
       });
     }
 
     return turnstileScriptPromise;
+  }
+
+  function findInsertTarget(form) {
+    const submitButton = getSubmitButton(form);
+    if (!submitButton) return { parent: form, before: null };
+
+    const wrapper = submitButton.closest('.formActions, .formFooter, .contactActions, .leadFormActions, .buttonRow, .actions');
+    if (wrapper && wrapper.parentNode) {
+      return { parent: wrapper.parentNode, before: wrapper };
+    }
+
+    if (submitButton.parentNode) {
+      return { parent: submitButton.parentNode, before: submitButton };
+    }
+
+    return { parent: form, before: null };
   }
 
   function ensureHumanCheckField(form) {
@@ -94,24 +139,19 @@
     hidden.setAttribute('data-turnstile-token', '');
 
     field = document.createElement('div');
-    field.className = 'field humanCheckField full fullWidth';
+    field.className = 'field humanCheckField full fullWidth turnstilePending';
     field.setAttribute('data-human-check', '');
-    field.innerHTML = `
-      <label>Are you human? <span>Required</span></label>
-      <div class="turnstileBox" data-turnstile-container></div>
-      <small class="fieldHelp">This helps stop spam bots before they can flood the inbox.</small>
-    `;
+    field.innerHTML = [
+      '<label>Are you human? <span>Required</span></label>',
+      '<div class="turnstileBox" data-turnstile-container>',
+      '  <div class="turnstileLoading">Loading human verification...</div>',
+      '</div>',
+      '<small class="fieldHelp">This quick check helps stop spam bots before they can flood the inbox.</small>'
+    ].join('');
     field.appendChild(hidden);
 
-    const grid = form.querySelector('.formGrid') || form;
-    const submitButton = grid.querySelector('button[type="submit"]') || form.querySelector('button[type="submit"]');
-    if (submitButton && submitButton.parentNode === grid) {
-      grid.insertBefore(field, submitButton);
-    } else if (submitButton) {
-      submitButton.parentNode.insertBefore(field, submitButton);
-    } else {
-      grid.appendChild(field);
-    }
+    const target = findInsertTarget(form);
+    target.parent.insertBefore(field, target.before);
 
     return field;
   }
@@ -135,54 +175,66 @@
     const container = field.querySelector('[data-turnstile-container]');
     const tokenInput = field.querySelector('[data-turnstile-token]');
 
+    if (!container || !tokenInput) return;
+    if (form.dataset.turnstileWidgetId) return;
+
     try {
+      field.classList.add('turnstilePending');
+      container.innerHTML = '<div class="turnstileLoading">Loading human verification...</div>';
+
       const [config, turnstile] = await Promise.all([loadTurnstileConfig(), loadTurnstileScript()]);
 
-      if (form.dataset.turnstileWidgetId || !container) return;
-
+      container.innerHTML = '';
       const widgetId = turnstile.render(container, {
         sitekey: config.siteKey,
         theme: 'light',
         appearance: 'always',
         callback: function (token) {
           tokenInput.value = token;
-          field.classList.remove('has-error');
+          field.classList.remove('has-error', 'turnstilePending');
+          field.classList.add('is-verified');
         },
         'expired-callback': function () {
           tokenInput.value = '';
+          field.classList.remove('is-verified');
           setMessage(form, 'The human check expired. Please complete it again before sending.', 'error');
         },
         'error-callback': function () {
           tokenInput.value = '';
+          field.classList.remove('is-verified', 'turnstilePending');
           field.classList.add('has-error');
           setMessage(form, 'The human check could not be completed. Please refresh and try again.', 'error');
         }
       });
 
       form.dataset.turnstileWidgetId = widgetId;
+      field.classList.remove('turnstilePending');
     } catch (error) {
+      field.classList.remove('turnstilePending');
       field.classList.add('has-error');
-      if (container) {
-        container.innerHTML = '<div class="turnstileError">Human verification is not ready. Check the Turnstile keys in Cloudflare.</div>';
-      }
-      setMessage(form, error.message || 'The human verification could not load.', 'error');
+      container.innerHTML = '<div class="turnstileError">Human verification could not load. Refresh the page. If it still does not appear, check browser blockers or Cloudflare Turnstile settings.</div>';
+      console.error('Arsenal Media Turnstile setup failed:', error);
     }
   }
 
-  forms.forEach((form) => {
+  function bindForm(form) {
+    if (!form || form.dataset.contactFormBound === 'true') return;
+    form.dataset.contactFormBound = 'true';
+
     ensureHumanCheckField(form);
     setupTurnstile(form);
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      const submitButton = form.querySelector('[type="submit"]');
+      const submitButton = getSubmitButton(form);
       const originalText = submitButton ? submitButton.textContent : '';
       const tokenInput = form.querySelector('[data-turnstile-token]');
 
       if (!tokenInput || !tokenInput.value) {
-        setMessage(form, 'Please complete the “Are you human?” check before sending.', 'error');
+        ensureHumanCheckField(form);
         setupTurnstile(form);
+        setMessage(form, 'Please complete the “Are you human?” check before sending the form.', 'error');
         return;
       }
 
@@ -221,5 +273,19 @@
         }
       }
     });
-  });
+  }
+
+  function initForms() {
+    document.querySelectorAll('[data-contact-form]').forEach(bindForm);
+
+    if (!observerStarted) {
+      observerStarted = true;
+      const observer = new MutationObserver(() => {
+        document.querySelectorAll('[data-contact-form]').forEach(bindForm);
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  ready(initForms);
 })();

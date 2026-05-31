@@ -1,59 +1,11 @@
-/*
-  X-Robots-Tag: index, follow
-  X-Frame-Options: SAMEORIGIN
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Cache-Control: public, max-age=300, must-revalidate
-
-/*.html
-  Content-Type: text/html; charset=utf-8
-  Cache-Control: public, max-age=300, must-revalidate
-
-/*.css
-  Content-Type: text/css; charset=utf-8
-  Cache-Control: public, max-age=300, must-revalidate
-
-/css/*.css
-  Content-Type: text/css; charset=utf-8
-  Cache-Control: public, max-age=300, must-revalidate
-
-/assets/css/*.css
-  Content-Type: text/css; charset=utf-8
-  Cache-Control: public, max-age=300, must-revalidate
-
-/*.js
+/assets/js/contact-forms.js
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
   Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
 
-/js/*.js
-  Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
+/assets/css/forms.css
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Content-Type: text/css; charset=utf-8
 
-/assets/js/*.js
-  Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
-
-/assets/images/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/images/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/screenshots/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/social-designs/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/robots.txt
-  Content-Type: text/plain; charset=utf-8
-  Cache-Control: public, max-age=300
-
-/sitemap.xml
-  Content-Type: application/xml; charset=utf-8
-  Cache-Control: public, max-age=300
-
-/llms.txt
-  Content-Type: text/plain; charset=utf-8
-  Cache-Control: public, max-age=300
+/css/forms.css
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Content-Type: text/css; charset=utf-8
