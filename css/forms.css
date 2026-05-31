@@ -226,3 +226,89 @@
 .humanCheckField.is-verified .turnstileBox{
   border-color:#1f9d55!important;
 }
+
+/* -------------------------------------------------------
+   TURNSTILE STYLING REFINEMENT v29
+   Makes the human check feel compact and intentional.
+------------------------------------------------------- */
+.humanCheckField{
+  display:block!important;
+  grid-column:1/-1!important;
+  width:100%!important;
+  clear:both!important;
+  margin:10px 0 10px!important;
+  padding:0!important;
+}
+.humanCheckField label{
+  display:flex!important;
+  align-items:baseline!important;
+  gap:6px!important;
+  margin:0 0 8px!important;
+  color:#171a21!important;
+  font-size:12.5px!important;
+  font-weight:850!important;
+}
+.humanCheckField label span{
+  color:#6b7280!important;
+  font-size:12px!important;
+  font-weight:700!important;
+}
+.turnstileBox{
+  min-height:auto!important;
+  width:fit-content!important;
+  max-width:100%!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  background:transparent!important;
+  border:none!important;
+  border-radius:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  box-shadow:none!important;
+}
+.turnstileBox iframe{
+  max-width:100%!important;
+}
+.humanCheckField.has-error .turnstileBox,
+.humanCheckField.is-verified .turnstileBox{
+  border:none!important;
+  background:transparent!important;
+}
+.humanCheckField .fieldHelp,
+.humanCheckField .humanCheckHelp,
+.humanCheckField small{
+  display:block;
+  margin-top:8px;
+  color:#6b7280!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+.turnstileLoading,
+.turnstileError{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:48px!important;
+  padding:12px 14px!important;
+  border-radius:12px!important;
+  border:1px solid #d8d0c5!important;
+  background:#fff!important;
+  font-size:13px!important;
+  line-height:1.45!important;
+  font-weight:800!important;
+}
+.turnstileLoading{color:#535b67!important;}
+.turnstileError{
+  color:#b42318!important;
+  border-color:#f2b8b5!important;
+  background:#fff5f5!important;
+}
+@media(max-width:680px){
+  .turnstileBox{
+    width:100%!important;
+  }
+  .turnstileBox iframe{
+    transform-origin:left top;
+    max-width:100%!important;
+  }
+}
